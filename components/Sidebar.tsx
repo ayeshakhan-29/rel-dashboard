@@ -17,6 +17,10 @@ import {
     Calendar,
     Mail,
     FileText,
+    Phone,
+    MessageSquare,
+    Users as UsersIcon,
+    Video,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -24,7 +28,14 @@ interface SidebarProps {
     onClose: () => void;
 }
 
-const navigationItems = [
+interface NavigationItem {
+    name: string;
+    href: string;
+    icon: any;
+    divider?: boolean;
+}
+
+const navigationItems: NavigationItem[] = [
     { name: 'Dashboard', href: '/', icon: Home },
     { name: 'Pipeline', href: '/pipeline', icon: Layers },
     { name: 'Leads', href: '/leads', icon: Users },
@@ -34,8 +45,15 @@ const navigationItems = [
     { name: 'Calendar', href: '/calendar', icon: Calendar },
     { name: 'Emails', href: '/emails', icon: Mail },
     { name: 'Forms', href: '/forms', icon: FileText },
-
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+    
+    // RingCentral Integration
+    { name: 'RingCentral', href: '/dashboard/ringcentral', icon: Phone, divider: true },
+    { name: 'Calls', href: '/calls', icon: Phone },
+    { name: 'Messages', href: '/messages', icon: MessageSquare },
+    { name: 'Team Chat', href: '/teams', icon: UsersIcon },
+    { name: 'Meetings', href: '/meetings', icon: Video },
+    
     { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
@@ -76,24 +94,28 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
             <nav className="mt-6 px-3">
                 <div className="space-y-1">
-                    {navigationItems.map((item) => {
+                    {navigationItems.map((item, index) => {
                         const Icon = item.icon;
                         const active = isActive(item.href);
                         return (
-                            <Link
-                                key={item.name}
-                                href={item.href}
-                                className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${active
-                                    ? 'text-white bg-slate-900'
-                                    : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
-                                    }`}
-                            >
-                                <Icon
-                                    className={`h-5 w-5 mr-3 ${active ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-600'
+                            <div key={item.name}>
+                                {item.divider && index > 0 && (
+                                    <div className="my-2 border-t border-slate-200"></div>
+                                )}
+                                <Link
+                                    href={item.href}
+                                    className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${active
+                                        ? 'text-white bg-slate-900'
+                                        : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
                                         }`}
-                                />
-                                {item.name}
-                            </Link>
+                                >
+                                    <Icon
+                                        className={`h-5 w-5 mr-3 ${active ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-600'
+                                            }`}
+                                    />
+                                    {item.name}
+                                </Link>
+                            </div>
                         );
                     })}
                 </div>
