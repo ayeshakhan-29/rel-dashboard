@@ -8,15 +8,15 @@ import {
   DollarSign,
   TrendingUp,
   ArrowRight,
-  UserPlus,
 } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import PrivateRoute from './components/auth/PrivateRoute';
 import KPICard from '@/components/KPICard';
 import TaskCard from '@/components/TaskCard';
-import { getLeads, Lead } from './services/leadsService';
-import dashboardService, { DashboardKPI, PipelineStageCount, DashboardTask } from './services/dashboardService';
+import { Lead } from './services/leadsService';
+import { getBookings, Booking } from './services/formsService';
+import dashboardService, { DashboardKPI, DashboardTask } from './services/dashboardService';
 import analyticsService, { PerformanceMetric } from './services/analyticsService';
 import { Task } from '@/types';
 
@@ -24,30 +24,53 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [kpis, setKpis] = useState<DashboardKPI[]>([]);
-  const [pipelineStages, setPipelineStages] = useState<PipelineStageCount[]>([]);
   const [upcomingTasks, setUpcomingTasks] = useState<DashboardTask[]>([]);
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetric[]>([]);
   const [loading, setLoading] = useState(true);
   const [kpisLoading, setKpisLoading] = useState(true);
-  const [pipelineLoading, setPipelineLoading] = useState(true);
   const [tasksLoading, setTasksLoading] = useState(true);
   const [metricsLoading, setMetricsLoading] = useState(true);
 
-  // Fetch leads from API
+  // Fetch form submissions (bookings) from API
   useEffect(() => {
-    const fetchLeads = async () => {
+    const fetchFormLeads = async () => {
       try {
         setLoading(true);
-        const response = await getLeads({ limit: 5 });
-        setLeads(response.data.leads);
+        const bookingsData = await getBookings();
+
+        const normalizeDate = (value: any): string => {
+          if (!value) return '';
+          if (typeof value === 'string') return value;
+          if (typeof value === 'number') return new Date(value).toISOString();
+          if (value && typeof value === 'object') {
+            if (typeof (value as any).toDate === 'function') return (value as any).toDate().toISOString();
+            if (typeof (value as any).seconds === 'number') return new Date((value as any).seconds * 1000).toISOString();
+            if (typeof (value as any)._seconds === 'number') return new Date((value as any)._seconds * 1000).toISOString();
+          }
+          return '';
+        };
+
+        // Map bookings to Lead format (limit to 5 for recent)
+        const mappedBookings: Lead[] = bookingsData.slice(0, 5).map((booking: Booking) => ({
+          id: booking.id,
+          name: booking.fullName || 'Unknown Name',
+          phone: booking.phone || '',
+          email: booking.email || '',
+          stage: 'Incoming',
+          source: 'Website',
+          created_at: normalizeDate(booking.created_at ?? (booking as any).createdAt) || new Date().toISOString(),
+          updated_at: normalizeDate(booking.updated_at ?? (booking as any).updatedAt ?? (booking as any).createdAt) || new Date().toISOString(),
+        }));
+
+        setLeads(mappedBookings);
       } catch (err) {
-        console.error('Failed to fetch leads:', err);
+        console.error('Failed to fetch form submissions:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchLeads();
+    fetchFormLeads();
   }, []);
 
   // Fetch KPIs from API
@@ -67,22 +90,6 @@ export default function Dashboard() {
     fetchKPIs();
   }, []);
 
-  // Fetch pipeline overview from API
-  useEffect(() => {
-    const fetchPipeline = async () => {
-      try {
-        setPipelineLoading(true);
-        const data = await dashboardService.getPipelineOverview();
-        setPipelineStages(data);
-      } catch (err) {
-        console.error('Failed to fetch pipeline overview:', err);
-      } finally {
-        setPipelineLoading(false);
-      }
-    };
-
-    fetchPipeline();
-  }, []);
 
   // Fetch upcoming tasks from API
   useEffect(() => {
@@ -175,7 +182,7 @@ export default function Dashboard() {
             </div>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
               <Link
                 href="/pipeline"
                 className="bg-white rounded-lg border border-slate-200 p-4 hover:shadow-md hover:border-emerald-300 transition-all duration-200 group"
@@ -212,58 +219,10 @@ export default function Dashboard() {
                   <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-emerald-600 transition-colors" />
                 </div>
               </Link>
-              <Link
-                href="/add-lead"
-                className="bg-slate-900 rounded-lg border border-slate-900 p-4 hover:bg-slate-800 transition-all duration-200 group"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-white">Add New Lead</p>
-                    <p className="text-xs text-slate-400 mt-1">Create lead</p>
-                  </div>
-                  <UserPlus className="h-5 w-5 text-white" />
-                </div>
-              </Link>
             </div>
 
-            {/* Pipeline Overview & Recent Leads */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-              {/* Mini Pipeline Overview */}
-              <div className="lg:col-span-2 bg-white rounded-lg border border-slate-200 p-6">
-                <div className="flex items-center justify-between mb-5">
-                  <h3 className="text-base font-semibold text-slate-900">Pipeline Overview</h3>
-                  <Link
-                    href="/pipeline"
-                    className="text-emerald-600 hover:text-emerald-700 text-xs font-semibold flex items-center"
-                  >
-                    View Full Pipeline
-                    <ArrowRight className="h-3.5 w-3.5 ml-1" />
-                  </Link>
-                </div>
-                {pipelineLoading ? (
-                  <div className="text-center py-8 text-slate-600">
-                    Loading pipeline data...
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                    {pipelineStages.map((stage, index) => (
-                      <div
-                        key={index}
-                        className={`${stage.bgColor} rounded-lg p-4 border ${stage.borderColor} text-center`}
-                      >
-                        <p className={`text-2xl font-bold ${stage.textColor} mb-1`}>
-                          {stage.count}
-                        </p>
-                        <p className={`text-xs font-medium ${stage.textColor}`}>
-                          {stage.name}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Recent Leads */}
+            {/* Recent Leads */}
+            <div className="grid grid-cols-1 gap-6 mb-6">
               <div className="bg-white rounded-lg border border-slate-200 p-6">
                 <div className="flex items-center justify-between mb-5">
                   <h3 className="text-base font-semibold text-slate-900">Recent Leads</h3>
@@ -288,13 +247,8 @@ export default function Dashboard() {
                               <p className="text-sm font-medium text-slate-900 truncate">{lead.name}</p>
                               <p className="text-xs text-slate-600">{lead.phone}</p>
                             </div>
-                            <span className={`ml-2 px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${lead.stage === 'Won' ? 'bg-green-100 text-green-700' :
-                                lead.stage === 'Lost' ? 'bg-red-100 text-red-700' :
-                                  lead.stage === 'Incoming' ? 'bg-blue-100 text-blue-700' :
-                                    lead.stage === 'Contacted' ? 'bg-indigo-100 text-indigo-700' :
-                                      'bg-slate-100 text-slate-700'
-                              }`}>
-                              {lead.stage}
+                            <span className="text-xs text-slate-400">
+                              {lead.created_at ? new Date(lead.created_at).toLocaleDateString() : 'No date'}
                             </span>
                           </div>
                         </div>
@@ -337,8 +291,8 @@ export default function Dashboard() {
                           <div className="w-full bg-slate-200 rounded-full h-2">
                             <div
                               className={`h-2 rounded-full transition-all duration-300 ${metric.progress >= 90 ? 'bg-green-500' :
-                                  metric.progress >= 70 ? 'bg-blue-500' :
-                                    metric.progress >= 50 ? 'bg-amber-500' : 'bg-red-500'
+                                metric.progress >= 70 ? 'bg-blue-500' :
+                                  metric.progress >= 50 ? 'bg-amber-500' : 'bg-red-500'
                                 }`}
                               style={{ width: `${Math.min(metric.progress, 100)}%` }}
                             ></div>

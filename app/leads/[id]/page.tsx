@@ -25,7 +25,7 @@ import { createCalendarMeeting } from '../../services/calendarService';
 export default function LeadDetailsPage() {
     const params = useParams();
     const router = useRouter();
-    const leadId = parseInt(params.id as string);
+    const leadId = params.id as string;
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [lead, setLead] = useState<LeadDetails | null>(null);
@@ -66,7 +66,7 @@ export default function LeadDetailsPage() {
         const fetchTasks = async () => {
             try {
                 setTasksLoading(true);
-                const response = await getTasks({ lead_id: leadId });
+                const response = await getTasks({ lead_id: typeof leadId === 'string' && !isNaN(parseInt(leadId)) ? parseInt(leadId) : leadId as any });
                 setTasks(response.data);
             } catch (err: any) {
                 console.error('Failed to fetch tasks:', err);
@@ -115,8 +115,12 @@ export default function LeadDetailsPage() {
         }
     };
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleString('en-US', {
+    const formatDate = (dateString: string | undefined | null) => {
+        if (!dateString) return 'No date';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'No date';
+
+        return date.toLocaleString('en-US', {
             month: 'short',
             day: 'numeric',
             year: 'numeric',
@@ -207,17 +211,6 @@ export default function LeadDetailsPage() {
                                     </div>
 
                                     <div className="mt-6 pt-6 border-t border-slate-200">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="text-sm text-slate-600">Stage</span>
-                                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${lead.stage === 'Won' ? 'bg-green-100 text-green-700' :
-                                                    lead.stage === 'Lost' ? 'bg-red-100 text-red-700' :
-                                                        lead.stage === 'Incoming' ? 'bg-blue-100 text-blue-700' :
-                                                            lead.stage === 'Contacted' ? 'bg-slate-100 text-slate-700' :
-                                                                'bg-slate-100 text-slate-700'
-                                                }`}>
-                                                {lead.stage}
-                                            </span>
-                                        </div>
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm text-slate-600">Source</span>
                                             <span className="text-sm font-medium text-slate-900">{lead.source}</span>
@@ -344,8 +337,8 @@ export default function LeadDetailsPage() {
                                                                     </span>
                                                                 )}
                                                                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${task.priority === 'High' ? 'bg-red-100 text-red-700' :
-                                                                        task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
-                                                                            'bg-green-100 text-green-700'
+                                                                    task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                                                                        'bg-green-100 text-green-700'
                                                                     }`}>
                                                                     {task.priority}
                                                                 </span>
@@ -402,8 +395,8 @@ export default function LeadDetailsPage() {
                                                 >
                                                     <div
                                                         className={`max-w-[70%] rounded-lg p-4 ${msg.direction === 'outbound'
-                                                                ? 'bg-indigo-600 text-white'
-                                                                : 'bg-slate-100 text-slate-900'
+                                                            ? 'bg-indigo-600 text-white'
+                                                            : 'bg-slate-100 text-slate-900'
                                                             }`}
                                                     >
                                                         <p className="text-sm whitespace-pre-wrap">{msg.message_text}</p>

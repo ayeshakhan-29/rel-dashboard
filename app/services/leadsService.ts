@@ -1,7 +1,7 @@
 import api from './api';
 
 export interface Lead {
-    id: number;
+    id: number | string;
     name: string;
     phone: string;
     email?: string;
@@ -14,8 +14,8 @@ export interface Lead {
 }
 
 export interface LeadMessage {
-    id: number;
-    lead_id: number;
+    id: number | string;
+    lead_id: number | string;
     message_id: string;
     direction: 'inbound' | 'outbound';
     message_text: string;
@@ -25,8 +25,8 @@ export interface LeadMessage {
 }
 
 export interface LeadTimeline {
-    id: number;
-    lead_id: number;
+    id: number | string;
+    lead_id: number | string;
     event_type: 'message_received' | 'message_sent' | 'stage_changed' | 'note_added' | 'call_made' | 'email_sent';
     description: string;
     metadata?: any;
@@ -78,7 +78,7 @@ export const getLeads = async (params?: {
 /**
  * Get single lead details with messages and timeline
  */
-export const getLeadDetails = async (id: number): Promise<LeadDetailsResponse> => {
+export const getLeadDetails = async (id: number | string): Promise<LeadDetailsResponse> => {
     const response = await api.get(`/leads/${id}`);
     return response.data;
 };
@@ -87,7 +87,7 @@ export const getLeadDetails = async (id: number): Promise<LeadDetailsResponse> =
  * Send WhatsApp message to a lead
  */
 export const sendWhatsAppMessage = async (data: {
-    leadId: number;
+    leadId: number | string;
     phone: string;
     message: string;
 }): Promise<SendMessageResponse> => {
@@ -130,7 +130,7 @@ export const createLead = async (data: CreateLeadData): Promise<CreateLeadRespon
 /**
  * Update a lead
  */
-export const updateLead = async (id: number, data: Partial<CreateLeadData>): Promise<{ success: boolean; message: string }> => {
+export const updateLead = async (id: number | string, data: Partial<CreateLeadData>): Promise<{ success: boolean; message: string }> => {
     const response = await api.put(`/leads/${id}`, data);
     return response.data;
 };
@@ -138,7 +138,7 @@ export const updateLead = async (id: number, data: Partial<CreateLeadData>): Pro
 /**
  * Delete a lead
  */
-export const deleteLead = async (id: number): Promise<{ success: boolean; message: string }> => {
+export const deleteLead = async (id: number | string): Promise<{ success: boolean; message: string }> => {
     const response = await api.delete(`/leads/${id}`);
     return response.data;
 };

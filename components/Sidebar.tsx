@@ -10,7 +10,7 @@ import {
     BarChart3,
     Settings,
     CheckSquare,
-    Layers,
+
     X,
     UserPlus,
     Plus,
@@ -37,23 +37,22 @@ interface NavigationItem {
 
 const navigationItems: NavigationItem[] = [
     { name: 'Dashboard', href: '/', icon: Home },
-    { name: 'Pipeline', href: '/pipeline', icon: Layers },
+
     { name: 'Leads', href: '/leads', icon: Users },
-    { name: 'Add Lead', href: '/add-lead', icon: UserPlus },
     { name: 'Tasks', href: '/tasks', icon: CheckSquare },
     { name: 'Add Task', href: '/create-task', icon: Plus },
     { name: 'Calendar', href: '/calendar', icon: Calendar },
     { name: 'Emails', href: '/emails', icon: Mail },
     { name: 'Forms', href: '/forms', icon: FileText },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-    
+
     // RingCentral Integration
     { name: 'RingCentral', href: '/dashboard/ringcentral', icon: Phone, divider: true },
     { name: 'Calls', href: '/calls', icon: Phone },
     { name: 'Messages', href: '/messages', icon: MessageSquare },
     { name: 'Team Chat', href: '/teams', icon: UsersIcon },
     { name: 'Meetings', href: '/meetings', icon: Video },
-    
+
     { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
