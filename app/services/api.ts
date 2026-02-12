@@ -33,6 +33,11 @@ api.interceptors.response.use(
 
         // If error is 401 and we haven't tried to refresh yet
         if (error.response?.status === 401 && !originalRequest._retry) {
+            // Don't intercept 401s for login/register requests
+            if (originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/register')) {
+                return Promise.reject(error);
+            }
+
             originalRequest._retry = true;
 
             try {
@@ -42,7 +47,11 @@ api.interceptors.response.use(
                     // No refresh token, redirect to login
                     sessionStorage.removeItem('accessToken');
                     sessionStorage.removeItem('refreshToken');
-                    window.location.href = '/login';
+
+                    // Only redirect if not already on the login page to avoid reloads
+                    if (window.location.pathname !== '/login') {
+                        window.location.href = '/login';
+                    }
                     return Promise.reject(error);
                 }
 
@@ -64,7 +73,10 @@ api.interceptors.response.use(
                 // Refresh failed, clear tokens and redirect to login
                 sessionStorage.removeItem('accessToken');
                 sessionStorage.removeItem('refreshToken');
-                window.location.href = '/login';
+
+                if (window.location.pathname !== '/login') {
+                    window.location.href = '/login';
+                }
                 return Promise.reject(refreshError);
             }
         }
