@@ -27,6 +27,7 @@ import {
   Bell,
   LogOut,
   User,
+  ExternalLink,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -88,6 +89,12 @@ const navigationItems: NavigationItem[] = [
     href: "/dashboard/ringcentral",
     icon: Phone,
     divider: true,
+    adminOnly: true,
+  },
+  {
+    name: "Limo Anywhere",
+    href: "https://manage.mylimobiz.com/admin/login.asp",
+    icon: ExternalLink,
     adminOnly: true,
   },
   { name: "Calls", href: "/calls", icon: Phone, adminOnly: true },
@@ -202,7 +209,7 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
         isOpen ? "translate-x-0" : "-translate-x-full"
       } transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex flex-col`}
     >
-      <div className="flex items-center justify-between h-16 px-6 border-b border-slate-200 flex-shrink-0">
+      <div className="flex items-center justify-between h-16 px-6 border-b border-slate-200 shrink-0">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
             <span className="text-xs font-bold text-emerald-600">
@@ -228,6 +235,7 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
       <nav className="mt-6 px-3 flex-1 overflow-y-auto">
         <div className="space-y-1">
           {filteredNavigationItems.map((item, index) => {
+            const isExternal = /^https?:\/\//.test(item.href);
             const Icon = item.icon;
             const hasChildren = item.children && item.children.length > 0;
             const isExpanded = expandedMenus[item.name];
@@ -294,6 +302,28 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                       </div>
                     )}
                   </>
+                ) : isExternal ? (
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                      active
+                        ? "text-white bg-slate-900 shadow-sm"
+                        : "text-slate-600 hover:bg-emerald-50 hover:text-emerald-700"
+                    }`}
+                  >
+                    <div className="relative flex items-center flex-1">
+                      <Icon
+                        className={`h-5 w-5 mr-3 ${
+                          active
+                            ? "text-emerald-400"
+                            : "text-slate-500 group-hover:text-emerald-600"
+                        }`}
+                      />
+                      <span>{item.name}</span>
+                    </div>
+                  </a>
                 ) : (
                   <Link
                     href={item.href}
@@ -314,7 +344,7 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                       <span>{item.name}</span>
                       {item.name === "Notifications" &&
                         unreadNotifications > 0 && (
-                          <span className="ml-auto bg-red-600 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5">
+                          <span className="ml-auto bg-red-600 text-white text-xs font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1.5">
                             {unreadNotifications > 99
                               ? "99+"
                               : unreadNotifications}
