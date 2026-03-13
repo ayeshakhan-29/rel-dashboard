@@ -28,6 +28,7 @@ import {
   LogOut,
   User,
   ExternalLink,
+  Car,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -65,6 +66,20 @@ const navigationItems: NavigationItem[] = [
   { name: "Tasks", href: "/tasks", icon: CheckSquare, adminOnly: true },
   { name: "Add Task", href: "/create-task", icon: Plus, adminOnly: true },
   { name: "Calendar", href: "/calendar", icon: Calendar, adminOnly: true },
+
+  // Dispatch Management Section
+  {
+    name: "Dispatch Board",
+    href: "/dispatch",
+    icon: Car,
+    adminOnly: true,
+    children: [
+      { name: "Dispatch Board", href: "/dispatch", icon: Car },
+      { name: "New Booking", href: "/dispatch/booking", icon: Plus },
+      { name: "Drivers", href: "/dispatch/drivers", icon: Users },
+      { name: "Passengers", href: "/dispatch/passengers", icon: User },
+    ],
+  },
 
   // Attendance Section for Admin
   {
