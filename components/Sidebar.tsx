@@ -124,8 +124,13 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user, isAdmin, isEmployee, logout } = useAuth();
-  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
-    "Attendance Admin": true, // Default expanded
+  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>(() => {
+    // Pre-expand any menu whose child matches the current pathname
+    const initial: Record<string, boolean> = {
+      "Attendance Admin": true,
+      "Dispatch Board": true,
+    };
+    return initial;
   });
   const [unreadNotifications, setUnreadNotifications] = useState(0);
 
@@ -135,6 +140,20 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
       [name]: !prev[name],
     }));
   };
+
+  // Auto-expand parent menus when a child route is active
+  useEffect(() => {
+    navigationItems.forEach((item) => {
+      if (item.children) {
+        const hasActiveChild = item.children.some((child) =>
+          pathname.startsWith(child.href)
+        );
+        if (hasActiveChild) {
+          setExpandedMenus((prev) => ({ ...prev, [item.name]: true }));
+        }
+      }
+    });
+  }, [pathname]);
 
   // Fetch unread notifications count for employees
   useEffect(() => {
@@ -208,7 +227,9 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
       return isPathMatch && !currentTab;
     }
 
-    return pathname.startsWith(href);
+    // Exact match only — prevents parent routes like /dispatch from
+    // staying active when a child like /dispatch/booking is selected
+    return pathname === targetPath;
   };
 
   const handleLogout = async () => {
