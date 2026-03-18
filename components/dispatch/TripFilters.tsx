@@ -17,22 +17,31 @@ interface TripFiltersProps {
 export default function TripFilters({
   statusFilters,
   activeFilter,
-  setActiveFilter
+  setActiveFilter,
 }: TripFiltersProps) {
   return (
-    <div className="bg-white border-b border-gray-200 px-6 py-3">
-      <div className="flex space-x-1">
+    <div className="bg-white border-b border-slate-200 px-6 py-2">
+      <div className="flex gap-1 overflow-x-auto">
         {statusFilters.map((filter) => (
           <button
             key={filter.key}
             onClick={() => setActiveFilter(filter.key)}
-            className={`px-4 py-2 rounded-t-lg transition-colors ${
+            className={`px-3 py-2 text-sm font-medium rounded-md whitespace-nowrap transition-colors ${
               activeFilter === filter.key
-                ? "bg-white text-blue-600 border-t-2 border-blue-500 -mb-px"
-                : "bg-gray-50 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                ? "bg-slate-800 text-white"
+                : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
             }`}
           >
-            {filter.label} ({filter.count})
+            {filter.label}
+            <span
+              className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
+                activeFilter === filter.key
+                  ? "bg-white/20 text-white"
+                  : "bg-slate-100 text-slate-500"
+              }`}
+            >
+              {filter.count}
+            </span>
           </button>
         ))}
       </div>

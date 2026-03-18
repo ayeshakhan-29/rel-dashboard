@@ -32,16 +32,24 @@ function DispatchContent() {
   } = useDispatchData();
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
+      {/* Sidebar overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Header
           title="Dispatch Board"
           onMenuClick={() => setSidebarOpen(true)}
         />
 
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50">
           <DispatchHeader
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -58,19 +66,21 @@ function DispatchContent() {
             setActiveFilter={setActiveFilter}
           />
 
-          {viewMode === "table" ? (
-            <TripTable
-              trips={trips}
-              onViewTrip={handleViewTrip}
-              onAssignDriver={handleAssignDriver}
-            />
-          ) : (
-            <TripCards
-              trips={trips}
-              onViewTrip={handleViewTrip}
-              onAssignDriver={handleAssignDriver}
-            />
-          )}
+          <div className="overflow-x-auto">
+            {viewMode === "table" ? (
+              <TripTable
+                trips={trips}
+                onViewTrip={handleViewTrip}
+                onAssignDriver={handleAssignDriver}
+              />
+            ) : (
+              <TripCards
+                trips={trips}
+                onViewTrip={handleViewTrip}
+                onAssignDriver={handleAssignDriver}
+              />
+            )}
+          </div>
         </main>
       </div>
     </div>

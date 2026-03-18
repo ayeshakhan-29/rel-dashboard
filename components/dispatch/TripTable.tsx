@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { MapPin, Clock, Car, User } from "lucide-react";
+import { MapPin, Clock } from "lucide-react";
 
 interface Trip {
   id: string;
@@ -12,10 +12,7 @@ interface Trip {
   vehicle: string;
   driver: string;
   driverStatus: string;
-  payment: {
-    method: string;
-    status: string;
-  };
+  payment: { method: string; status: string };
   price: number;
   status: string;
   actions: string[];
@@ -27,107 +24,93 @@ interface TripTableProps {
   onAssignDriver: (tripId: string) => void;
 }
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "completed": return "text-green-600 bg-green-50";
-    case "dispatched": return "text-blue-600 bg-blue-50";
-    case "confirmed": return "text-purple-600 bg-purple-50";
-    case "scheduled": return "text-yellow-600 bg-yellow-50";
-    case "in_progress": return "text-orange-600 bg-orange-50";
-    case "cancelled": return "text-red-600 bg-red-50";
-    case "unassigned": return "text-gray-600 bg-gray-50";
-    default: return "text-gray-600 bg-gray-50";
-  }
+const statusStyles: Record<string, string> = {
+  completed:   "text-emerald-700 bg-emerald-50 border border-emerald-200",
+  dispatched:  "text-sky-700    bg-sky-50    border border-sky-200",
+  confirmed:   "text-violet-700 bg-violet-50 border border-violet-200",
+  scheduled:   "text-amber-700  bg-amber-50  border border-amber-200",
+  in_progress: "text-orange-700 bg-orange-50 border border-orange-200",
+  cancelled:   "text-rose-700   bg-rose-50   border border-rose-200",
+  unassigned:  "text-slate-600  bg-slate-100 border border-slate-200",
 };
 
-const getPaymentStatusColor = (status: string) => {
-  switch (status) {
-    case "PAID": return "text-green-600";
-    case "PENDING": return "text-yellow-600";
-    case "FAILED": return "text-red-600";
-    default: return "text-gray-600";
-  }
+const paymentStyles: Record<string, string> = {
+  PAID:    "text-emerald-600",
+  PENDING: "text-amber-600",
+  FAILED:  "text-rose-600",
 };
 
 export default function TripTable({ trips, onViewTrip, onAssignDriver }: TripTableProps) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
+    <div className="overflow-x-auto bg-white">
+      <table className="w-full min-w-[860px] text-sm">
         <thead>
-          <tr className="border-b border-gray-200">
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">ID</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Client</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Route</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Date / Time</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Vehicle</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Driver</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Payment</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Actions</th>
+          <tr className="border-b border-slate-200 bg-slate-50">
+            {["ID", "Client", "Route", "Date / Time", "Vehicle", "Driver", "Payment", "Status", "Actions"].map((h) => (
+              <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                {h}
+              </th>
+            ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-slate-100">
           {trips.map((trip) => (
-            <tr key={trip.id} className="border-b border-gray-200 hover:bg-gray-50">
-              <td className="py-3 px-4 font-mono text-sm text-gray-600">{trip.id}</td>
+            <tr key={trip.id} className="hover:bg-slate-50 transition-colors">
+              <td className="py-3 px-4 font-mono text-xs text-slate-500">{trip.id}</td>
               <td className="py-3 px-4">
-                <div>
-                  <div className="font-medium text-gray-900">{trip.client}</div>
-                  <div className="text-sm text-gray-500">({trip.passengers} pax)</div>
+                <div className="font-medium text-slate-800">{trip.client}</div>
+                <div className="text-xs text-slate-400">{trip.passengers} pax</div>
+              </td>
+              <td className="py-3 px-4">
+                <div className="flex items-center gap-1.5 text-slate-700">
+                  <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  {trip.route}
                 </div>
               </td>
               <td className="py-3 px-4">
-                <div className="flex items-center space-x-2">
-                  <MapPin className="w-4 h-4 text-gray-400" />
-                  <span className="text-gray-700">{trip.route}</span>
+                <div className="flex items-center gap-1.5 text-slate-700">
+                  <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  {trip.dateTime}
                 </div>
               </td>
-              <td className="py-3 px-4">
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-700">{trip.dateTime}</span>
-                </div>
-              </td>
-              <td className="py-3 px-4 text-gray-700">{trip.vehicle}</td>
+              <td className="py-3 px-4 text-slate-700">{trip.vehicle}</td>
               <td className="py-3 px-4">
                 {trip.driver ? (
-                  <div>
-                    <div className="font-medium text-gray-900">{trip.driver}</div>
-                    <div className="text-sm text-green-600">{trip.driverStatus}</div>
-                  </div>
+                  <>
+                    <div className="font-medium text-slate-800">{trip.driver}</div>
+                    <div className="text-xs text-emerald-600">{trip.driverStatus}</div>
+                  </>
                 ) : (
-                  <button 
+                  <button
                     onClick={() => onAssignDriver(trip.id)}
-                    className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm transition-colors text-white"
+                    className="px-2.5 py-1 text-xs font-medium bg-slate-800 hover:bg-slate-900 text-white rounded transition-colors"
                   >
                     Assign
                   </button>
                 )}
               </td>
               <td className="py-3 px-4">
-                <div>
-                  <div className="text-sm text-gray-700">{trip.payment.method}</div>
-                  <div className={`text-sm font-medium ${getPaymentStatusColor(trip.payment.status)}`}>
-                    ({trip.payment.status})
-                  </div>
+                <div className="text-slate-700">{trip.payment.method}</div>
+                <div className={`text-xs font-medium ${paymentStyles[trip.payment.status] ?? "text-slate-500"}`}>
+                  {trip.payment.status}
                 </div>
               </td>
               <td className="py-3 px-4">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(trip.status)}`}>
-                  {trip.status.charAt(0).toUpperCase() + trip.status.slice(1).replace('_', ' ')}
+                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusStyles[trip.status] ?? statusStyles.unassigned}`}>
+                  {trip.status.charAt(0).toUpperCase() + trip.status.slice(1).replace("_", " ")}
                 </span>
               </td>
               <td className="py-3 px-4">
-                <div className="flex space-x-2">
-                  <button 
+                <div className="flex items-center gap-2">
+                  <button
                     onClick={() => onViewTrip(trip.id)}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
+                    className="text-slate-600 hover:text-slate-900 font-medium text-xs underline-offset-2 hover:underline"
                   >
                     View
                   </button>
-                  <span className="text-gray-300">/</span>
-                  <button className="text-green-600 hover:text-green-800 text-sm">
-                    {trip.actions.includes('assign') ? 'Assign' : 'Send'}
+                  <span className="text-slate-300">·</span>
+                  <button className="text-slate-600 hover:text-slate-900 font-medium text-xs underline-offset-2 hover:underline">
+                    {trip.actions.includes("assign") ? "Assign" : "Send"}
                   </button>
                 </div>
               </td>
