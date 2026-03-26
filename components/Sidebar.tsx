@@ -173,6 +173,20 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
     }));
   };
 
+  // Auto-expand parent menus when a child route is active
+  useEffect(() => {
+    navigationItems.forEach((item) => {
+      if (item.children) {
+        const hasActiveChild = item.children.some((child) =>
+          pathname.startsWith(child.href)
+        );
+        if (hasActiveChild) {
+          setExpandedMenus((prev) => ({ ...prev, [item.name]: true }));
+        }
+      }
+    });
+  }, [pathname]);
+
   // Fetch unread notifications count for employees
   useEffect(() => {
     if (isEmployee && user) {
