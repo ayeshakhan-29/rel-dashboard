@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import { getNotifications } from "@/app/services/notificationsService";
+import reservationService from "@/app/services/reservationService";
 import {
   Home,
   Users,
@@ -29,6 +30,12 @@ import {
   User,
   ExternalLink,
   Car,
+  Ticket,
+  ListTodo,
+  Award,
+  MapPin,
+  DollarSign,
+  PieChart,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -43,6 +50,7 @@ interface NavigationItem {
   divider?: boolean;
   adminOnly?: boolean;
   employeeOnly?: boolean;
+  badge?: number;
   children?: NavigationItem[];
 }
 
@@ -63,9 +71,18 @@ const navigationItems: NavigationItem[] = [
     employeeOnly: true,
   },
 
-  { name: "Tasks", href: "/tasks", icon: CheckSquare, adminOnly: true },
-  { name: "Add Task", href: "/create-task", icon: Plus, adminOnly: true },
-  { name: "Calendar", href: "/calendar", icon: Calendar, adminOnly: true },
+  // Reservation Module - Main Section
+  {
+    name: "Reservations",
+    href: "/reservations",
+    icon: Ticket,
+    adminOnly: true,
+    children: [
+      { name: "All Reservations", href: "/reservations", icon: ListTodo },
+      { name: "Create Reservation", href: "/reservations/create", icon: Plus },
+      { name: "Form Submissions", href: "/forms", icon: FileText },
+    ],
+  },
 
   // Dispatch Management Section
   {
@@ -75,11 +92,16 @@ const navigationItems: NavigationItem[] = [
     adminOnly: true,
     children: [
       { name: "Dispatch Board", href: "/dispatch", icon: Car },
-      { name: "New Booking", href: "/dispatch/booking", icon: Plus },
+      { name: "Assign Drivers", href: "/dispatch/assign", icon: Users },
+      { name: "Active Trips", href: "/dispatch/active", icon: MapPin },
       { name: "Drivers", href: "/dispatch/drivers", icon: Users },
       { name: "Passengers", href: "/dispatch/passengers", icon: User },
     ],
   },
+
+  { name: "Tasks", href: "/tasks", icon: CheckSquare, adminOnly: true },
+  { name: "Add Task", href: "/create-task", icon: Plus, adminOnly: true },
+  { name: "Calendar", href: "/calendar", icon: Calendar, adminOnly: true },
 
   // Attendance Section for Admin
   {
@@ -96,7 +118,19 @@ const navigationItems: NavigationItem[] = [
   { name: "Emails", href: "/emails", icon: Mail, adminOnly: true },
   { name: "Forms", href: "/forms", icon: FileText, adminOnly: true },
   { name: "SOPs", href: "/sops", icon: FileText, adminOnly: true },
-  { name: "Analytics", href: "/analytics", icon: BarChart3, adminOnly: true },
+  
+  // Analytics Section
+  {
+    name: "Analytics",
+    href: "/analytics",
+    icon: BarChart3,
+    adminOnly: true,
+    children: [
+      { name: "Overview", href: "/analytics", icon: PieChart },
+      { name: "Revenue", href: "/analytics/revenue", icon: DollarSign },
+      { name: "Performance", href: "/analytics/performance", icon: BarChart3 },
+    ],
+  },
 
   // RingCentral Integration
   {
@@ -124,15 +158,13 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user, isAdmin, isEmployee, logout } = useAuth();
-  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>(() => {
-    // Pre-expand any menu whose child matches the current pathname
-    const initial: Record<string, boolean> = {
-      "Attendance Admin": true,
-      "Dispatch Board": true,
-    };
-    return initial;
+  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
+    "Reservations": true,
+    "Attendance Admin": true,
+    "Dispatch Board": true,
   });
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [pendingReservations, setPendingReservations] = useState(0);
 
   const toggleMenu = (name: string) => {
     setExpandedMenus((prev) => ({
@@ -187,7 +219,30 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
         );
       };
     }
-  }, [isEmployee, user, pathname]); // Add pathname to refresh when navigating
+  }, [isEmployee, user, pathname]);
+
+  // Fetch pending reservations count for admin
+  useEffect(() => {
+    if (isAdmin) {
+      const fetchPendingCount = async () => {
+        try {
+          const reservations = await reservationService.getReservations({
+            status: 'pending',
+            limit: 1
+          });
+          setPendingReservations(reservations.pagination.total);
+        } catch (err) {
+          console.error("Failed to fetch pending reservations:", err);
+        }
+      };
+
+      fetchPendingCount();
+      
+      // Refresh every 30 seconds
+      const interval = setInterval(fetchPendingCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isAdmin]);
 
   const filteredNavigationItems = navigationItems
     .filter((item) => {
@@ -196,6 +251,11 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
       return true;
     })
     .map((item) => {
+      // Add badge to Reservations for pending count
+      if (item.name === "Reservations" && isAdmin && pendingReservations > 0) {
+        item.badge = pendingReservations;
+      }
+      
       if (item.children) {
         return {
           ...item,
@@ -209,28 +269,29 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
       return item;
     });
 
-  const isActive = (href: string) => {
+const isActive = (href: string) => {
     const [targetPath, targetQuery] = href.split("?");
     const currentTab = searchParams.get("tab");
 
-    // Page matches the target path exactly
+    // Exact match for path
     const isPathMatch = pathname === targetPath;
+    
+    // Check if current path is a child of the target path
+    const isChildPath = pathname.startsWith(targetPath + '/');
 
     if (targetQuery) {
-      const targetParams = new URLSearchParams(targetQuery);
-      const targetTab = targetParams.get("tab");
-      return isPathMatch && currentTab === targetTab;
+        const targetParams = new URLSearchParams(targetQuery);
+        const targetTab = targetParams.get("tab");
+        return isPathMatch && currentTab === targetTab;
     }
 
-    // For the main Dashboard link (/), only active if NO tab is selected
     if (href === "/") {
-      return isPathMatch && !currentTab;
+        return isPathMatch && !currentTab;
     }
 
-    // Exact match only — prevents parent routes like /dispatch from
-    // staying active when a child like /dispatch/booking is selected
-    return pathname === targetPath;
-  };
+    // Return true for exact match OR if it's a child route
+    return isPathMatch || isChildPath;
+};
 
   const handleLogout = async () => {
     if (window.confirm("Are you sure you want to log out?")) {
@@ -249,15 +310,15 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
             <span className="text-xs font-bold text-emerald-600">
-              {user?.name ? user.name.charAt(0).toUpperCase() : "L"}
+              {user?.name ? user.name.charAt(0).toUpperCase() : "R"}
             </span>
           </div>
           <div className="flex flex-col">
             <h1 className="text-sm font-semibold text-slate-900 truncate w-32">
-              {user?.name || "Lead CRM"}
+              {user?.name || "REL Dashboard"}
             </h1>
             <span className="text-xs text-slate-500 capitalize">
-              {user?.role || "Employee"}
+              {user?.role || "Admin"}
             </span>
           </div>
         </div>
@@ -304,7 +365,12 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                               : "text-slate-500 group-hover:text-emerald-600"
                           }`}
                         />
-                        {item.name}
+                        <span className="flex-1">{item.name}</span>
+                        {item.badge && item.badge > 0 && (
+                          <span className="ml-2 bg-red-600 text-white text-xs font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1.5">
+                            {item.badge > 99 ? "99+" : item.badge}
+                          </span>
+                        )}
                       </div>
                       {isExpanded ? (
                         <ChevronDown className="h-4 w-4 text-slate-400" />
@@ -331,7 +397,7 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                               <ChildIcon
                                 className={`h-4 w-4 mr-3 ${childActive ? "text-emerald-400" : "text-slate-400"}`}
                               />
-                              {child.name}
+                              <span>{child.name}</span>
                             </Link>
                           );
                         })}
@@ -377,15 +443,12 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                             : "text-slate-500 group-hover:text-emerald-600"
                         }`}
                       />
-                      <span>{item.name}</span>
-                      {item.name === "Notifications" &&
-                        unreadNotifications > 0 && (
-                          <span className="ml-auto bg-red-600 text-white text-xs font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1.5">
-                            {unreadNotifications > 99
-                              ? "99+"
-                              : unreadNotifications}
-                          </span>
-                        )}
+                      <span className="flex-1">{item.name}</span>
+                      {item.name === "Notifications" && unreadNotifications > 0 && (
+                        <span className="ml-auto bg-red-600 text-white text-xs font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1.5">
+                          {unreadNotifications > 99 ? "99+" : unreadNotifications}
+                        </span>
+                      )}
                     </div>
                   </Link>
                 )}

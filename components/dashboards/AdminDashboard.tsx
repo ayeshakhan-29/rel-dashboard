@@ -8,122 +8,92 @@ import {
     DollarSign,
     TrendingUp,
     ArrowRight,
+    Car,
+    Clock,
+    MapPin
 } from 'lucide-react';
 import KPICard from '@/components/KPICard';
 import TaskCard from '@/components/TaskCard';
 import { Task, Lead } from '@/types';
-import { getBookings, Booking } from '@/app/services/formsService';
 import dashboardService, { DashboardKPI, DashboardTask } from '@/app/services/dashboardService';
 import analyticsService, { PerformanceMetric } from '@/app/services/analyticsService';
-import { attendanceService, AttendanceRecord } from '@/app/services/attendanceService';
-
+import reservationService from '@/app/services/reservationService';
+import { Reservation } from '@/types/reservation.types';
 export default function AdminDashboard() {
-    const [recentForms, setRecentForms] = useState<Lead[]>([]);
+    const [recentForms, setRecentForms] = useState<any[]>([]);
     const [kpis, setKpis] = useState<DashboardKPI[]>([]);
     const [upcomingTasks, setUpcomingTasks] = useState<DashboardTask[]>([]);
     const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetric[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [kpisLoading, setKpisLoading] = useState(true);
-    const [tasksLoading, setTasksLoading] = useState(true);
-    const [metricsLoading, setMetricsLoading] = useState(true);
+    const [recentReservations, setRecentReservations] = useState<Reservation[]>([]);
+    const [loading, setLoading] = useState({
+        kpis: true,
+        forms: true,
+        tasks: true,
+        metrics: true,
+        reservations: true
+    });
 
-
-    // Fetch form submissions (bookings) from API
+    // Fetch all dashboard data
     useEffect(() => {
-        const fetchFormLeads = async () => {
+        const fetchDashboardData = async () => {
             try {
-                setLoading(true);
-                const bookingsData = await getBookings();
-
-                const normalizeDate = (value: any): string => {
-                    if (!value) return '';
-                    if (typeof value === 'string') return value;
-                    if (typeof value === 'number') return new Date(value).toISOString();
-                    if (value && typeof value === 'object') {
-                        if (typeof (value as any).toDate === 'function') return (value as any).toDate().toISOString();
-                        if (typeof (value as any).seconds === 'number') return new Date((value as any).seconds * 1000).toISOString();
-                        if (typeof (value as any)._seconds === 'number') return new Date((value as any)._seconds * 1000).toISOString();
-                    }
-                    return '';
-                };
-
-                // Map bookings to Lead format (limit to 5 for recent)
-                const mappedBookings: Lead[] = bookingsData.slice(0, 5).map((booking: Booking) => ({
-                    id: booking.id,
-                    name: booking.fullName || 'Unknown Name',
-                    phone: booking.phone || '',
-                    email: booking.email || '',
-                    stage: 'Incoming',
-                    source: 'Website',
-                    created_at: normalizeDate(booking.created_at ?? (booking as any).createdAt) || new Date().toISOString(),
-                    updated_at: normalizeDate(booking.updated_at ?? (booking as any).updatedAt ?? (booking as any).createdAt) || new Date().toISOString(),
-                }));
-
-                setRecentForms(mappedBookings);
-            } catch (err) {
-                console.error('Failed to fetch form submissions:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchFormLeads();
-    }, []);
-
-    // Fetch KPIs from API
-    useEffect(() => {
-        const fetchKPIs = async () => {
-            try {
-                setKpisLoading(true);
-                const data = await dashboardService.getKPIs();
-                setKpis(data);
+                // Fetch KPIs
+                setLoading(prev => ({ ...prev, kpis: true }));
+                const kpiData = await dashboardService.getKPIs();
+                setKpis(kpiData);
             } catch (err) {
                 console.error('Failed to fetch KPIs:', err);
             } finally {
-                setKpisLoading(false);
+                setLoading(prev => ({ ...prev, kpis: false }));
             }
-        };
 
-        fetchKPIs();
-    }, []);
-
-
-    // Fetch upcoming tasks from API
-    useEffect(() => {
-        const fetchTasks = async () => {
             try {
-                setTasksLoading(true);
-                const data = await dashboardService.getUpcomingTasks(3);
-                setUpcomingTasks(data);
+                // Fetch recent form submissions
+                setLoading(prev => ({ ...prev, forms: true }));
+                const formData = await dashboardService.getRecentFormSubmissions(5);
+                setRecentForms(formData);
             } catch (err) {
-                console.error('Failed to fetch upcoming tasks:', err);
+                console.error('Failed to fetch recent forms:', err);
             } finally {
-                setTasksLoading(false);
+                setLoading(prev => ({ ...prev, forms: false }));
             }
-        };
 
-        fetchTasks();
-    }, []);
-
-    // Fetch performance metrics from API
-    useEffect(() => {
-        const fetchMetrics = async () => {
             try {
-                setMetricsLoading(true);
-                const data = await analyticsService.getPerformanceMetrics();
-                setPerformanceMetrics(data);
+                // Fetch upcoming tasks
+                setLoading(prev => ({ ...prev, tasks: true }));
+                const taskData = await dashboardService.getUpcomingTasks(3);
+                setUpcomingTasks(taskData);
             } catch (err) {
-                console.error('Failed to fetch performance metrics:', err);
+                console.error('Failed to fetch tasks:', err);
             } finally {
-                setMetricsLoading(false);
+                setLoading(prev => ({ ...prev, tasks: false }));
+            }
+
+            try {
+                // Fetch performance metrics
+                setLoading(prev => ({ ...prev, metrics: true }));
+                const metricData = await analyticsService.getPerformanceMetrics();
+                setPerformanceMetrics(metricData);
+            } catch (err) {
+                console.error('Failed to fetch metrics:', err);
+            } finally {
+                setLoading(prev => ({ ...prev, metrics: false }));
+            }
+
+            try {
+                // Fetch recent reservations
+                setLoading(prev => ({ ...prev, reservations: true }));
+                const reservations = await reservationService.getReservations({ limit: 5 });
+                setRecentReservations(reservations.data);
+            } catch (err) {
+                console.error('Failed to fetch reservations:', err);
+            } finally {
+                setLoading(prev => ({ ...prev, reservations: false }));
             }
         };
 
-        fetchMetrics();
+        fetchDashboardData();
     }, []);
-
-    // Get recent form submissions (top 5)
-    const recentSubmissions = recentForms.slice(0, 5);
 
     // Convert API tasks to TaskCard format
     const convertTasksForCard = (apiTasks: DashboardTask[]): Task[] => {
@@ -143,7 +113,7 @@ export default function AdminDashboard() {
         <div className="space-y-6">
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                {kpisLoading ? (
+                {loading.kpis ? (
                     <div className="col-span-4 text-center py-8 text-slate-600">
                         Loading dashboard metrics...
                     </div>
@@ -158,10 +128,10 @@ export default function AdminDashboard() {
                             icon={
                                 kpi.title.includes('Bookings')
                                     ? Users
-                                    : kpi.title.includes('Revenue')
-                                        ? DollarSign
-                                        : kpi.title.includes('Clients')
-                                            ? Users
+                                    : kpi.title.includes('Today')
+                                        ? Clock
+                                        : kpi.title.includes('Active')
+                                            ? Car
                                             : BarChart3
                             }
                         />
@@ -169,17 +139,18 @@ export default function AdminDashboard() {
                 )}
             </div>
 
-
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                 <Link
-                    href="/tasks"
+                    href="/dispatch"
                     className="bg-white rounded-lg border border-slate-200 p-4 hover:shadow-md hover:border-emerald-300 transition-all duration-200 group"
                 >
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm font-medium text-slate-600">View Tasks</p>
-                            <p className="text-xs text-slate-500 mt-1">{upcomingTasks.length} upcoming</p>
+                            <p className="text-sm font-medium text-slate-600">Dispatch Board</p>
+                            <p className="text-xs text-slate-500 mt-1">
+                                {recentReservations.filter(r => r.reservation_status === 'pending').length} pending
+                            </p>
                         </div>
                         <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-emerald-600 transition-colors" />
                     </div>
@@ -198,8 +169,9 @@ export default function AdminDashboard() {
                 </Link>
             </div>
 
-            {/* Recent Form Submissions */}
-            <div className="grid grid-cols-1 gap-6">
+            {/* Recent Form Submissions & Recent Reservations */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Recent Form Submissions */}
                 <div className="bg-white rounded-lg border border-slate-200 p-6">
                     <div className="flex items-center justify-between mb-5">
                         <h3 className="text-base font-semibold text-slate-900">Recent Form Submissions</h3>
@@ -211,22 +183,96 @@ export default function AdminDashboard() {
                         </Link>
                     </div>
                     <div className="space-y-3">
-                        {loading ? (
+                        {loading.forms ? (
                             <p className="text-sm text-slate-500">Loading submissions...</p>
-                        ) : recentSubmissions.length === 0 ? (
+                        ) : recentForms.length === 0 ? (
                             <p className="text-sm text-slate-500">No submissions yet</p>
                         ) : (
-                            recentSubmissions.map((lead) => (
-                                <Link key={lead.id} href="/forms">
+                            recentForms.map((form) => (
+                                <Link key={form.id} href={`/forms/${form.id}`}>
                                     <div className="p-3 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-slate-50 transition-all cursor-pointer">
                                         <div className="flex items-center justify-between">
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-slate-900 truncate">{lead.name}</p>
-                                                <p className="text-xs text-slate-600">{lead.phone}</p>
+                                                <p className="text-sm font-medium text-slate-900 truncate">{form.name}</p>
+                                                <p className="text-xs text-slate-600">{form.phone}</p>
+                                                <p className="text-xs text-slate-500 truncate mt-1">
+                                                    {form.pickup} → {form.dropoff}
+                                                </p>
                                             </div>
-                                            <span className="text-xs text-slate-400">
-                                                {lead.created_at ? new Date(lead.created_at).toLocaleDateString() : 'No date'}
-                                            </span>
+                                            <div className="flex flex-col items-end">
+                                                <span className="text-xs text-slate-400">
+                                                    {new Date(form.date).toLocaleDateString()}
+                                                </span>
+                                                <span className={`text-xs mt-1 px-2 py-0.5 rounded-full ${
+                                                    form.status === 'completed' ? 'bg-green-100 text-green-700' :
+                                                    form.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                                                    form.status === 'assigned' ? 'bg-blue-100 text-blue-700' :
+                                                    'bg-slate-100 text-slate-700'
+                                                }`}>
+                                                    {form.status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))
+                        )}
+                    </div>
+                </div>
+
+                {/* Recent Reservations */}
+                <div className="bg-white rounded-lg border border-slate-200 p-6">
+                    <div className="flex items-center justify-between mb-5">
+                        <h3 className="text-base font-semibold text-slate-900">Recent Reservations</h3>
+                        <Link
+                            href="/reservations"
+                            className="text-emerald-600 hover:text-emerald-700 text-xs font-semibold"
+                        >
+                            View all
+                        </Link>
+                    </div>
+                    <div className="space-y-3">
+                        {loading.reservations ? (
+                            <p className="text-sm text-slate-500">Loading reservations...</p>
+                        ) : recentReservations.length === 0 ? (
+                            <p className="text-sm text-slate-500">No reservations yet</p>
+                        ) : (
+                            recentReservations.map((res) => (
+                                <Link key={res.id} href={`/reservations/${res.id}`}>
+                                    <div className="p-3 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-slate-50 transition-all cursor-pointer">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center">
+                                                    <p className="text-sm font-medium text-slate-900 truncate">
+                                                        {res.passenger_name}
+                                                    </p>
+                                                    <span className="ml-2 text-xs text-slate-500">
+                                                        #{res.reservation_number}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center mt-1 text-xs text-slate-600">
+                                                    <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
+                                                    <span className="truncate">{res.pickup_location}</span>
+                                                </div>
+                                                <div className="flex items-center mt-1 text-xs text-slate-600">
+                                                    <Car className="h-3 w-3 mr-1 flex-shrink-0" />
+                                                    <span>{res.vehicle_type || `Vehicle #${res.vehicle_type_id}`}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col items-end ml-2">
+                                                <span className="text-xs font-medium text-slate-900">
+                                                    ${res.price}
+                                                </span>
+                                                <span className={`text-xs mt-1 px-2 py-0.5 rounded-full ${
+                                                    res.reservation_status === 'completed' ? 'bg-green-100 text-green-700' :
+                                                    res.reservation_status === 'in_progress' ? 'bg-purple-100 text-purple-700' :
+                                                    res.reservation_status === 'assigned' ? 'bg-blue-100 text-blue-700' :
+                                                    res.reservation_status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                                                    'bg-red-100 text-red-700'
+                                                }`}>
+                                                    {res.reservation_status.replace('_', ' ')}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </Link>
@@ -250,7 +296,7 @@ export default function AdminDashboard() {
                         </Link>
                     </div>
                     <div className="space-y-4">
-                        {metricsLoading ? (
+                        {loading.metrics ? (
                             <p className="text-sm text-slate-500">Loading metrics...</p>
                         ) : performanceMetrics.length === 0 ? (
                             <p className="text-sm text-slate-500">No metrics available</p>
@@ -267,10 +313,11 @@ export default function AdminDashboard() {
                                         </div>
                                         <div className="w-full bg-slate-200 rounded-full h-2">
                                             <div
-                                                className={`h-2 rounded-full transition-all duration-300 ${metric.progress >= 90 ? 'bg-green-500' :
+                                                className={`h-2 rounded-full transition-all duration-300 ${
+                                                    metric.progress >= 90 ? 'bg-green-500' :
                                                     metric.progress >= 70 ? 'bg-blue-500' :
-                                                        metric.progress >= 50 ? 'bg-amber-500' : 'bg-red-500'
-                                                    }`}
+                                                    metric.progress >= 50 ? 'bg-amber-500' : 'bg-red-500'
+                                                }`}
                                                 style={{ width: `${Math.min(metric.progress, 100)}%` }}
                                             ></div>
                                         </div>
@@ -294,7 +341,7 @@ export default function AdminDashboard() {
                         </Link>
                     </div>
                     <div className="space-y-3">
-                        {tasksLoading ? (
+                        {loading.tasks ? (
                             <p className="text-sm text-slate-500">Loading tasks...</p>
                         ) : upcomingTasks.length === 0 ? (
                             <p className="text-sm text-slate-500">No upcoming tasks</p>
