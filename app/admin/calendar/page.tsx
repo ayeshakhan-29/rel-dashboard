@@ -23,14 +23,15 @@ import {
     MoreVertical,
     Eye
 } from 'lucide-react';
-import PrivateRoute from '../components/auth/PrivateRoute';
+import PrivateRoute from '../../components/auth/PrivateRoute';
 import {
     createCalendarMeeting,
     getMeetingsForDate,
     getAllUpcomingMeetings,
     deleteCalendarMeeting,
     CalendarMeeting
-} from '../services/calendarService';
+} from '../../services/calendarService';
+
 
 type ViewMode = 'month' | 'week' | 'day' | 'list';
 

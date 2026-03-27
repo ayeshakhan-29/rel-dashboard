@@ -5,8 +5,8 @@ import { UserPlus, Loader2, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
-import AdminRoute from '../components/auth/AdminRoute';
-import { createUser } from '../services/userService';
+import AdminRoute from '../../components/auth/AdminRoute';
+import { createUser } from '../../services/userService';
 
 export default function CreateUserPage() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -83,7 +83,7 @@ export default function CreateUserPage() {
 
             // Redirect to all users page after 2 seconds
             setTimeout(() => {
-                router.push('/all-users');
+                router.push('/admin/all-users');
             }, 2000);
         } catch (err: any) {
             console.error('Failed to create user:', err);
@@ -238,7 +238,7 @@ export default function CreateUserPage() {
                                     <div className="flex items-center justify-end space-x-3 pt-4">
                                         <button
                                             type="button"
-                                            onClick={() => router.push('/settings')}
+                                            onClick={() => router.push('/admin/settings')}
                                             className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
                                         >
                                             Cancel

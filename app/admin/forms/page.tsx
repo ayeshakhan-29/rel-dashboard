@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { FileText, RefreshCw, Loader2, Calendar, User, MapPin, Phone, Mail, Clock, CheckCircle, Package } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
-import PrivateRoute from '../components/auth/PrivateRoute';
-import { getBookings, getBookingById, Booking } from '../services/formsService';
+import PrivateRoute from '../../components/auth/PrivateRoute';
+import { getBookings, getBookingById, Booking } from '../../services/formsService';
 
 export default function FormsPage() {
     const router = useRouter();

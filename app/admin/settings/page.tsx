@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import SecurityCard from '@/components/SecurityCard';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 function SettingsContent() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -44,7 +44,7 @@ function SettingsContent() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* All Users */}
                             {isAdmin && (
-                                <Link href="/all-users">
+                                <Link href="/admin/all-users">
                                     <div className="bg-white rounded-lg border border-slate-200 p-6 hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer">
                                         <div className="flex items-center space-x-3 mb-4">
                                             <div className="p-2 bg-slate-100 rounded-lg">
@@ -61,7 +61,7 @@ function SettingsContent() {
 
                             {/* Create User */}
                             {isAdmin && (
-                                <Link href="/create-user">
+                                <Link href="/admin/create-user">
                                     <div className="bg-white rounded-lg border border-slate-200 p-6 hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer">
                                         <div className="flex items-center space-x-3 mb-4">
                                             <div className="p-2 bg-blue-50 rounded-lg">

@@ -1,7 +1,7 @@
 'use client';
 
-import { Suspense, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Suspense, useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import PrivateRoute from './components/auth/PrivateRoute';
@@ -13,7 +13,14 @@ function DashboardContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, isAdmin } = useAuth();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const tab = searchParams.get('tab');
+
+  useEffect(() => {
+    if (isAdmin) {
+      router.push('/admin');
+    }
+  }, [isAdmin, router]);
 
   const getTitle = () => {
     if (isAdmin) return "Admin Dashboard";

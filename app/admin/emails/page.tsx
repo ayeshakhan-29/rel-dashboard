@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Mail, Search, RefreshCw, Loader2, ExternalLink, Calendar, User, FileText } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
-import PrivateRoute from '../components/auth/PrivateRoute';
-import { listEmails, getEmailById, Email, EmailListResponse } from '../services/gmailService';
+import PrivateRoute from '../../components/auth/PrivateRoute';
+import { listEmails, getEmailById, Email, EmailListResponse } from '../../services/gmailService';
 import GoogleConnectionStatus from '@/components/GoogleConnectionStatus';
 
 export default function EmailsPage() {

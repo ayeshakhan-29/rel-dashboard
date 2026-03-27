@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { Users as UsersIcon, Loader2, AlertCircle, Trash2, Shield, User } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
-import AdminRoute from '../components/auth/AdminRoute';
-import { getAllUsers, deleteUser, User as UserType } from '../services/userService';
+import AdminRoute from '../../components/auth/AdminRoute';
+import { getAllUsers, deleteUser, User as UserType } from '../../services/userService';
 
 export default function AllUsersPage() {
     const [sidebarOpen, setSidebarOpen] = useState(false);

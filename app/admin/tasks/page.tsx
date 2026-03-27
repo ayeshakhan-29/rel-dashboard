@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 import { Plus, Filter, Search, Loader2 } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
-import PrivateRoute from '../components/auth/PrivateRoute';
+import PrivateRoute from '../../components/auth/PrivateRoute';
 import TaskCard from '@/components/TaskCard';
 
-import { getTasks, Task } from '../services/tasksService';
+import { getTasks, Task } from '../../services/tasksService';
 
 export default function TasksPage() {
     const router = useRouter();

@@ -173,7 +173,7 @@ export default function AdminDashboard() {
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                 <Link
-                    href="/tasks"
+                    href="/admin/tasks"
                     className="bg-white rounded-lg border border-slate-200 p-4 hover:shadow-md hover:border-emerald-300 transition-all duration-200 group"
                 >
                     <div className="flex items-center justify-between">
@@ -185,7 +185,7 @@ export default function AdminDashboard() {
                     </div>
                 </Link>
                 <Link
-                    href="/analytics"
+                    href="/admin/analytics"
                     className="bg-white rounded-lg border border-slate-200 p-4 hover:shadow-md hover:border-emerald-300 transition-all duration-200 group"
                 >
                     <div className="flex items-center justify-between">
@@ -204,7 +204,7 @@ export default function AdminDashboard() {
                     <div className="flex items-center justify-between mb-5">
                         <h3 className="text-base font-semibold text-slate-900">Recent Form Submissions</h3>
                         <Link
-                            href="/forms"
+                            href="/admin/forms"
                             className="text-emerald-600 hover:text-emerald-700 text-xs font-semibold"
                         >
                             View all
@@ -217,7 +217,7 @@ export default function AdminDashboard() {
                             <p className="text-sm text-slate-500">No submissions yet</p>
                         ) : (
                             recentSubmissions.map((lead) => (
-                                <Link key={lead.id} href="/forms">
+                                <Link key={lead.id} href="/admin/forms">
                                     <div className="p-3 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-slate-50 transition-all cursor-pointer">
                                         <div className="flex items-center justify-between">
                                             <div className="flex-1 min-w-0">
@@ -243,7 +243,7 @@ export default function AdminDashboard() {
                     <div className="flex items-center justify-between mb-5">
                         <h3 className="text-base font-semibold text-slate-900">Performance Metrics</h3>
                         <Link
-                            href="/analytics"
+                            href="/admin/analytics"
                             className="text-emerald-600 hover:text-emerald-700 text-xs font-semibold"
                         >
                             View analytics
@@ -287,7 +287,7 @@ export default function AdminDashboard() {
                     <div className="flex items-center justify-between mb-5">
                         <h3 className="text-base font-semibold text-slate-900">Upcoming Tasks</h3>
                         <Link
-                            href="/tasks"
+                            href="/admin/tasks"
                             className="text-emerald-600 hover:text-emerald-700 text-xs font-semibold"
                         >
                             View all

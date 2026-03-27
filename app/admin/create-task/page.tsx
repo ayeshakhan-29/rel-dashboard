@@ -4,10 +4,10 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
-import PrivateRoute from '../components/auth/PrivateRoute';
-import { createTask } from '../services/tasksService';
-import { getBookings, Booking } from '../services/formsService';
-import { getAllUsers, User as UserType } from '../services/userService';
+import PrivateRoute from '../../components/auth/PrivateRoute';
+import { createTask } from '../../services/tasksService';
+import { getBookings, Booking } from '../../services/formsService';
+import { getAllUsers, User as UserType } from '../../services/userService';
 import {
     Calendar,
     FileText,

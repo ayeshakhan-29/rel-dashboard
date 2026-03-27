@@ -52,34 +52,35 @@ const navigationItems: NavigationItem[] = [
     { name: 'Attendance', href: '/?tab=attendance', icon: Clock, employeeOnly: true },
     { name: 'Notifications', href: '/?tab=notifications', icon: Bell, employeeOnly: true },
 
-    { name: 'Tasks', href: '/tasks', icon: CheckSquare, adminOnly: true },
-    { name: 'Add Task', href: '/create-task', icon: Plus, adminOnly: true },
-    { name: 'Calendar', href: '/calendar', icon: Calendar, adminOnly: true },
+    { name: 'Tasks', href: '/admin/tasks', icon: CheckSquare, adminOnly: true },
+    { name: 'Add Task', href: '/admin/create-task', icon: Plus, adminOnly: true },
+    { name: 'Calendar', href: '/admin/calendar', icon: Calendar, adminOnly: true },
 
     // Attendance Section for Admin
     {
         name: 'Attendance Admin',
-        href: '/attendance',
+        href: '/admin/attendance',
         icon: Clock,
         adminOnly: true,
         children: [
-            { name: "Today's Attendance", href: '/attendance/today', icon: Clock },
-            { name: 'Attendance Record', href: '/attendance/record', icon: FileText },
+            { name: "Today's Attendance", href: '/admin/attendance/today', icon: Clock },
+            { name: 'Attendance Record', href: '/admin/attendance/record', icon: FileText },
         ]
     },
 
-    { name: 'Emails', href: '/emails', icon: Mail, adminOnly: true },
-    { name: 'Forms', href: '/forms', icon: FileText, adminOnly: true },
-    { name: 'Analytics', href: '/analytics', icon: BarChart3, adminOnly: true },
+    { name: 'Emails', href: '/admin/emails', icon: Mail, adminOnly: true },
+    { name: 'Forms', href: '/admin/forms', icon: FileText, adminOnly: true },
+    { name: 'Analytics', href: '/admin/analytics', icon: BarChart3, adminOnly: true },
+    { name: 'Form Configuration', href: '/admin/form-configuration', icon: FileText, adminOnly: true },
 
     // RingCentral Integration
-    { name: 'RingCentral', href: '/dashboard/ringcentral', icon: Phone, divider: true, adminOnly: true },
-    { name: 'Calls', href: '/calls', icon: Phone, adminOnly: true },
-    { name: 'Messages', href: '/messages', icon: MessageSquare, adminOnly: true },
-    { name: 'Team Chat', href: '/teams', icon: UsersIcon, adminOnly: true },
-    { name: 'Meetings', href: '/meetings', icon: Video, adminOnly: true },
+    { name: 'RingCentral', href: '/admin/dashboard/ringcentral', icon: Phone, divider: true, adminOnly: true },
+    { name: 'Calls', href: '/admin/calls', icon: Phone, adminOnly: true },
+    { name: 'Messages', href: '/admin/messages', icon: MessageSquare, adminOnly: true },
+    { name: 'Team Chat', href: '/admin/teams', icon: UsersIcon, adminOnly: true },
+    { name: 'Meetings', href: '/admin/meetings', icon: Video, adminOnly: true },
 
-    { name: 'Settings', href: '/settings', icon: Settings },
+    { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
 function SidebarContent({ isOpen, onClose }: SidebarProps) {
