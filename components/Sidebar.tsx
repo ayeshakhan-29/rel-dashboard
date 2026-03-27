@@ -135,6 +135,26 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
         }));
     };
 
+    useEffect(() => {
+        const activeSubmenus: Record<string, boolean> = {
+            'Attendance Admin': true,
+        };
+
+        navigationItems.forEach(item => {
+            if (item.children && item.children.some(child => isActive(child.href))) {
+                activeSubmenus[item.name] = true;
+            }
+        });
+
+        setExpandedMenus(prev => {
+            const hasNewExpanded = Object.entries(activeSubmenus).some(
+                ([key, value]) => value && !prev[key]
+            );
+
+            return hasNewExpanded ? { ...prev, ...activeSubmenus } : prev;
+        });
+    }, [pathname, searchParams, isAdmin, isEmployee]);
+
     // Fetch unread notifications count for employees
     useEffect(() => {
         if (isEmployee && user) {
@@ -204,7 +224,7 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
             return isPathMatch && !currentTab;
         }
 
-        return pathname.startsWith(href);
+        return isPathMatch;
     };
 
     const handleLogout = async () => {
