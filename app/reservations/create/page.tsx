@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-    Car, 
-    User, 
-    MapPin, 
-    Calendar, 
-    Clock, 
-    Users, 
-    Luggage, 
+import {
+    Car,
+    User,
+    MapPin,
+    Calendar,
+    Clock,
+    Users,
+    Luggage,
     DollarSign,
     FileText,
     AlertCircle,
@@ -19,6 +19,7 @@ import {
     Mail,
     CreditCard
 } from 'lucide-react';
+
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import reservationService from '@/app/services/reservationService';
@@ -26,6 +27,9 @@ import { Vehicle, Passenger } from '@/types/reservation.types';
 
 export default function CreateReservationPage() {
     const router = useRouter();
+    const formContainerRef = useRef<HTMLDivElement>(null);
+    const dynamicContainerRef = useRef<HTMLDivElement>(null);
+    
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -34,20 +38,19 @@ export default function CreateReservationPage() {
     const [showPassengerSearch, setShowPassengerSearch] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [success, setSuccess] = useState(false);
+    const [prevTripType, setPrevTripType] = useState('distance');
+    const [dynamicHeight, setDynamicHeight] = useState(0);
 
-    // Form state
+    // Form State
     const [formData, setFormData] = useState({
-        // Booking Type
         booking_type: 'form' as 'form' | 'contract' | 'manual',
         trip_type: 'distance' as 'hourly' | 'distance' | 'contract',
-        
-        // Passenger Information
+
         passenger_id: 0,
         passenger_name: '',
         passenger_email: '',
         passenger_phone: '',
-        
-        // Trip Details
+
         pickup_location: '',
         dropoff_location: '',
         pickup_date: '',
@@ -55,30 +58,49 @@ export default function CreateReservationPage() {
         vehicle_type_id: 0,
         passenger_count: 1,
         luggage_count: 0,
-        
-        // Booking Details
+
         price: 0,
         payment_status: 'pending' as 'pending' | 'paid',
-        
-        // Contract specific
+
         contract_start_date: '',
         contract_end_date: '',
         daily_rate: 0,
         hourly_rate: 0,
+        hours: 1,
+        distance: 10,
     });
 
-    // Fetch vehicles on mount
     useEffect(() => {
         fetchVehicles();
     }, []);
+
+    // Store the height when switching
+    useEffect(() => {
+        if (dynamicContainerRef.current && prevTripType !== formData.trip_type) {
+            // Store current scroll position
+            const scrollY = window.scrollY;
+            
+            // Update the container height to prevent jump
+            const currentHeight = dynamicContainerRef.current.scrollHeight;
+            dynamicContainerRef.current.style.minHeight = `${currentHeight}px`;
+            
+            setTimeout(() => {
+                if (dynamicContainerRef.current) {
+                    dynamicContainerRef.current.style.minHeight = '';
+                }
+                // Restore scroll position
+                window.scrollTo(0, scrollY);
+            }, 150);
+            
+            setPrevTripType(formData.trip_type);
+        }
+    }, [formData.trip_type, prevTripType]);
 
     const fetchVehicles = async () => {
         setLoading(true);
         try {
             const data = await reservationService.getAvailableVehicles();
-            console.log('Fetched vehicles:', data); // Debug log
             setVehicles(data);
-            // Don't auto-select, let user choose
         } catch (error) {
             console.error('Failed to fetch vehicles:', error);
         } finally {
@@ -110,23 +132,14 @@ export default function CreateReservationPage() {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        
         let processedValue: string | number = value;
-        
-        // Handle number fields
-        if (name === 'vehicle_type_id') {
-            processedValue = value === '' ? 0 : Number(value);
-            console.log('Selected vehicle ID:', processedValue); // Debug log
-        }
-        
-        if (name === 'passenger_count' || name === 'luggage_count' || 
-            name === 'price' || name === 'daily_rate' || name === 'hourly_rate') {
+
+        if (['vehicle_type_id', 'passenger_count', 'luggage_count', 'price', 'daily_rate', 'hourly_rate', 'hours', 'distance'].includes(name)) {
             processedValue = value === '' ? 0 : Number(value);
         }
-        
+
         setFormData(prev => ({ ...prev, [name]: processedValue }));
-        
-        // Clear error for this field
+
         if (errors[name]) {
             setErrors(prev => {
                 const newErrors = { ...prev };
@@ -135,7 +148,6 @@ export default function CreateReservationPage() {
             });
         }
 
-        // Search passengers when typing name
         if (name === 'passenger_name' && value.length >= 3) {
             searchPassengers(value);
         }
@@ -147,7 +159,6 @@ export default function CreateReservationPage() {
         if (!formData.passenger_name) newErrors.passenger_name = 'Passenger name is required';
         if (!formData.passenger_email) newErrors.passenger_email = 'Email is required';
         else if (!/\S+@\S+\.\S+/.test(formData.passenger_email)) newErrors.passenger_email = 'Invalid email format';
-        
         if (!formData.passenger_phone) newErrors.passenger_phone = 'Phone is required';
         if (!formData.pickup_location) newErrors.pickup_location = 'Pickup location is required';
         if (!formData.dropoff_location) newErrors.dropoff_location = 'Dropoff location is required';
@@ -158,15 +169,9 @@ export default function CreateReservationPage() {
         }
         if (formData.price <= 0) newErrors.price = 'Price must be greater than 0';
 
-        // Contract validations
-        if (formData.booking_type === 'contract') {
+        if (formData.trip_type === 'contract') {
             if (!formData.contract_start_date) newErrors.contract_start_date = 'Contract start date is required';
             if (!formData.contract_end_date) newErrors.contract_end_date = 'Contract end date is required';
-            if (formData.contract_start_date && formData.contract_end_date) {
-                if (new Date(formData.contract_end_date) < new Date(formData.contract_start_date)) {
-                    newErrors.contract_end_date = 'End date must be after start date';
-                }
-            }
         }
 
         setErrors(newErrors);
@@ -175,9 +180,6 @@ export default function CreateReservationPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
-        console.log('Submitting form data:', formData); // Debug log
-        
         if (!validateForm()) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
@@ -187,10 +189,7 @@ export default function CreateReservationPage() {
         try {
             const reservation = await reservationService.createReservation(formData);
             setSuccess(true);
-            
-            setTimeout(() => {
-                router.push(`/reservations/${reservation.id}`);
-            }, 2000);
+            setTimeout(() => router.push(`/reservations/${reservation.id}`), 2000);
         } catch (error: any) {
             console.error('Failed to create reservation:', error);
             setErrors({ submit: error.response?.data?.message || 'Failed to create reservation' });
@@ -205,25 +204,21 @@ export default function CreateReservationPage() {
             if (!selectedVehicle) return 0;
 
             let estimatedPrice = 0;
-
             if (formData.trip_type === 'hourly') {
-                const hours = Number(formData.hourly_rate) || 1;
+                const hours = formData.hours || 1;
                 const hourlyRate = Number(selectedVehicle.hourly_rate) || 50;
                 estimatedPrice = hourlyRate * hours;
             } else if (formData.trip_type === 'distance') {
                 const baseFare = Number(selectedVehicle.base_fare) || 25;
                 const perMileRate = Number(selectedVehicle.per_mile_rate) || 2.5;
-                const miles = 10;
-                estimatedPrice = baseFare + (perMileRate * miles);
+                const distance = formData.distance || 10;
+                estimatedPrice = baseFare + (perMileRate * distance);
             } else {
                 estimatedPrice = Number(selectedVehicle.hourly_rate) || 50;
             }
 
-            const passengerCount = Number(formData.passenger_count) || 1;
-            const luggageCount = Number(formData.luggage_count) || 0;
-            
-            estimatedPrice += (passengerCount - 1) * 5;
-            estimatedPrice += luggageCount * 3;
+            estimatedPrice += (Number(formData.passenger_count) - 1) * 5;
+            estimatedPrice += Number(formData.luggage_count) * 3;
 
             return Math.round(estimatedPrice * 100) / 100;
         } catch (error) {
@@ -234,13 +229,14 @@ export default function CreateReservationPage() {
 
     const estimatedPrice = calculateEstimatedPrice();
 
+    // Success Screen
     if (success) {
         return (
-            <div className="flex h-screen bg-slate-50">
+            <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Header title="Create Reservation" onMenuClick={() => setSidebarOpen(true)} />
-                    <div className="flex-1 flex items-center justify-center">
+                    <div className="flex-1 flex items-center justify-center p-4">
                         <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
                             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <CheckCircle className="h-8 w-8 text-green-600" />
@@ -259,14 +255,14 @@ export default function CreateReservationPage() {
     }
 
     return (
-        <div className="flex h-screen bg-slate-50">
+        <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-            
-            <div className="flex-1 flex flex-col overflow-hidden">
+
+            <div className="flex-1 flex flex-col overflow-hidden min-h-0">
                 <Header title="Create New Reservation" onMenuClick={() => setSidebarOpen(true)} />
 
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
-                    <div className="max-w-4xl mx-auto">
+                <main className="flex-1 min-h-0 overflow-y-auto p-4 md:p-6 bg-slate-50">
+                    <div ref={formContainerRef} className="max-w-4xl mx-auto pb-32">
                         {errors.submit && (
                             <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
                                 <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
@@ -282,60 +278,33 @@ export default function CreateReservationPage() {
                                     Booking Type
                                 </h2>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                                        formData.booking_type === 'form' 
-                                            ? 'border-emerald-500 bg-emerald-50' 
-                                            : 'border-slate-200 hover:border-emerald-300'
-                                    }`}>
-                                        <input
-                                            type="radio"
-                                            name="booking_type"
-                                            value="form"
-                                            checked={formData.booking_type === 'form'}
-                                            onChange={handleInputChange}
-                                            className="sr-only"
-                                        />
-                                        <div>
-                                            <p className="font-medium text-slate-900">Form Booking</p>
-                                            <p className="text-xs text-slate-500">Standard web form booking</p>
-                                        </div>
-                                    </label>
-                                    <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                                        formData.booking_type === 'manual' 
-                                            ? 'border-emerald-500 bg-emerald-50' 
-                                            : 'border-slate-200 hover:border-emerald-300'
-                                    }`}>
-                                        <input
-                                            type="radio"
-                                            name="booking_type"
-                                            value="manual"
-                                            checked={formData.booking_type === 'manual'}
-                                            onChange={handleInputChange}
-                                            className="sr-only"
-                                        />
-                                        <div>
-                                            <p className="font-medium text-slate-900">Manual Entry</p>
-                                            <p className="text-xs text-slate-500">Created by operations team</p>
-                                        </div>
-                                    </label>
-                                    <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                                        formData.booking_type === 'contract' 
-                                            ? 'border-emerald-500 bg-emerald-50' 
-                                            : 'border-slate-200 hover:border-emerald-300'
-                                    }`}>
-                                        <input
-                                            type="radio"
-                                            name="booking_type"
-                                            value="contract"
-                                            checked={formData.booking_type === 'contract'}
-                                            onChange={handleInputChange}
-                                            className="sr-only"
-                                        />
-                                        <div>
-                                            <p className="font-medium text-slate-900">Contract Booking</p>
-                                            <p className="text-xs text-slate-500">Long-term / multi-day</p>
-                                        </div>
-                                    </label>
+                                    {['form', 'manual', 'contract'].map((type) => (
+                                        <label
+                                            key={type}
+                                            className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
+                                                formData.booking_type === type
+                                                    ? 'border-emerald-500 bg-emerald-50'
+                                                    : 'border-slate-200 hover:border-emerald-300'
+                                            }`}
+                                        >
+                                            <input
+                                                type="radio"
+                                                name="booking_type"
+                                                value={type}
+                                                checked={formData.booking_type === type}
+                                                onChange={handleInputChange}
+                                                className="sr-only"
+                                            />
+                                            <div>
+                                                <p className="font-medium text-slate-900 capitalize">{type} Booking</p>
+                                                <p className="text-xs text-slate-500">
+                                                    {type === 'form' && 'Standard web form booking'}
+                                                    {type === 'manual' && 'Created by operations team'}
+                                                    {type === 'contract' && 'Long-term / multi-day'}
+                                                </p>
+                                            </div>
+                                        </label>
+                                    ))}
                                 </div>
                             </div>
 
@@ -346,27 +315,25 @@ export default function CreateReservationPage() {
                                     Passenger Information
                                 </h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* ... Passenger fields (same as before) ... */}
                                     <div className="relative">
                                         <label className="block text-sm font-medium text-slate-700 mb-2">
                                             Full Name <span className="text-red-500">*</span>
                                         </label>
                                         <div className="relative">
-                                            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <input
                                                 type="text"
                                                 name="passenger_name"
                                                 value={formData.passenger_name}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                                                     errors.passenger_name ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="Enter passenger name"
                                             />
                                         </div>
-                                        {errors.passenger_name && (
-                                            <p className="mt-1 text-xs text-red-600">{errors.passenger_name}</p>
-                                        )}
-                                        
+                                        {errors.passenger_name && <p className="mt-1 text-xs text-red-600">{errors.passenger_name}</p>}
                                         {showPassengerSearch && passengers.length > 0 && (
                                             <div className="absolute z-10 mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                                                 {passengers.map(p => (
@@ -389,21 +356,19 @@ export default function CreateReservationPage() {
                                             Email <span className="text-red-500">*</span>
                                         </label>
                                         <div className="relative">
-                                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <input
                                                 type="email"
                                                 name="passenger_email"
                                                 value={formData.passenger_email}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                                                     errors.passenger_email ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="passenger@example.com"
                                             />
                                         </div>
-                                        {errors.passenger_email && (
-                                            <p className="mt-1 text-xs text-red-600">{errors.passenger_email}</p>
-                                        )}
+                                        {errors.passenger_email && <p className="mt-1 text-xs text-red-600">{errors.passenger_email}</p>}
                                     </div>
 
                                     <div>
@@ -411,29 +376,25 @@ export default function CreateReservationPage() {
                                             Phone <span className="text-red-500">*</span>
                                         </label>
                                         <div className="relative">
-                                            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <input
                                                 type="tel"
                                                 name="passenger_phone"
                                                 value={formData.passenger_phone}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                                                     errors.passenger_phone ? 'border-red-500' : 'border-slate-300'
                                                 }`}
-                                                placeholder="+1 (234) 567-8900"
+                                                placeholder="+92 300 1234567"
                                             />
                                         </div>
-                                        {errors.passenger_phone && (
-                                            <p className="mt-1 text-xs text-red-600">{errors.passenger_phone}</p>
-                                        )}
+                                        {errors.passenger_phone && <p className="mt-1 text-xs text-red-600">{errors.passenger_phone}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                                            Passenger Count
-                                        </label>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">Passenger Count</label>
                                         <div className="relative">
-                                            <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <input
                                                 type="number"
                                                 name="passenger_count"
@@ -441,7 +402,7 @@ export default function CreateReservationPage() {
                                                 onChange={handleInputChange}
                                                 min="1"
                                                 max="20"
-                                                className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                             />
                                         </div>
                                     </div>
@@ -455,26 +416,25 @@ export default function CreateReservationPage() {
                                     Trip Details
                                 </h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* ... Trip Details fields (same as before) ... */}
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 mb-2">
                                             Pickup Location <span className="text-red-500">*</span>
                                         </label>
                                         <div className="relative">
-                                            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <input
                                                 type="text"
                                                 name="pickup_location"
                                                 value={formData.pickup_location}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                                                     errors.pickup_location ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="Enter pickup address"
                                             />
                                         </div>
-                                        {errors.pickup_location && (
-                                            <p className="mt-1 text-xs text-red-600">{errors.pickup_location}</p>
-                                        )}
+                                        {errors.pickup_location && <p className="mt-1 text-xs text-red-600">{errors.pickup_location}</p>}
                                     </div>
 
                                     <div>
@@ -482,21 +442,19 @@ export default function CreateReservationPage() {
                                             Dropoff Location <span className="text-red-500">*</span>
                                         </label>
                                         <div className="relative">
-                                            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <input
                                                 type="text"
                                                 name="dropoff_location"
                                                 value={formData.dropoff_location}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                                                     errors.dropoff_location ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="Enter dropoff address"
                                             />
                                         </div>
-                                        {errors.dropoff_location && (
-                                            <p className="mt-1 text-xs text-red-600">{errors.dropoff_location}</p>
-                                        )}
+                                        {errors.dropoff_location && <p className="mt-1 text-xs text-red-600">{errors.dropoff_location}</p>}
                                     </div>
 
                                     <div>
@@ -504,21 +462,19 @@ export default function CreateReservationPage() {
                                             Pickup Date <span className="text-red-500">*</span>
                                         </label>
                                         <div className="relative">
-                                            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <input
                                                 type="date"
                                                 name="pickup_date"
                                                 value={formData.pickup_date}
                                                 onChange={handleInputChange}
                                                 min={new Date().toISOString().split('T')[0]}
-                                                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                                                     errors.pickup_date ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                             />
                                         </div>
-                                        {errors.pickup_date && (
-                                            <p className="mt-1 text-xs text-red-600">{errors.pickup_date}</p>
-                                        )}
+                                        {errors.pickup_date && <p className="mt-1 text-xs text-red-600">{errors.pickup_date}</p>}
                                     </div>
 
                                     <div>
@@ -526,20 +482,18 @@ export default function CreateReservationPage() {
                                             Pickup Time <span className="text-red-500">*</span>
                                         </label>
                                         <div className="relative">
-                                            <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <input
                                                 type="time"
                                                 name="pickup_time"
                                                 value={formData.pickup_time}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                                                     errors.pickup_time ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                             />
                                         </div>
-                                        {errors.pickup_time && (
-                                            <p className="mt-1 text-xs text-red-600">{errors.pickup_time}</p>
-                                        )}
+                                        {errors.pickup_time && <p className="mt-1 text-xs text-red-600">{errors.pickup_time}</p>}
                                     </div>
 
                                     <div>
@@ -547,37 +501,30 @@ export default function CreateReservationPage() {
                                             Vehicle Type <span className="text-red-500">*</span>
                                         </label>
                                         <div className="relative">
-                                            <Car className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <Car className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <select
                                                 name="vehicle_type_id"
                                                 value={formData.vehicle_type_id || ''}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                                                     errors.vehicle_type_id ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                             >
                                                 <option value="">Select a vehicle</option>
-                                                {vehicles.map(v => (
+                                                {vehicles.map((v) => (
                                                     <option key={v.id} value={v.id}>
                                                         {v.vehicle_type} - {v.vehicle_code} (Capacity: {v.passenger_capacity})
                                                     </option>
                                                 ))}
                                             </select>
                                         </div>
-                                        {errors.vehicle_type_id && (
-                                            <p className="mt-1 text-xs text-red-600">{errors.vehicle_type_id}</p>
-                                        )}
-                                        {vehicles.length === 0 && !loading && (
-                                            <p className="mt-1 text-xs text-amber-600">No vehicles available. Please contact admin.</p>
-                                        )}
+                                        {errors.vehicle_type_id && <p className="mt-1 text-xs text-red-600">{errors.vehicle_type_id}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                                            Luggage Count
-                                        </label>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">Luggage Count</label>
                                         <div className="relative">
-                                            <Luggage className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <Luggage className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <input
                                                 type="number"
                                                 name="luggage_count"
@@ -585,7 +532,7 @@ export default function CreateReservationPage() {
                                                 onChange={handleInputChange}
                                                 min="0"
                                                 max="10"
-                                                className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                             />
                                         </div>
                                     </div>
@@ -598,12 +545,15 @@ export default function CreateReservationPage() {
                                     <DollarSign className="h-5 w-5 mr-2 text-emerald-600" />
                                     Trip Type & Pricing
                                 </h2>
+
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                    <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                                        formData.trip_type === 'distance' 
-                                            ? 'border-emerald-500 bg-emerald-50' 
-                                            : 'border-slate-200 hover:border-emerald-300'
-                                    }`}>
+                                    <label
+                                        className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
+                                            formData.trip_type === 'distance'
+                                                ? 'border-emerald-500 bg-emerald-50'
+                                                : 'border-slate-200 hover:border-emerald-300'
+                                        }`}
+                                    >
                                         <input
                                             type="radio"
                                             name="trip_type"
@@ -617,11 +567,13 @@ export default function CreateReservationPage() {
                                             <p className="text-xs text-slate-500">Pay per mile/km</p>
                                         </div>
                                     </label>
-                                    <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                                        formData.trip_type === 'hourly' 
-                                            ? 'border-emerald-500 bg-emerald-50' 
-                                            : 'border-slate-200 hover:border-emerald-300'
-                                    }`}>
+                                    <label
+                                        className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
+                                            formData.trip_type === 'hourly'
+                                                ? 'border-emerald-500 bg-emerald-50'
+                                                : 'border-slate-200 hover:border-emerald-300'
+                                        }`}
+                                    >
                                         <input
                                             type="radio"
                                             name="trip_type"
@@ -635,11 +587,13 @@ export default function CreateReservationPage() {
                                             <p className="text-xs text-slate-500">Pay per hour</p>
                                         </div>
                                     </label>
-                                    <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                                        formData.trip_type === 'contract' 
-                                            ? 'border-emerald-500 bg-emerald-50' 
-                                            : 'border-slate-200 hover:border-emerald-300'
-                                    }`}>
+                                    <label
+                                        className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
+                                            formData.trip_type === 'contract'
+                                                ? 'border-emerald-500 bg-emerald-50'
+                                                : 'border-slate-200 hover:border-emerald-300'
+                                        }`}
+                                    >
                                         <input
                                             type="radio"
                                             name="trip_type"
@@ -655,13 +609,62 @@ export default function CreateReservationPage() {
                                     </label>
                                 </div>
 
+                                {/* Dynamic Fields Container with Height Lock */}
+                                <div ref={dynamicContainerRef} className="transition-all duration-150">
+                                    {/* Distance Based Fields */}
+                                    {formData.trip_type === 'distance' && (
+                                        <div className="mb-6 p-4 bg-slate-50 rounded-lg">
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                Distance (miles/km) <span className="text-red-500">*</span>
+                                            </label>
+                                            <div className="relative">
+                                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                                <input
+                                                    type="number"
+                                                    name="distance"
+                                                    value={formData.distance}
+                                                    onChange={handleInputChange}
+                                                    min="1"
+                                                    step="0.1"
+                                                    className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                    placeholder="Enter distance"
+                                                />
+                                            </div>
+                                            <p className="mt-1 text-xs text-slate-500">Base fare + per mile rate × distance</p>
+                                        </div>
+                                    )}
+
+                                    {/* Hourly Based Fields */}
+                                    {formData.trip_type === 'hourly' && (
+                                        <div className="mb-6 p-4 bg-slate-50 rounded-lg">
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                Hours <span className="text-red-500">*</span>
+                                            </label>
+                                            <div className="relative">
+                                                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                                <input
+                                                    type="number"
+                                                    name="hours"
+                                                    value={formData.hours}
+                                                    onChange={handleInputChange}
+                                                    min="1"
+                                                    step="0.5"
+                                                    className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                    placeholder="Enter number of hours"
+                                                />
+                                            </div>
+                                            <p className="mt-1 text-xs text-slate-500">Hourly rate × number of hours</p>
+                                        </div>
+                                    )}
+                                </div>
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 mb-2">
                                             Price ($) <span className="text-red-500">*</span>
                                         </label>
                                         <div className="relative">
-                                            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <input
                                                 type="number"
                                                 name="price"
@@ -669,33 +672,27 @@ export default function CreateReservationPage() {
                                                 onChange={handleInputChange}
                                                 min="0"
                                                 step="0.01"
-                                                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                                                     errors.price ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="0.00"
                                             />
                                         </div>
-                                        {errors.price && (
-                                            <p className="mt-1 text-xs text-red-600">{errors.price}</p>
-                                        )}
-                                        {formData.vehicle_type_id !== 0 && vehicles.length > 0 && (
-                                            <p className="mt-1 text-xs text-slate-500">
-                                                Estimated: ${estimatedPrice.toFixed(2)}
-                                            </p>
+                                        {errors.price && <p className="mt-1 text-xs text-red-600">{errors.price}</p>}
+                                        {formData.vehicle_type_id !== 0 && (
+                                            <p className="mt-1 text-xs text-slate-500">Estimated: ${estimatedPrice.toFixed(2)}</p>
                                         )}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                                            Payment Status
-                                        </label>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">Payment Status</label>
                                         <div className="relative">
-                                            <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <select
                                                 name="payment_status"
                                                 value={formData.payment_status}
                                                 onChange={handleInputChange}
-                                                className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                             >
                                                 <option value="pending">Pending</option>
                                                 <option value="paid">Paid</option>
@@ -704,8 +701,8 @@ export default function CreateReservationPage() {
                                     </div>
                                 </div>
 
-                                {/* Contract fields */}
-                                {formData.booking_type === 'contract' && (
+                                {/* Contract Fields */}
+                                {formData.trip_type === 'contract' && (
                                     <div className="mt-6 pt-6 border-t border-slate-200">
                                         <h3 className="text-md font-medium text-slate-900 mb-4">Contract Details</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -714,47 +711,41 @@ export default function CreateReservationPage() {
                                                     Start Date <span className="text-red-500">*</span>
                                                 </label>
                                                 <div className="relative">
-                                                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                                     <input
                                                         type="date"
                                                         name="contract_start_date"
                                                         value={formData.contract_start_date}
                                                         onChange={handleInputChange}
-                                                        className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                        className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                                                             errors.contract_start_date ? 'border-red-500' : 'border-slate-300'
                                                         }`}
                                                     />
                                                 </div>
-                                                {errors.contract_start_date && (
-                                                    <p className="mt-1 text-xs text-red-600">{errors.contract_start_date}</p>
-                                                )}
+                                                {errors.contract_start_date && <p className="mt-1 text-xs text-red-600">{errors.contract_start_date}</p>}
                                             </div>
                                             <div>
                                                 <label className="block text-sm font-medium text-slate-700 mb-2">
                                                     End Date <span className="text-red-500">*</span>
                                                 </label>
                                                 <div className="relative">
-                                                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                                     <input
                                                         type="date"
                                                         name="contract_end_date"
                                                         value={formData.contract_end_date}
                                                         onChange={handleInputChange}
-                                                        className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                        className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                                                             errors.contract_end_date ? 'border-red-500' : 'border-slate-300'
                                                         }`}
                                                     />
                                                 </div>
-                                                {errors.contract_end_date && (
-                                                    <p className="mt-1 text-xs text-red-600">{errors.contract_end_date}</p>
-                                                )}
+                                                {errors.contract_end_date && <p className="mt-1 text-xs text-red-600">{errors.contract_end_date}</p>}
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-slate-700 mb-2">
-                                                    Daily Rate ($)
-                                                </label>
+                                                <label className="block text-sm font-medium text-slate-700 mb-2">Daily Rate ($)</label>
                                                 <div className="relative">
-                                                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                                     <input
                                                         type="number"
                                                         name="daily_rate"
@@ -762,17 +753,15 @@ export default function CreateReservationPage() {
                                                         onChange={handleInputChange}
                                                         min="0"
                                                         step="0.01"
-                                                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                        className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                                         placeholder="0.00"
                                                     />
                                                 </div>
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-slate-700 mb-2">
-                                                    Hourly Rate ($)
-                                                </label>
+                                                <label className="block text-sm font-medium text-slate-700 mb-2">Hourly Rate ($)</label>
                                                 <div className="relative">
-                                                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                                     <input
                                                         type="number"
                                                         name="hourly_rate"
@@ -780,7 +769,7 @@ export default function CreateReservationPage() {
                                                         onChange={handleInputChange}
                                                         min="0"
                                                         step="0.01"
-                                                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                        className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                                         placeholder="0.00"
                                                     />
                                                 </div>
@@ -788,33 +777,31 @@ export default function CreateReservationPage() {
                                         </div>
                                     </div>
                                 )}
+                            </div>
 
-                                {/* Submit Button */}
-                                <div className="mt-8 pt-4 border-t border-slate-200">
-                                    <div className="flex justify-end gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={() => router.push('/reservations')}
-                                            className="px-6 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            disabled={submitting}
-                                            className="px-6 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                                        >
-                                            {submitting ? (
-                                                <>
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                    <span>Creating...</span>
-                                                </>
-                                            ) : (
-                                                <span>Create Reservation</span>
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
+                            {/* Submit Buttons */}
+                            <div className="flex justify-end gap-3 pt-6">
+                                <button
+                                    type="button"
+                                    onClick={() => router.push('/reservations')}
+                                    className="px-6 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className="px-6 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    {submitting ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            Creating...
+                                        </>
+                                    ) : (
+                                        'Create Reservation'
+                                    )}
+                                </button>
                             </div>
                         </form>
                     </div>
