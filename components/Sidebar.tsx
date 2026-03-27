@@ -27,7 +27,15 @@ import {
     ChevronRight,
     Bell,
     LogOut,
-    User
+    User,
+    ExternalLink,
+    Car,
+    Ticket,
+    ListTodo,
+    Award,
+    MapPin,
+    DollarSign,
+    PieChart,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -51,6 +59,34 @@ const navigationItems: NavigationItem[] = [
     { name: 'Tasks', href: '/?tab=tasks', icon: CheckSquare, employeeOnly: true },
     { name: 'Attendance', href: '/?tab=attendance', icon: Clock, employeeOnly: true },
     { name: 'Notifications', href: '/?tab=notifications', icon: Bell, employeeOnly: true },
+
+    // Reservation Module - Main Section
+    {
+        name: 'Reservations',
+        href: '/reservations',
+        icon: Ticket,
+        adminOnly: true,
+        children: [
+            { name: 'All Reservations', href: '/reservations', icon: ListTodo },
+            { name: 'Create Reservation', href: '/reservations/create', icon: Plus },
+            { name: 'Form Submissions', href: '/forms', icon: FileText },
+        ],
+    },
+
+    // Dispatch Management Section
+    {
+        name: 'Dispatch Board',
+        href: '/dispatch',
+        icon: Car,
+        adminOnly: true,
+        children: [
+            { name: 'Dispatch Board', href: '/dispatch', icon: Car },
+            { name: 'Assign Drivers', href: '/dispatch/assign', icon: Users },
+            { name: 'Active Trips', href: '/dispatch/active', icon: MapPin },
+            { name: 'Drivers', href: '/dispatch/drivers', icon: Users },
+            { name: 'Passengers', href: '/dispatch/passengers', icon: User },
+        ],
+    },
 
     { name: 'Tasks', href: '/admin/tasks', icon: CheckSquare, adminOnly: true },
     { name: 'Add Task', href: '/admin/create-task', icon: Plus, adminOnly: true },
