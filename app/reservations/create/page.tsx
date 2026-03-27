@@ -27,8 +27,8 @@ import { Vehicle, Passenger } from '@/types/reservation.types';
 
 export default function CreateReservationPage() {
     const router = useRouter();
+    const mainRef = useRef<HTMLDivElement>(null);
     const formContainerRef = useRef<HTMLDivElement>(null);
-    const dynamicContainerRef = useRef<HTMLDivElement>(null);
     
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -38,7 +38,6 @@ export default function CreateReservationPage() {
     const [showPassengerSearch, setShowPassengerSearch] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [success, setSuccess] = useState(false);
-    const [prevTripType, setPrevTripType] = useState('distance');
     const [dynamicHeight, setDynamicHeight] = useState(0);
 
     // Form State
@@ -73,28 +72,6 @@ export default function CreateReservationPage() {
     useEffect(() => {
         fetchVehicles();
     }, []);
-
-    // Store the height when switching
-    useEffect(() => {
-        if (dynamicContainerRef.current && prevTripType !== formData.trip_type) {
-            // Store current scroll position
-            const scrollY = window.scrollY;
-            
-            // Update the container height to prevent jump
-            const currentHeight = dynamicContainerRef.current.scrollHeight;
-            dynamicContainerRef.current.style.minHeight = `${currentHeight}px`;
-            
-            setTimeout(() => {
-                if (dynamicContainerRef.current) {
-                    dynamicContainerRef.current.style.minHeight = '';
-                }
-                // Restore scroll position
-                window.scrollTo(0, scrollY);
-            }, 150);
-            
-            setPrevTripType(formData.trip_type);
-        }
-    }, [formData.trip_type, prevTripType]);
 
     const fetchVehicles = async () => {
         setLoading(true);
@@ -181,7 +158,7 @@ export default function CreateReservationPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateForm()) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
             return;
         }
 
@@ -255,13 +232,13 @@ export default function CreateReservationPage() {
     }
 
     return (
-        <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
+        <div className="flex h-screen w-full overflow-hidden bg-slate-50 text-slate-900">
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
             <div className="flex-1 flex flex-col overflow-hidden min-h-0">
                 <Header title="Create New Reservation" onMenuClick={() => setSidebarOpen(true)} />
 
-                <main className="flex-1 min-h-0 overflow-y-auto p-4 md:p-6 bg-slate-50">
+                <main ref={mainRef} className="flex-1 min-h-0 overflow-y-auto p-4 md:p-6 bg-slate-50">
                     <div ref={formContainerRef} className="max-w-4xl mx-auto pb-32">
                         {errors.submit && (
                             <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
@@ -281,7 +258,7 @@ export default function CreateReservationPage() {
                                     {['form', 'manual', 'contract'].map((type) => (
                                         <label
                                             key={type}
-                                            className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
+                                            className={`relative flex items-center p-4 border rounded-lg cursor-pointer ${
                                                 formData.booking_type === type
                                                     ? 'border-emerald-500 bg-emerald-50'
                                                     : 'border-slate-200 hover:border-emerald-300'
@@ -293,7 +270,7 @@ export default function CreateReservationPage() {
                                                 value={type}
                                                 checked={formData.booking_type === type}
                                                 onChange={handleInputChange}
-                                                className="sr-only"
+                                                className="absolute inset-0 opacity-0 cursor-pointer"
                                             />
                                             <div>
                                                 <p className="font-medium text-slate-900 capitalize">{type} Booking</p>
@@ -327,7 +304,7 @@ export default function CreateReservationPage() {
                                                 name="passenger_name"
                                                 value={formData.passenger_name}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
                                                     errors.passenger_name ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="Enter passenger name"
@@ -362,7 +339,7 @@ export default function CreateReservationPage() {
                                                 name="passenger_email"
                                                 value={formData.passenger_email}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
                                                     errors.passenger_email ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="passenger@example.com"
@@ -382,7 +359,7 @@ export default function CreateReservationPage() {
                                                 name="passenger_phone"
                                                 value={formData.passenger_phone}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
                                                     errors.passenger_phone ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="+92 300 1234567"
@@ -428,7 +405,7 @@ export default function CreateReservationPage() {
                                                 name="pickup_location"
                                                 value={formData.pickup_location}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
                                                     errors.pickup_location ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="Enter pickup address"
@@ -448,7 +425,7 @@ export default function CreateReservationPage() {
                                                 name="dropoff_location"
                                                 value={formData.dropoff_location}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
                                                     errors.dropoff_location ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="Enter dropoff address"
@@ -469,7 +446,7 @@ export default function CreateReservationPage() {
                                                 value={formData.pickup_date}
                                                 onChange={handleInputChange}
                                                 min={new Date().toISOString().split('T')[0]}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
                                                     errors.pickup_date ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                             />
@@ -488,7 +465,7 @@ export default function CreateReservationPage() {
                                                 name="pickup_time"
                                                 value={formData.pickup_time}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
                                                     errors.pickup_time ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                             />
@@ -506,7 +483,7 @@ export default function CreateReservationPage() {
                                                 name="vehicle_type_id"
                                                 value={formData.vehicle_type_id || ''}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
                                                     errors.vehicle_type_id ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                             >
@@ -548,7 +525,7 @@ export default function CreateReservationPage() {
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                                     <label
-                                        className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
+                                        className={`relative flex items-center p-4 border rounded-lg cursor-pointer ${
                                             formData.trip_type === 'distance'
                                                 ? 'border-emerald-500 bg-emerald-50'
                                                 : 'border-slate-200 hover:border-emerald-300'
@@ -560,7 +537,7 @@ export default function CreateReservationPage() {
                                             value="distance"
                                             checked={formData.trip_type === 'distance'}
                                             onChange={handleInputChange}
-                                            className="sr-only"
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
                                         />
                                         <div>
                                             <p className="font-medium text-slate-900">Distance Based</p>
@@ -568,7 +545,7 @@ export default function CreateReservationPage() {
                                         </div>
                                     </label>
                                     <label
-                                        className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
+                                        className={`relative flex items-center p-4 border rounded-lg cursor-pointer ${
                                             formData.trip_type === 'hourly'
                                                 ? 'border-emerald-500 bg-emerald-50'
                                                 : 'border-slate-200 hover:border-emerald-300'
@@ -580,7 +557,7 @@ export default function CreateReservationPage() {
                                             value="hourly"
                                             checked={formData.trip_type === 'hourly'}
                                             onChange={handleInputChange}
-                                            className="sr-only"
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
                                         />
                                         <div>
                                             <p className="font-medium text-slate-900">Hourly</p>
@@ -588,7 +565,7 @@ export default function CreateReservationPage() {
                                         </div>
                                     </label>
                                     <label
-                                        className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
+                                        className={`relative flex items-center p-4 border rounded-lg cursor-pointer ${
                                             formData.trip_type === 'contract'
                                                 ? 'border-emerald-500 bg-emerald-50'
                                                 : 'border-slate-200 hover:border-emerald-300'
@@ -600,7 +577,7 @@ export default function CreateReservationPage() {
                                             value="contract"
                                             checked={formData.trip_type === 'contract'}
                                             onChange={handleInputChange}
-                                            className="sr-only"
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
                                         />
                                         <div>
                                             <p className="font-medium text-slate-900">Contract</p>
@@ -609,8 +586,8 @@ export default function CreateReservationPage() {
                                     </label>
                                 </div>
 
-                                {/* Dynamic Fields Container with Height Lock */}
-                                <div ref={dynamicContainerRef} className="transition-all duration-150">
+                            {/* Dynamic Fields Container */}
+                            <div className="min-h-[100px]">
                                     {/* Distance Based Fields */}
                                     {formData.trip_type === 'distance' && (
                                         <div className="mb-6 p-4 bg-slate-50 rounded-lg">
@@ -672,7 +649,7 @@ export default function CreateReservationPage() {
                                                 onChange={handleInputChange}
                                                 min="0"
                                                 step="0.01"
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
                                                     errors.price ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="0.00"
@@ -717,7 +694,7 @@ export default function CreateReservationPage() {
                                                         name="contract_start_date"
                                                         value={formData.contract_start_date}
                                                         onChange={handleInputChange}
-                                                        className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                        className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
                                                             errors.contract_start_date ? 'border-red-500' : 'border-slate-300'
                                                         }`}
                                                     />
@@ -735,7 +712,7 @@ export default function CreateReservationPage() {
                                                         name="contract_end_date"
                                                         value={formData.contract_end_date}
                                                         onChange={handleInputChange}
-                                                        className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                                                        className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
                                                             errors.contract_end_date ? 'border-red-500' : 'border-slate-300'
                                                         }`}
                                                     />

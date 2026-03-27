@@ -152,7 +152,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Smooth Transitions */
-* {
+/* Targeted Transitions for Performance */
+.transition-standard {
   transition-property: color, background-color, border-color, box-shadow, transform, opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;

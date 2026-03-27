@@ -52,6 +52,7 @@ interface NavigationItem {
   employeeOnly?: boolean;
   badge?: number;
   children?: NavigationItem[];
+  exact?: boolean;
 }
 
 const navigationItems: NavigationItem[] = [
@@ -78,7 +79,7 @@ const navigationItems: NavigationItem[] = [
     icon: Ticket,
     adminOnly: true,
     children: [
-      { name: "All Reservations", href: "/reservations", icon: ListTodo },
+      { name: "All Reservations", href: "/reservations", icon: ListTodo, exact: true },
       { name: "Create Reservation", href: "/reservations/create", icon: Plus },
       { name: "Form Submissions", href: "/forms", icon: FileText },
     ],
@@ -91,7 +92,7 @@ const navigationItems: NavigationItem[] = [
     icon: Car,
     adminOnly: true,
     children: [
-      { name: "Dispatch Board", href: "/dispatch", icon: Car },
+      { name: "Dispatch Board", href: "/dispatch", icon: Car, exact: true },
       { name: "Assign Drivers", href: "/dispatch/assign", icon: Users },
       { name: "Active Trips", href: "/dispatch/active", icon: MapPin },
       { name: "Drivers", href: "/dispatch/drivers", icon: Users },
@@ -269,29 +270,29 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
       return item;
     });
 
-const isActive = (href: string) => {
+  const isActive = (href: string, exact: boolean = false) => {
     const [targetPath, targetQuery] = href.split("?");
     const currentTab = searchParams.get("tab");
 
     // Exact match for path
     const isPathMatch = pathname === targetPath;
-    
+
     // Check if current path is a child of the target path
-    const isChildPath = pathname.startsWith(targetPath + '/');
+    const isChildPath = pathname.startsWith(targetPath + "/");
 
     if (targetQuery) {
-        const targetParams = new URLSearchParams(targetQuery);
-        const targetTab = targetParams.get("tab");
-        return isPathMatch && currentTab === targetTab;
+      const targetParams = new URLSearchParams(targetQuery);
+      const targetTab = targetParams.get("tab");
+      return isPathMatch && currentTab === targetTab;
     }
 
     if (href === "/") {
-        return isPathMatch && !currentTab;
+      return isPathMatch && !currentTab;
     }
 
-    // Return true for exact match OR if it's a child route
-    return isPathMatch || isChildPath;
-};
+    // Return true for exact match OR if it's a child route (unless exact is true)
+    return isPathMatch || (!exact && isChildPath);
+  };
 
   const handleLogout = async () => {
     if (window.confirm("Are you sure you want to log out?")) {
@@ -337,9 +338,9 @@ const isActive = (href: string) => {
             const hasChildren = item.children && item.children.length > 0;
             const isExpanded = expandedMenus[item.name];
             const active =
-              isActive(item.href) ||
+              isActive(item.href, item.exact) ||
               (hasChildren &&
-                item.children?.some((child) => isActive(child.href)));
+                item.children?.some((child) => isActive(child.href, child.exact)));
 
             return (
               <div key={item.name}>
@@ -383,7 +384,7 @@ const isActive = (href: string) => {
                       <div className="mt-1 ml-4 pl-4 border-l border-slate-100 space-y-1">
                         {item.children?.map((child) => {
                           const ChildIcon = child.icon;
-                          const childActive = isActive(child.href);
+                          const childActive = isActive(child.href, child.exact);
                           return (
                             <Link
                               key={child.name}
@@ -395,7 +396,9 @@ const isActive = (href: string) => {
                               }`}
                             >
                               <ChildIcon
-                                className={`h-4 w-4 mr-3 ${childActive ? "text-emerald-400" : "text-slate-400"}`}
+                                className={`h-4 w-4 mr-3 ${
+                                  childActive ? "text-emerald-400" : "text-slate-400"
+                                }`}
                               />
                               <span>{child.name}</span>
                             </Link>
