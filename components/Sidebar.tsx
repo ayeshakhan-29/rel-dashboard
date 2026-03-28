@@ -67,9 +67,8 @@ const navigationItems: NavigationItem[] = [
         icon: Ticket,
         adminOnly: true,
         children: [
-            { name: 'All Reservations', href: '/reservations', icon: ListTodo },
+            { name: 'Manage Reservations', href: '/reservations', icon: ListTodo },
             { name: 'Create Reservation', href: '/reservations/create', icon: Plus },
-            { name: 'Form Submissions', href: '/forms', icon: FileText },
         ],
     },
 

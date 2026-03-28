@@ -304,8 +304,7 @@ export default function CreateReservationPage() {
                                                 name="passenger_name"
                                                 value={formData.passenger_name}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
-                                                    errors.passenger_name ? 'border-red-500' : 'border-slate-300'
+                                                className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.passenger_name ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="Enter passenger name"
                                             />
@@ -339,8 +338,7 @@ export default function CreateReservationPage() {
                                                 name="passenger_email"
                                                 value={formData.passenger_email}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
-                                                    errors.passenger_email ? 'border-red-500' : 'border-slate-300'
+                                                className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.passenger_email ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="passenger@example.com"
                                             />
@@ -359,8 +357,7 @@ export default function CreateReservationPage() {
                                                 name="passenger_phone"
                                                 value={formData.passenger_phone}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
-                                                    errors.passenger_phone ? 'border-red-500' : 'border-slate-300'
+                                                className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.passenger_phone ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="+92 300 1234567"
                                             />
@@ -379,7 +376,7 @@ export default function CreateReservationPage() {
                                                 onChange={handleInputChange}
                                                 min="1"
                                                 max="20"
-                                                className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                             />
                                         </div>
                                     </div>
@@ -405,8 +402,7 @@ export default function CreateReservationPage() {
                                                 name="pickup_location"
                                                 value={formData.pickup_location}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
-                                                    errors.pickup_location ? 'border-red-500' : 'border-slate-300'
+                                                className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.pickup_location ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="Enter pickup address"
                                             />
@@ -425,8 +421,7 @@ export default function CreateReservationPage() {
                                                 name="dropoff_location"
                                                 value={formData.dropoff_location}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
-                                                    errors.dropoff_location ? 'border-red-500' : 'border-slate-300'
+                                                className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.dropoff_location ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="Enter dropoff address"
                                             />
@@ -446,8 +441,7 @@ export default function CreateReservationPage() {
                                                 value={formData.pickup_date}
                                                 onChange={handleInputChange}
                                                 min={new Date().toISOString().split('T')[0]}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
-                                                    errors.pickup_date ? 'border-red-500' : 'border-slate-300'
+                                                className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.pickup_date ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                             />
                                         </div>
@@ -465,8 +459,7 @@ export default function CreateReservationPage() {
                                                 name="pickup_time"
                                                 value={formData.pickup_time}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
-                                                    errors.pickup_time ? 'border-red-500' : 'border-slate-300'
+                                                className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.pickup_time ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                             />
                                         </div>
@@ -483,8 +476,7 @@ export default function CreateReservationPage() {
                                                 name="vehicle_type_id"
                                                 value={formData.vehicle_type_id || ''}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
-                                                    errors.vehicle_type_id ? 'border-red-500' : 'border-slate-300'
+                                                className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.vehicle_type_id ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                             >
                                                 <option value="">Select a vehicle</option>
@@ -509,7 +501,7 @@ export default function CreateReservationPage() {
                                                 onChange={handleInputChange}
                                                 min="0"
                                                 max="10"
-                                                className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                             />
                                         </div>
                                     </div>
@@ -603,7 +595,7 @@ export default function CreateReservationPage() {
                                                     onChange={handleInputChange}
                                                     min="1"
                                                     step="0.1"
-                                                    className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                    className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                                     placeholder="Enter distance"
                                                 />
                                             </div>
@@ -626,7 +618,7 @@ export default function CreateReservationPage() {
                                                     onChange={handleInputChange}
                                                     min="1"
                                                     step="0.5"
-                                                    className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                    className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                                     placeholder="Enter number of hours"
                                                 />
                                             </div>
@@ -649,8 +641,7 @@ export default function CreateReservationPage() {
                                                 onChange={handleInputChange}
                                                 min="0"
                                                 step="0.01"
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
-                                                    errors.price ? 'border-red-500' : 'border-slate-300'
+                                                className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.price ? 'border-red-500' : 'border-slate-300'
                                                 }`}
                                                 placeholder="0.00"
                                             />
@@ -669,7 +660,7 @@ export default function CreateReservationPage() {
                                                 name="payment_status"
                                                 value={formData.payment_status}
                                                 onChange={handleInputChange}
-                                                className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                             >
                                                 <option value="pending">Pending</option>
                                                 <option value="paid">Paid</option>
@@ -694,8 +685,7 @@ export default function CreateReservationPage() {
                                                         name="contract_start_date"
                                                         value={formData.contract_start_date}
                                                         onChange={handleInputChange}
-                                                        className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
-                                                            errors.contract_start_date ? 'border-red-500' : 'border-slate-300'
+                                                        className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                            errors.contract_start_date ? 'border-red-500' : 'border-slate-300'
                                                         }`}
                                                     />
                                                 </div>
@@ -712,8 +702,7 @@ export default function CreateReservationPage() {
                                                         name="contract_end_date"
                                                         value={formData.contract_end_date}
                                                         onChange={handleInputChange}
-                                                        className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400
-                                                            errors.contract_end_date ? 'border-red-500' : 'border-slate-300'
+                                                        className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                            errors.contract_end_date ? 'border-red-500' : 'border-slate-300'
                                                         }`}
                                                     />
                                                 </div>
@@ -730,7 +719,7 @@ export default function CreateReservationPage() {
                                                         onChange={handleInputChange}
                                                         min="0"
                                                         step="0.01"
-                                                        className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                        className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                                         placeholder="0.00"
                                                     />
                                                 </div>
@@ -746,7 +735,7 @@ export default function CreateReservationPage() {
                                                         onChange={handleInputChange}
                                                         min="0"
                                                         step="0.01"
-                                                        className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                        className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                                         placeholder="0.00"
                                                     />
                                                 </div>
