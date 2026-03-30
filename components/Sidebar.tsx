@@ -106,14 +106,6 @@ const navigationItems: NavigationItem[] = [
     { name: 'Emails', href: '/admin/emails', icon: Mail, adminOnly: true },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3, adminOnly: true },
     { name: 'Form Configuration', href: '/admin/form-configuration', icon: FileText, adminOnly: true },
-
-    // RingCentral Integration
-    { name: 'RingCentral', href: '/admin/dashboard/ringcentral', icon: Phone, divider: true, adminOnly: true },
-    { name: 'Calls', href: '/admin/calls', icon: Phone, adminOnly: true },
-    { name: 'Messages', href: '/admin/messages', icon: MessageSquare, adminOnly: true },
-    { name: 'Team Chat', href: '/admin/teams', icon: UsersIcon, adminOnly: true },
-    { name: 'Meetings', href: '/admin/meetings', icon: Video, adminOnly: true },
-
     { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
