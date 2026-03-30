@@ -11,14 +11,12 @@ import {
 } from 'lucide-react';
 import KPICard from '@/components/KPICard';
 import TaskCard from '@/components/TaskCard';
-import { Task, Lead } from '@/types';
-import { getBookings, Booking } from '@/app/services/formsService';
+import { Task } from '@/types';
 import dashboardService, { DashboardKPI, DashboardTask } from '@/app/services/dashboardService';
 import analyticsService, { PerformanceMetric } from '@/app/services/analyticsService';
 import { attendanceService, AttendanceRecord } from '@/app/services/attendanceService';
 
 export default function AdminDashboard() {
-    const [recentForms, setRecentForms] = useState<Lead[]>([]);
     const [kpis, setKpis] = useState<DashboardKPI[]>([]);
     const [upcomingTasks, setUpcomingTasks] = useState<DashboardTask[]>([]);
     const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetric[]>([]);
@@ -26,49 +24,6 @@ export default function AdminDashboard() {
     const [kpisLoading, setKpisLoading] = useState(true);
     const [tasksLoading, setTasksLoading] = useState(true);
     const [metricsLoading, setMetricsLoading] = useState(true);
-
-
-    // Fetch form submissions (bookings) from API
-    useEffect(() => {
-        const fetchFormLeads = async () => {
-            try {
-                setLoading(true);
-                const bookingsData = await getBookings();
-
-                const normalizeDate = (value: any): string => {
-                    if (!value) return '';
-                    if (typeof value === 'string') return value;
-                    if (typeof value === 'number') return new Date(value).toISOString();
-                    if (value && typeof value === 'object') {
-                        if (typeof (value as any).toDate === 'function') return (value as any).toDate().toISOString();
-                        if (typeof (value as any).seconds === 'number') return new Date((value as any).seconds * 1000).toISOString();
-                        if (typeof (value as any)._seconds === 'number') return new Date((value as any)._seconds * 1000).toISOString();
-                    }
-                    return '';
-                };
-
-                // Map bookings to Lead format (limit to 5 for recent)
-                const mappedBookings: Lead[] = bookingsData.slice(0, 5).map((booking: Booking) => ({
-                    id: booking.id,
-                    name: booking.fullName || 'Unknown Name',
-                    phone: booking.phone || '',
-                    email: booking.email || '',
-                    stage: 'Incoming',
-                    source: 'Website',
-                    created_at: normalizeDate(booking.created_at ?? (booking as any).createdAt) || new Date().toISOString(),
-                    updated_at: normalizeDate(booking.updated_at ?? (booking as any).updatedAt ?? (booking as any).createdAt) || new Date().toISOString(),
-                }));
-
-                setRecentForms(mappedBookings);
-            } catch (err) {
-                console.error('Failed to fetch form submissions:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchFormLeads();
-    }, []);
 
     // Fetch KPIs from API
     useEffect(() => {
@@ -121,9 +76,6 @@ export default function AdminDashboard() {
 
         fetchMetrics();
     }, []);
-
-    // Get recent form submissions (top 5)
-    const recentSubmissions = recentForms.slice(0, 5);
 
     // Convert API tasks to TaskCard format
     const convertTasksForCard = (apiTasks: DashboardTask[]): Task[] => {
@@ -196,44 +148,6 @@ export default function AdminDashboard() {
                         <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-emerald-600 transition-colors" />
                     </div>
                 </Link>
-            </div>
-
-            {/* Recent Form Submissions */}
-            <div className="grid grid-cols-1 gap-6">
-                <div className="bg-white rounded-lg border border-slate-200 p-6">
-                    <div className="flex items-center justify-between mb-5">
-                        <h3 className="text-base font-semibold text-slate-900">Recent Form Submissions</h3>
-                        <Link
-                            href="/admin/forms"
-                            className="text-emerald-600 hover:text-emerald-700 text-xs font-semibold"
-                        >
-                            View all
-                        </Link>
-                    </div>
-                    <div className="space-y-3">
-                        {loading ? (
-                            <p className="text-sm text-slate-500">Loading submissions...</p>
-                        ) : recentSubmissions.length === 0 ? (
-                            <p className="text-sm text-slate-500">No submissions yet</p>
-                        ) : (
-                            recentSubmissions.map((lead) => (
-                                <Link key={lead.id} href="/admin/forms">
-                                    <div className="p-3 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-slate-50 transition-all cursor-pointer">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-slate-900 truncate">{lead.name}</p>
-                                                <p className="text-xs text-slate-600">{lead.phone}</p>
-                                            </div>
-                                            <span className="text-xs text-slate-400">
-                                                {lead.created_at ? new Date(lead.created_at).toLocaleDateString() : 'No date'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))
-                        )}
-                    </div>
-                </div>
             </div>
 
             {/* Performance Metrics & Upcoming Tasks */}

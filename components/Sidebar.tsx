@@ -104,7 +104,6 @@ const navigationItems: NavigationItem[] = [
     },
 
     { name: 'Emails', href: '/admin/emails', icon: Mail, adminOnly: true },
-    { name: 'Forms', href: '/admin/forms', icon: FileText, adminOnly: true },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3, adminOnly: true },
     { name: 'Form Configuration', href: '/admin/form-configuration', icon: FileText, adminOnly: true },
 
