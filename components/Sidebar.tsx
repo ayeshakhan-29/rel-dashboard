@@ -56,23 +56,21 @@ interface NavigationItem {
 const navigationItems: NavigationItem[] = [
     { name: 'Dashboard', href: '/', icon: Home },
     { name: 'Profile', href: '/?tab=profile', icon: User, employeeOnly: true },
+    { name: 'Notifications', href: '/?tab=notifications', icon: Bell, employeeOnly: true },
     { name: 'Tasks', href: '/?tab=tasks', icon: CheckSquare, employeeOnly: true },
     { name: 'Attendance', href: '/?tab=attendance', icon: Clock, employeeOnly: true },
-    { name: 'Notifications', href: '/?tab=notifications', icon: Bell, employeeOnly: true },
 
-    // Reservation Module - Main Section
     {
         name: 'Reservations',
         href: '/reservations',
         icon: Ticket,
         adminOnly: true,
         children: [
-            { name: 'Manage Reservations', href: '/reservations', icon: ListTodo },
             { name: 'Create Reservation', href: '/reservations/create', icon: Plus },
+            { name: 'Manage Reservations', href: '/reservations', icon: ListTodo },
         ],
     },
 
-    // Dispatch Management Section
     {
         name: 'Dispatch Board',
         href: '/dispatch',
@@ -87,11 +85,6 @@ const navigationItems: NavigationItem[] = [
         ],
     },
 
-    { name: 'Tasks', href: '/admin/tasks', icon: CheckSquare, adminOnly: true },
-    { name: 'Add Task', href: '/admin/create-task', icon: Plus, adminOnly: true },
-    { name: 'Calendar', href: '/admin/calendar', icon: Calendar, adminOnly: true },
-
-    // Attendance Section for Admin
     {
         name: 'Attendance Admin',
         href: '/admin/attendance',
@@ -103,6 +96,9 @@ const navigationItems: NavigationItem[] = [
         ]
     },
 
+    { name: 'Calendar', href: '/admin/calendar', icon: Calendar, adminOnly: true },
+    { name: 'Tasks', href: '/admin/tasks', icon: CheckSquare, adminOnly: true },
+    { name: 'Add Task', href: '/admin/create-task', icon: Plus, adminOnly: true },
     { name: 'Emails', href: '/admin/emails', icon: Mail, adminOnly: true },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3, adminOnly: true },
     { name: 'Form Configuration', href: '/admin/form-configuration', icon: FileText, adminOnly: true },
@@ -136,13 +132,7 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
             }
         });
 
-        setExpandedMenus(prev => {
-            const hasNewExpanded = Object.entries(activeSubmenus).some(
-                ([key, value]) => value && !prev[key]
-            );
-
-            return hasNewExpanded ? { ...prev, ...activeSubmenus } : prev;
-        });
+        setExpandedMenus(() => activeSubmenus);
     }, [pathname, searchParams, isAdmin, isEmployee]);
 
     // Fetch unread notifications count for employees
@@ -294,6 +284,7 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                                                         <Link
                                                             key={child.name}
                                                             href={child.href}
+                                                            onClick={onClose}
                                                             className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${childActive
                                                                 ? 'text-white bg-slate-900 shadow-sm'
                                                                 : 'text-slate-500 hover:bg-emerald-50 hover:text-emerald-700'
@@ -310,6 +301,7 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                                 ) : (
                                     <Link
                                         href={item.href}
+                                        onClick={onClose}
                                         className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${active
                                             ? 'text-white bg-slate-900 shadow-sm'
                                             : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
