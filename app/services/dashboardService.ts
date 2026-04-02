@@ -117,7 +117,7 @@ count: (stats.by_status.find((s: { status: string }) => s.status === 'assigned')
                 },
                 'in_progress': {
                     stage: 'in_progress',
-count: (stats.by_status.find((s: { status: string }) => s.status === 'in_progress')?.count || 0).toString(),                    name: 'In Progress',
+count: (stats.by_status.find((s: { status: string }) => s.status === 'in_progress')?.count || 0).toString(),                    name: 'On Trip',
                     bgColor: 'bg-purple-100',
                     textColor: 'text-purple-800',
                     borderColor: 'border-purple-200'

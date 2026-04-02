@@ -6,24 +6,38 @@ import {
     BarChart3,
     Users,
     DollarSign,
-    TrendingUp,
     ArrowRight,
+    Activity,
 } from 'lucide-react';
 import KPICard from '@/components/KPICard';
 import TaskCard from '@/components/TaskCard';
 import { Task } from '@/types';
 import dashboardService, { DashboardKPI, DashboardTask } from '@/app/services/dashboardService';
 import analyticsService, { PerformanceMetric } from '@/app/services/analyticsService';
-import { attendanceService, AttendanceRecord } from '@/app/services/attendanceService';
+import reservationService from '@/app/services/reservationService';
+
+const STATUS_COLORS: Record<string, string> = {
+    pending: 'bg-amber-100 text-amber-700',
+    pending_driver_approval: 'bg-violet-100 text-violet-700',
+    assigned: 'bg-blue-100 text-blue-700',
+    confirmed: 'bg-emerald-100 text-emerald-700',
+    in_progress: 'bg-orange-100 text-orange-700',
+    completed: 'bg-green-100 text-green-700',
+    cancelled: 'bg-red-100 text-red-700',
+    rejected: 'bg-red-100 text-red-700',
+    driver_denied: 'bg-red-100 text-red-700',
+};
 
 export default function AdminDashboard() {
     const [kpis, setKpis] = useState<DashboardKPI[]>([]);
     const [upcomingTasks, setUpcomingTasks] = useState<DashboardTask[]>([]);
     const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetric[]>([]);
+    const [recentActivity, setRecentActivity] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [kpisLoading, setKpisLoading] = useState(true);
     const [tasksLoading, setTasksLoading] = useState(true);
     const [metricsLoading, setMetricsLoading] = useState(true);
+    const [activityLoading, setActivityLoading] = useState(true);
 
     // Fetch KPIs from API
     useEffect(() => {
@@ -75,6 +89,14 @@ export default function AdminDashboard() {
         };
 
         fetchMetrics();
+    }, []);
+
+    // Fetch recent trip activity
+    useEffect(() => {
+        reservationService.getRecentActivity(8)
+            .then(setRecentActivity)
+            .catch(() => setRecentActivity([]))
+            .finally(() => setActivityLoading(false));
     }, []);
 
     // Convert API tasks to TaskCard format
@@ -150,8 +172,8 @@ export default function AdminDashboard() {
                 </Link>
             </div>
 
-            {/* Performance Metrics & Upcoming Tasks */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Performance Metrics, Tasks & Trip Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Performance Metrics */}
                 <div className="bg-white rounded-lg border border-slate-200 p-6">
                     <div className="flex items-center justify-between mb-5">
@@ -215,6 +237,49 @@ export default function AdminDashboard() {
                         ) : (
                             convertTasksForCard(upcomingTasks).map((task) => (
                                 <TaskCard key={task.id} task={task} />
+                            ))
+                        )}
+                    </div>
+                </div>
+
+                {/* Recent Trip Activity */}
+                <div className="bg-white rounded-lg border border-slate-200 p-6">
+                    <div className="flex items-center justify-between mb-5">
+                        <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+                            <Activity className="h-4 w-4 text-emerald-600" />
+                            Trip Activity
+                        </h3>
+                        <Link href="/reservations" className="text-emerald-600 hover:text-emerald-700 text-xs font-semibold">
+                            View all
+                        </Link>
+                    </div>
+                    <div className="space-y-3">
+                        {activityLoading ? (
+                            <p className="text-sm text-slate-500">Loading activity...</p>
+                        ) : recentActivity.length === 0 ? (
+                            <p className="text-sm text-slate-500">No recent activity</p>
+                        ) : (
+                            recentActivity.map((log) => (
+                                <Link
+                                    key={log.id}
+                                    href={`/reservations/${log.reservation_id}`}
+                                    className="block p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors"
+                                >
+                                    <div className="flex items-center justify-between gap-2 mb-1">
+                                        <span className="text-xs font-semibold text-slate-700 truncate">
+                                            #{log.reservation_number} — {log.passenger_name}
+                                        </span>
+                                        <span className={`flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[log.to_status] ?? 'bg-slate-100 text-slate-600'}`}>
+                                            {log.to_status.replace(/_/g, ' ')}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-slate-500">
+                                        by {log.changed_by_name} · {new Date(log.created_at).toLocaleString()}
+                                    </p>
+                                    {log.note && (
+                                        <p className="text-xs text-slate-400 italic mt-0.5 truncate">"{log.note}"</p>
+                                    )}
+                                </Link>
                             ))
                         )}
                     </div>

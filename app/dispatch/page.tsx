@@ -29,6 +29,7 @@ function DispatchContent() {
     handleViewTrip,
     handleAssignDriver,
     handleNewTrip,
+    loading
   } = useDispatchData();
 
   return (
@@ -67,7 +68,22 @@ function DispatchContent() {
           />
 
           <div className="overflow-x-auto">
-            {viewMode === "table" ? (
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800"></div>
+                <span className="ml-3 text-slate-600 font-medium">Loading dispatch board...</span>
+              </div>
+            ) : trips.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="bg-slate-100 p-4 rounded-full mb-4 text-slate-400">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-slate-800">No trips found</h3>
+                <p className="text-slate-500 max-w-sm mx-auto mt-1">There are no reservations matching your current search and filters.</p>
+              </div>
+            ) : viewMode === "table" ? (
               <TripTable
                 trips={trips}
                 onViewTrip={handleViewTrip}

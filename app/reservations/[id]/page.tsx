@@ -28,6 +28,7 @@ import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import reservationService from '@/app/services/reservationService';
 import { Reservation } from '@/types/reservation.types';
+import TripStatusLog from '@/components/TripStatusLog';
 
 export default function ReservationDetailPage() {
     const params = useParams();
@@ -105,7 +106,7 @@ export default function ReservationDetailPage() {
         const statusConfig = {
             'pending': { bg: 'bg-amber-100', text: 'text-amber-700', icon: Clock, label: 'Pending' },
             'assigned': { bg: 'bg-blue-100', text: 'text-blue-700', icon: Car, label: 'Assigned' },
-            'in_progress': { bg: 'bg-purple-100', text: 'text-purple-700', icon: Car, label: 'In Progress' },
+            'in_progress': { bg: 'bg-purple-100', text: 'text-purple-700', icon: Car, label: 'On Trip' },
             'completed': { bg: 'bg-green-100', text: 'text-green-700', icon: CheckCircle, label: 'Completed' },
             'cancelled': { bg: 'bg-red-100', text: 'text-red-700', icon: XCircle, label: 'Cancelled' }
         };
@@ -208,7 +209,7 @@ export default function ReservationDetailPage() {
                                             disabled={reservation.reservation_status !== 'assigned'}
                                             className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            Mark as In Progress
+                                            Mark as On Trip
                                         </button>
                                         <button
                                             onClick={() => handleStatusUpdate('completed')}
@@ -344,6 +345,15 @@ export default function ReservationDetailPage() {
                                             )}
                                         </div>
                                     </div>
+                                </div>
+
+                                {/* Status History */}
+                                <div className="bg-white rounded-xl border border-slate-200 p-6">
+                                    <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                        <Clock className="h-5 w-5 mr-2 text-emerald-600" />
+                                        Status History
+                                    </h2>
+                                    <TripStatusLog reservationId={reservation.id} />
                                 </div>
                             </div>
 

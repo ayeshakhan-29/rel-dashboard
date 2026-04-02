@@ -3,20 +3,7 @@
 import React from "react";
 import { MapPin, Clock } from "lucide-react";
 
-interface Trip {
-  id: string;
-  client: string;
-  passengers: number;
-  route: string;
-  dateTime: string;
-  vehicle: string;
-  driver: string;
-  driverStatus: string;
-  payment: { method: string; status: string };
-  price: number;
-  status: string;
-  actions: string[];
-}
+import { Trip } from "./useDispatchData";
 
 interface TripTableProps {
   trips: Trip[];
@@ -75,17 +62,15 @@ export default function TripTable({ trips, onViewTrip, onAssignDriver }: TripTab
               </td>
               <td className="py-3 px-4 text-slate-700">{trip.vehicle}</td>
               <td className="py-3 px-4">
-                {trip.driver ? (
-                  <>
-                    <div className="font-medium text-slate-800">{trip.driver}</div>
-                    <div className="text-xs text-emerald-600">{trip.driverStatus}</div>
-                  </>
-                ) : (
+                <div className={`font-medium ${trip.driver ? "text-slate-800" : "text-slate-400 italic"}`}>
+                  {trip.driver || "Unassigned"}
+                </div>
+                {!trip.driver && (
                   <button
                     onClick={() => onAssignDriver(trip.id)}
-                    className="px-2.5 py-1 text-xs font-medium bg-slate-800 hover:bg-slate-900 text-white rounded transition-colors"
+                    className="mt-1 text-[10px] font-bold text-emerald-600 uppercase tracking-wider hover:text-emerald-700 transition-colors"
                   >
-                    Assign
+                    Assign Driver
                   </button>
                 )}
               </td>

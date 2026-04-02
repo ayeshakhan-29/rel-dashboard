@@ -41,7 +41,7 @@ const statusOptions = [
   { value: "scheduled", label: "Scheduled", color: "text-yellow-600" },
   { value: "confirmed", label: "Confirmed", color: "text-purple-600" },
   { value: "dispatched", label: "Dispatched", color: "text-blue-600" },
-  { value: "in_progress", label: "In Progress", color: "text-orange-600" },
+  { value: "in_progress", label: "On Trip", color: "text-orange-600" },
   { value: "completed", label: "Completed", color: "text-green-600" },
   { value: "cancelled", label: "Cancelled", color: "text-red-600" }
 ];
@@ -280,7 +280,7 @@ export default function TripManagementModal({
                   <div className="flex items-start space-x-3">
                     <div className="w-5 h-5 border-2 border-blue-400 rounded-full mt-1 animate-pulse"></div>
                     <div>
-                      <p className="text-white font-medium">In Progress</p>
+                      <p className="text-white font-medium">On Trip</p>
                       <p className="text-sm text-gray-400">Currently active</p>
                     </div>
                   </div>

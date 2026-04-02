@@ -22,7 +22,7 @@ export interface Reservation {
     // Booking Details
     price: number;
     payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
-    reservation_status: 'pending' | 'assigned' | 'in_progress' | 'completed' | 'cancelled';
+    reservation_status: 'pending' | 'assigned' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'rejected' | 'pending_driver_approval' | 'driver_denied';
     
     // Assignment
     assigned_driver_id: number | null;

@@ -50,15 +50,25 @@ interface NavigationItem {
     divider?: boolean;
     adminOnly?: boolean;
     employeeOnly?: boolean;
+    driverOnly?: boolean;
+    notDriverOnly?: boolean;
     children?: NavigationItem[];
 }
 
 const navigationItems: NavigationItem[] = [
-    { name: 'Dashboard', href: '/', icon: Home },
+    { name: 'Dashboard', href: '/', icon: Home, notDriverOnly: true },
+    { name: 'Dashboard', href: '/', icon: Home, driverOnly: true },
     { name: 'Profile', href: '/?tab=profile', icon: User, employeeOnly: true },
     { name: 'Notifications', href: '/?tab=notifications', icon: Bell, employeeOnly: true },
     { name: 'Tasks', href: '/?tab=tasks', icon: CheckSquare, employeeOnly: true },
     { name: 'Attendance', href: '/?tab=attendance', icon: Clock, employeeOnly: true },
+
+    {
+        name: 'My Trips',
+        href: '/driver/trips',
+        icon: MapPin,
+        driverOnly: true
+    },
 
     {
         name: 'Reservations',
@@ -86,6 +96,17 @@ const navigationItems: NavigationItem[] = [
     },
 
     {
+        name: 'Driver Management',
+        href: '/admin/drivers',
+        icon: UserPlus,
+        adminOnly: true,
+        children: [
+            { name: 'Register Driver', href: '/admin/drivers/register', icon: Plus },
+            { name: 'Drivers', href: '/admin/drivers', icon: Users },
+        ],
+    },
+
+    {
         name: 'Attendance Admin',
         href: '/admin/attendance',
         icon: Clock,
@@ -108,7 +129,7 @@ const navigationItems: NavigationItem[] = [
 function SidebarContent({ isOpen, onClose }: SidebarProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const { user, isAdmin, isEmployee, logout } = useAuth();
+    const { user, isAdmin, isEmployee, isDriver, logout } = useAuth();
     const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
         'Attendance Admin': true // Default expanded
     });
@@ -170,6 +191,8 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
         .filter(item => {
             if (item.adminOnly && !isAdmin) return false;
             if (item.employeeOnly && !isEmployee) return false;
+            if (item.driverOnly && !isDriver) return false;
+            if (item.notDriverOnly && isDriver) return false;
             return true;
         })
         .map(item => {
@@ -179,6 +202,7 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                     children: item.children.filter(child => {
                         if (child.adminOnly && !isAdmin) return false;
                         if (child.employeeOnly && !isEmployee) return false;
+                        if (child.driverOnly && !isDriver) return false;
                         return true;
                     })
                 };

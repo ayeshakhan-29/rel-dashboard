@@ -69,6 +69,26 @@ class ReservationService {
         return response.data;
     }
 
+    async getDriverTrips(params: { status?: string; page?: number; limit?: number }): Promise<PaginatedResponse<Reservation>> {
+        const response = await api.get('/reservations/driver/trips', { params });
+        return response.data;
+    }
+
+    async updateReservationStatus(id: number, status: string): Promise<Reservation> {
+        const response = await api.patch(`/reservations/${id}/status`, { status });
+        return response.data.data;
+    }
+
+    async getStatusLogs(reservationId: number): Promise<any[]> {
+        const response = await api.get(`/reservations/${reservationId}/status-logs`);
+        return response.data.data;
+    }
+
+    async getRecentActivity(limit = 10): Promise<any[]> {
+        const response = await api.get('/reservations/activity/recent', { params: { limit } });
+        return response.data.data;
+    }
+
     /**
      * Get available vehicles
      */
@@ -115,6 +135,10 @@ class ReservationService {
             }
         });
         return response.data.data;
+    }
+
+    async deleteReservation(id: number): Promise<void> {
+        await api.delete(`/reservations/${id}`);
     }
 }
 
