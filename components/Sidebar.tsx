@@ -90,7 +90,6 @@ const navigationItems: NavigationItem[] = [
             { name: 'Dispatch Board', href: '/dispatch', icon: Car },
             { name: 'Assign Drivers', href: '/dispatch/assign', icon: Users },
             { name: 'Active Trips', href: '/dispatch/active', icon: MapPin },
-            { name: 'Drivers', href: '/dispatch/drivers', icon: Users },
             { name: 'Passengers', href: '/dispatch/passengers', icon: User },
         ],
     },
