@@ -56,9 +56,8 @@ export default function CreateReservationPage() {
         pickup_time: '',
         vehicle_type_id: 0,
         passenger_count: 1,
-        luggage_count: 0,
-
-        price: 0,
+        luggage_count: null as number | null,
+        price: null as number | null,
         payment_status: 'pending' as 'pending' | 'paid',
 
         contract_start_date: '',
@@ -109,10 +108,10 @@ export default function CreateReservationPage() {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        let processedValue: string | number = value;
+        let processedValue: string | number | null = value;
 
         if (['vehicle_type_id', 'passenger_count', 'luggage_count', 'price', 'daily_rate', 'hourly_rate', 'hours', 'distance'].includes(name)) {
-            processedValue = value === '' ? 0 : Number(value);
+            processedValue = value === '' ? null : Number(value);
         }
 
         setFormData(prev => ({ ...prev, [name]: processedValue }));
@@ -144,7 +143,7 @@ export default function CreateReservationPage() {
         if (!formData.vehicle_type_id || formData.vehicle_type_id === 0) {
             newErrors.vehicle_type_id = 'Vehicle type is required';
         }
-        if (formData.price <= 0) newErrors.price = 'Price must be greater than 0';
+        if (!formData.price || formData.price <= 0) newErrors.price = 'Price must be greater than 0';
 
         if (formData.trip_type === 'contract') {
             if (!formData.contract_start_date) newErrors.contract_start_date = 'Contract start date is required';
@@ -497,7 +496,7 @@ export default function CreateReservationPage() {
                                             <input
                                                 type="number"
                                                 name="luggage_count"
-                                                value={formData.luggage_count}
+                                                value={formData.luggage_count ?? ''}
                                                 onChange={handleInputChange}
                                                 min="0"
                                                 max="10"
@@ -637,7 +636,7 @@ export default function CreateReservationPage() {
                                             <input
                                                 type="number"
                                                 name="price"
-                                                value={formData.price}
+                                                value={formData.price ?? ''}
                                                 onChange={handleInputChange}
                                                 min="0"
                                                 step="0.01"

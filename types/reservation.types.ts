@@ -17,10 +17,10 @@ export interface Reservation {
     pickup_time: string;
     vehicle_type_id: number;
     passenger_count: number;
-    luggage_count: number;
+    luggage_count: number | null;
     
     // Booking Details
-    price: number;
+    price: number | null;
     payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
     reservation_status: 'pending' | 'assigned' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'rejected' | 'pending_driver_approval' | 'driver_denied';
     
@@ -93,8 +93,8 @@ export interface CreateReservationData {
     pickup_time: string;
     vehicle_type_id: number;
     passenger_count: number;
-    luggage_count: number;
-    price: number;
+    luggage_count: number | null;
+    price: number | null;
     payment_status?: 'pending' | 'paid';
     contract_start_date?: string;
     contract_end_date?: string;
