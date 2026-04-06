@@ -49,6 +49,8 @@ interface NavigationItem {
     icon: any;
     divider?: boolean;
     adminOnly?: boolean;
+    teamOnly?: boolean;
+    adminOrTeamOnly?: boolean;
     employeeOnly?: boolean;
     driverOnly?: boolean;
     notDriverOnly?: boolean;
@@ -74,10 +76,11 @@ const navigationItems: NavigationItem[] = [
         name: 'Reservations',
         href: '/reservations',
         icon: Ticket,
-        adminOnly: true,
+        adminOrTeamOnly: true,
         children: [
             { name: 'Create Reservation', href: '/reservations/create', icon: Plus },
             { name: 'Manage Reservations', href: '/reservations', icon: ListTodo },
+            { name: 'Assign Drivers', href: '/dispatch/assign', icon: Users },
         ],
     },
 
@@ -85,7 +88,7 @@ const navigationItems: NavigationItem[] = [
         name: 'Dispatch Board',
         href: '/dispatch',
         icon: Car,
-        adminOnly: true,
+        adminOrTeamOnly: true,
         children: [
             { name: 'Dispatch Board', href: '/dispatch', icon: Car },
             { name: 'Assign Drivers', href: '/dispatch/assign', icon: Users },
@@ -98,10 +101,20 @@ const navigationItems: NavigationItem[] = [
         name: 'Driver Management',
         href: '/admin/drivers',
         icon: UserPlus,
+        adminOrTeamOnly: true,
+        children: [
+            { name: 'Register Driver', href: '/admin/drivers/register', icon: Plus, adminOnly: true },
+            { name: 'Drivers', href: '/admin/drivers', icon: Users },
+        ],
+    },
+    {
+        name: 'Team Management',
+        href: '/admin/team',
+        icon: UsersIcon,
         adminOnly: true,
         children: [
-            { name: 'Register Driver', href: '/admin/drivers/register', icon: Plus },
-            { name: 'Drivers', href: '/admin/drivers', icon: Users },
+            { name: 'Register Team Member', href: '/admin/team/register', icon: Plus },
+            { name: 'Manage Team', href: '/admin/team', icon: UsersIcon },
         ],
     },
 
@@ -117,8 +130,6 @@ const navigationItems: NavigationItem[] = [
     },
 
     { name: 'Calendar', href: '/admin/calendar', icon: Calendar, adminOnly: true },
-    { name: 'Tasks', href: '/admin/tasks', icon: CheckSquare, adminOnly: true },
-    { name: 'Add Task', href: '/admin/create-task', icon: Plus, adminOnly: true },
     { name: 'Emails', href: '/admin/emails', icon: Mail, adminOnly: true },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3, adminOnly: true },
     { name: 'Form Configuration', href: '/admin/form-configuration', icon: FileText, adminOnly: true },
@@ -128,7 +139,7 @@ const navigationItems: NavigationItem[] = [
 function SidebarContent({ isOpen, onClose }: SidebarProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const { user, isAdmin, isEmployee, isDriver, logout } = useAuth();
+    const { user, isAdmin, isTeam, isEmployee, isDriver, logout } = useAuth();
     const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
         'Attendance Admin': true // Default expanded
     });
@@ -153,7 +164,7 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
         });
 
         setExpandedMenus(() => activeSubmenus);
-    }, [pathname, searchParams, isAdmin, isEmployee]);
+    }, [pathname, searchParams, isAdmin, isTeam, isEmployee]);
 
     // Fetch unread notifications count for employees
     useEffect(() => {
@@ -189,6 +200,8 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
     const filteredNavigationItems = navigationItems
         .filter(item => {
             if (item.adminOnly && !isAdmin) return false;
+            if (item.teamOnly && !isTeam) return false;
+            if (item.adminOrTeamOnly && !(isAdmin || isTeam)) return false;
             if (item.employeeOnly && !isEmployee) return false;
             if (item.driverOnly && !isDriver) return false;
             if (item.notDriverOnly && isDriver) return false;
@@ -200,6 +213,8 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                     ...item,
                     children: item.children.filter(child => {
                         if (child.adminOnly && !isAdmin) return false;
+                        if (child.teamOnly && !isTeam) return false;
+                        if (child.adminOrTeamOnly && !(isAdmin || isTeam)) return false;
                         if (child.employeeOnly && !isEmployee) return false;
                         if (child.driverOnly && !isDriver) return false;
                         return true;
@@ -269,8 +284,10 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                         const isExpanded = expandedMenus[item.name];
                         const active = isActive(item.href) || (hasChildren && item.children?.some(child => isActive(child.href)));
 
+                        const uniqueKey = `${item.name}-${item.href}-${index}`;
+
                         return (
-                            <div key={item.name}>
+                            <div key={uniqueKey}>
                                 {item.divider && index > 0 && (
                                     <div className="my-2 border-t border-slate-200"></div>
                                 )}
@@ -305,7 +322,7 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                                                     const childActive = isActive(child.href);
                                                     return (
                                                         <Link
-                                                            key={child.name}
+                                                            key={`${child.name}-${child.href}`}
                                                             href={child.href}
                                                             onClick={onClose}
                                                             className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${childActive

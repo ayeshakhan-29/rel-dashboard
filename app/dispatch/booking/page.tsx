@@ -1,9 +1,8 @@
 "use client";
-
 import React, { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
-import PrivateRoute from "../../components/auth/PrivateRoute";
+import AdminRoute from "../../components/auth/AdminRoute";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { Users, MapPin, Calendar, DollarSign, User, Phone, Mail } from "lucide-react";
@@ -382,8 +381,8 @@ function NewBookingContent() {
 
 export default function NewBooking() {
   return (
-    <PrivateRoute>
+    <AdminRoute>
       <NewBookingContent />
-    </PrivateRoute>
+    </AdminRoute>
   );
 }

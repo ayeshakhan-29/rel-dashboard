@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
-import PrivateRoute from "@/app/components/auth/PrivateRoute";
+import AdminRoute from "@/app/components/auth/AdminRoute";
 import {
   MapPin,
   Clock,
@@ -325,8 +325,8 @@ function TripCard({ trip }: { trip: ActiveTrip }) {
 
 export default function ActiveTripsPage() {
   return (
-    <PrivateRoute>
+    <AdminRoute>
       <ActiveTripsContent />
-    </PrivateRoute>
+    </AdminRoute>
   );
 }

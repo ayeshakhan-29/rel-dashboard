@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
-import PrivateRoute from "../components/auth/PrivateRoute";
+import AdminRoute from "../components/auth/AdminRoute";
 import { useAuth } from "../context/AuthContext";
 import DispatchHeader from "@/components/dispatch/DispatchHeader";
 import TripFilters from "@/components/dispatch/TripFilters";
@@ -105,8 +105,8 @@ function DispatchContent() {
 
 export default function DispatchBoard() {
   return (
-    <PrivateRoute>
+    <AdminRoute>
       <DispatchContent />
-    </PrivateRoute>
+    </AdminRoute>
   );
 }

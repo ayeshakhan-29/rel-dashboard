@@ -21,6 +21,7 @@ interface AuthContextType {
     updateUser: (userData: User) => void;
     isAuthenticated: boolean;
     isAdmin: boolean;
+    isTeam: boolean;
     isEmployee: boolean;
     isDriver: boolean;
     isPassenger: boolean;
@@ -164,6 +165,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         updateUser,
         isAuthenticated: !!user,
         isAdmin: user?.role === 'admin',
+        isTeam: user?.role === 'team',
         isEmployee: user?.role === 'employee' || user?.role === 'team',
         isDriver: user?.role === 'driver',
         isPassenger: user?.role === 'passenger',

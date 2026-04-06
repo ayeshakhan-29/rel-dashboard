@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/app/context/AuthContext';
 import {
     Plus,
     Search,
@@ -75,6 +76,8 @@ export default function ReservationsContent() {
             setLoading(false);
         }
     };
+
+    const { isAdmin } = useAuth();
 
     const handleFilterChange = (key: string, value: string) => {
         setFilters(prev => ({ ...prev, [key]: value }));
@@ -408,16 +411,18 @@ export default function ReservationsContent() {
                                                             </div>
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    setConfirmDeleteId(res.id);
-                                                                }}
-                                                                className="text-slate-400 hover:text-rose-600 transition-colors"
-                                                                title="Delete reservation"
-                                                            >
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </button>
+                                                            {isAdmin && (
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setConfirmDeleteId(res.id);
+                                                                    }}
+                                                                    className="text-slate-400 hover:text-rose-600 transition-colors"
+                                                                    title="Delete reservation"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </button>
+                                                            )}
                                                         </td>
                                                     </tr>
                                                 ))}

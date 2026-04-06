@@ -4,31 +4,19 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
-import { useAuth } from '@/app/context/AuthContext';
 import AdminRoute from '@/app/components/auth/AdminRoute';
-import { registerDriver } from '@/app/services/driversService';
+import { createUser } from '@/app/services/userService';
 import { UserPlus, Loader2, AlertCircle, CheckCircle2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
-import { useEffect } from 'react';
 
-export default function RegisterDriverPage() {
+export default function RegisterTeamMemberPage() {
     const router = useRouter();
-    const { isAdmin } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(false);
-
-    useEffect(() => {
-        if (!isAdmin) {
-            router.push('/dashboard');
-        }
-    }, [isAdmin, router]);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        phone: '',
         password: '',
         confirmPassword: '',
-        licenseNumber: '',
-        licenseExpiry: '',
-        vehicleId: ''
+        role: 'team' as const
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [apiError, setApiError] = useState<string | null>(null);
@@ -37,7 +25,7 @@ export default function RegisterDriverPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
@@ -51,7 +39,7 @@ export default function RegisterDriverPage() {
     const validate = () => {
         const validationErrors: Record<string, string> = {};
 
-        if (!formData.name.trim()) validationErrors.name = 'Driver name is required';
+        if (!formData.name.trim()) validationErrors.name = 'Name is required';
         if (!formData.email.trim()) {
             validationErrors.email = 'Email is required';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -62,7 +50,6 @@ export default function RegisterDriverPage() {
         if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
             validationErrors.confirmPassword = 'Passwords do not match';
         }
-        if (!formData.licenseNumber.trim()) validationErrors.licenseNumber = 'License number is required';
 
         setErrors(validationErrors);
         return Object.keys(validationErrors).length === 0;
@@ -78,15 +65,20 @@ export default function RegisterDriverPage() {
 
         try {
             setLoading(true);
-            await registerDriver(formData);
+            await createUser({
+                name: formData.name,
+                email: formData.email,
+                password: formData.password,
+                role: formData.role
+            });
             setSuccess(true);
 
             setTimeout(() => {
-                router.push('/admin/drivers');
+                router.push('/admin/team');
             }, 1600);
         } catch (error: any) {
-            console.error('Driver registration error:', error);
-            setApiError(error.response?.data?.message || 'Failed to register driver.');
+            console.error('Team member registration error:', error);
+            setApiError(error.response?.data?.message || 'Failed to register team member.');
         } finally {
             setLoading(false);
         }
@@ -98,17 +90,17 @@ export default function RegisterDriverPage() {
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
                 <div className="flex-1 flex flex-col overflow-hidden">
-                    <Header title="Register Driver" onMenuClick={() => setSidebarOpen(true)} />
+                    <Header title="Register Team Member" onMenuClick={() => setSidebarOpen(true)} />
 
                     <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
                         <div className="max-w-3xl mx-auto">
                             <button
                                 type="button"
-                                onClick={() => router.push('/admin/drivers')}
+                                onClick={() => router.push('/admin/team')}
                                 className="inline-flex items-center text-slate-600 hover:text-slate-900 mb-6 transition-colors"
                             >
                                 <ArrowLeft className="h-4 w-4 mr-2" />
-                                Back to drivers
+                                Back to Team Management
                             </button>
 
                             {success && (
@@ -116,8 +108,8 @@ export default function RegisterDriverPage() {
                                     <div className="flex items-start gap-3">
                                         <CheckCircle2 className="h-5 w-5 text-emerald-600" />
                                         <div>
-                                            <p className="font-semibold text-emerald-900">Driver registered successfully.</p>
-                                            <p className="text-sm text-emerald-700">You will be redirected to the Drivers page shortly.</p>
+                                            <p className="font-semibold text-emerald-900">Team member registered successfully.</p>
+                                            <p className="text-sm text-emerald-700">You will be redirected shortly.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -138,16 +130,16 @@ export default function RegisterDriverPage() {
                                         <UserPlus className="h-6 w-6" />
                                     </div>
                                     <div>
-                                        <h1 className="text-2xl font-semibold text-slate-900">Register Driver</h1>
+                                        <h1 className="text-2xl font-semibold text-slate-900">Register Team Member</h1>
                                         <p className="text-sm text-slate-500">
-                                            Add a new driver profile for dispatch and trip assignments.
+                                            Add a new staff member to the platform.
                                         </p>
                                     </div>
                                 </div>
 
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
+                                        <div className="md:col-span-2">
                                             <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
                                                 Full Name <span className="text-red-500">*</span>
                                             </label>
@@ -157,12 +149,12 @@ export default function RegisterDriverPage() {
                                                 value={formData.name}
                                                 onChange={handleChange}
                                                 className={`w-full rounded-2xl border px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 ${errors.name ? 'border-red-300 bg-red-50' : 'border-slate-200 bg-white'}`}
-                                                placeholder="Driver full name"
+                                                placeholder="Enter full name"
                                             />
                                             {errors.name && <p className="mt-2 text-xs text-red-600">{errors.name}</p>}
                                         </div>
 
-                                        <div>
+                                        <div className="md:col-span-2">
                                             <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
                                                 Email Address <span className="text-red-500">*</span>
                                             </label>
@@ -173,66 +165,22 @@ export default function RegisterDriverPage() {
                                                 value={formData.email}
                                                 onChange={handleChange}
                                                 className={`w-full rounded-2xl border px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 ${errors.email ? 'border-red-300 bg-red-50' : 'border-slate-200 bg-white'}`}
-                                                placeholder="driver@example.com"
+                                                placeholder="staff@example.com"
                                             />
                                             {errors.email && <p className="mt-2 text-xs text-red-600">{errors.email}</p>}
                                         </div>
 
-                                        <div>
-                                            <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">
-                                                Phone Number
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                Assigned Role
                                             </label>
                                             <input
-                                                id="phone"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handleChange}
-                                                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                                                placeholder="+1 555 123 4567"
+                                                type="text"
+                                                disabled
+                                                value="Team"
+                                                className="w-full rounded-2xl border px-4 py-3 text-sm text-slate-500 border-slate-200 bg-slate-100 cursor-not-allowed"
                                             />
-                                        </div>
-
-                                        <div>
-                                            <label htmlFor="vehicleId" className="block text-sm font-medium text-slate-700 mb-2">
-                                                Vehicle ID (optional)
-                                            </label>
-                                            <input
-                                                id="vehicleId"
-                                                name="vehicleId"
-                                                value={formData.vehicleId}
-                                                onChange={handleChange}
-                                                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                                                placeholder="123"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label htmlFor="licenseNumber" className="block text-sm font-medium text-slate-700 mb-2">
-                                                License Number <span className="text-red-500">*</span>
-                                            </label>
-                                            <input
-                                                id="licenseNumber"
-                                                name="licenseNumber"
-                                                value={formData.licenseNumber}
-                                                onChange={handleChange}
-                                                className={`w-full rounded-2xl border px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 ${errors.licenseNumber ? 'border-red-300 bg-red-50' : 'border-slate-200 bg-white'}`}
-                                                placeholder="DL12345"
-                                            />
-                                            {errors.licenseNumber && <p className="mt-2 text-xs text-red-600">{errors.licenseNumber}</p>}
-                                        </div>
-
-                                        <div>
-                                            <label htmlFor="licenseExpiry" className="block text-sm font-medium text-slate-700 mb-2">
-                                                License Expiry
-                                            </label>
-                                            <input
-                                                id="licenseExpiry"
-                                                name="licenseExpiry"
-                                                type="date"
-                                                value={formData.licenseExpiry}
-                                                onChange={handleChange}
-                                                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                                            />
+                                            <p className="mt-1 text-xs text-slate-500">This role is automatically assigned for new staff members.</p>
                                         </div>
 
                                         <div>
@@ -247,7 +195,7 @@ export default function RegisterDriverPage() {
                                                     value={formData.password}
                                                     onChange={handleChange}
                                                     className={`w-full rounded-2xl border px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 ${errors.password ? 'border-red-300 bg-red-50' : 'border-slate-200 bg-white'}`}
-                                                    placeholder="Create secure password"
+                                                    placeholder="Create password"
                                                 />
                                                 <button
                                                     type="button"
@@ -272,7 +220,7 @@ export default function RegisterDriverPage() {
                                                     value={formData.confirmPassword}
                                                     onChange={handleChange}
                                                     className={`w-full rounded-2xl border px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 ${errors.confirmPassword ? 'border-red-300 bg-red-50' : 'border-slate-200 bg-white'}`}
-                                                    placeholder="Confirm password"
+                                                    placeholder="Repeat password"
                                                 />
                                                 <button
                                                     type="button"
@@ -289,7 +237,7 @@ export default function RegisterDriverPage() {
                                     <div className="flex items-center justify-end gap-3 pt-4">
                                         <button
                                             type="button"
-                                            onClick={() => router.push('/admin/drivers')}
+                                            onClick={() => router.push('/admin/team')}
                                             className="rounded-2xl border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                                         >
                                             Cancel
@@ -304,7 +252,7 @@ export default function RegisterDriverPage() {
                                             ) : (
                                                 <UserPlus className="mr-2 h-4 w-4" />
                                             )}
-                                            Register Driver
+                                            Register Staff Member
                                         </button>
                                     </div>
                                 </form>

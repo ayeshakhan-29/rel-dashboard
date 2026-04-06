@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
+import { useAuth } from '@/app/context/AuthContext';
 import AdminRoute from '@/app/components/auth/AdminRoute';
 import { getDrivers, deleteDriver, updateDriver, Driver, UpdateDriverData } from '@/app/services/driversService';
 import { Plus, Loader2, Trash2, Edit, X, Save, LayoutGrid, List, Phone, Mail, User, Calendar, CheckCircle, Clock, XCircle } from 'lucide-react';
 
 export default function DriversPage() {
     const router = useRouter();
+    const { isAdmin } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [drivers, setDrivers] = useState<Driver[]>([]);
     const [loading, setLoading] = useState(true);
@@ -141,14 +143,16 @@ export default function DriversPage() {
                                             Cards
                                         </button>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => router.push('/admin/drivers/register')}
-                                        className="inline-flex items-center rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
-                                    >
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Register Driver
-                                    </button>
+                                    {isAdmin && (
+                                        <button
+                                            type="button"
+                                            onClick={() => router.push('/admin/drivers/register')}
+                                            className="inline-flex items-center rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+                                        >
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Register Driver
+                                        </button>
+                                    )}
                                 </div>
                             </div>
 
@@ -221,14 +225,16 @@ export default function DriversPage() {
                                                                         >
                                                                             <Edit className="h-4 w-4" />
                                                                         </button>
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => handleDelete(driver.id)}
-                                                                            disabled={deletingDriverId === driver.id}
-                                                                            className="inline-flex items-center justify-center rounded-full border border-red-100 bg-white px-3 py-2 text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-                                                                        >
-                                                                            <Trash2 className="h-4 w-4" />
-                                                                        </button>
+                                                                        {isAdmin && (
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handleDelete(driver.id)}
+                                                                                disabled={deletingDriverId === driver.id}
+                                                                                className="inline-flex items-center justify-center rounded-full border border-red-100 bg-white px-3 py-2 text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                                                            >
+                                                                                <Trash2 className="h-4 w-4" />
+                                                                            </button>
+                                                                        )}
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -297,12 +303,14 @@ export default function DriversPage() {
                                                         <Edit className="mr-2 h-4 w-4" />
                                                         Edit
                                                     </button>
-                                                    <button 
-                                                        onClick={() => handleDelete(driver.id)}
-                                                        className="inline-flex items-center justify-center rounded-2xl border border-red-100 bg-white px-3 py-2.5 text-red-600 transition hover:bg-red-50"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </button>
+                                                    {isAdmin && (
+                                                        <button 
+                                                            onClick={() => handleDelete(driver.id)}
+                                                            className="inline-flex items-center justify-center rounded-2xl border border-red-100 bg-white px-3 py-2.5 text-red-600 transition hover:bg-red-50"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
                                         ))}
