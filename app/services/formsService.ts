@@ -3,6 +3,9 @@ import api from './api';
 export interface Booking {
     id: string;
     booking_ref: string;
+    /** pending | paid | failed | refunded — set when Stripe payment completes */
+    payment_status?: 'pending' | 'paid' | 'failed' | 'refunded';
+    stripe_session_id?: string | null;
     service_class: string;
     event_type: string;
     hours: number;

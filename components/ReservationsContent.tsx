@@ -43,6 +43,7 @@ export default function ReservationsContent() {
     const [filters, setFilters] = useState({
         status: searchParams.get('status') || '',
         booking_type: searchParams.get('booking_type') || '',
+        payment_status: searchParams.get('payment_status') || '',
         start_date: '',
         end_date: '',
         search: ''
@@ -54,7 +55,7 @@ export default function ReservationsContent() {
 
     useEffect(() => {
         fetchReservations();
-    }, [pagination.page, filters.status, filters.booking_type, filters.search]);
+    }, [pagination.page, filters.status, filters.booking_type, filters.payment_status, filters.search]);
 
     const fetchReservations = async () => {
         setLoading(true);
@@ -64,6 +65,7 @@ export default function ReservationsContent() {
                 limit: pagination.limit,
                 status: filters.status || undefined,
                 booking_type: filters.booking_type || undefined,
+                payment_status: filters.payment_status || undefined,
                 start_date: filters.start_date || undefined,
                 end_date: filters.end_date || undefined,
                 search: filters.search || undefined
@@ -94,6 +96,7 @@ export default function ReservationsContent() {
         setFilters({
             status: '',
             booking_type: '',
+            payment_status: '',
             start_date: '',
             end_date: '',
             search: ''
@@ -140,16 +143,18 @@ export default function ReservationsContent() {
         );
     };
 
-    const getPaymentStatusBadge = (status: string) => {
-        const config = {
-            'pending': 'bg-amber-100 text-amber-700',
-            'paid': 'bg-green-100 text-green-700',
-            'failed': 'bg-red-100 text-red-700',
-            'refunded': 'bg-slate-100 text-slate-700'
+    const getPaymentStatusBadge = (status: string | undefined) => {
+        const key = (status || 'pending').toLowerCase();
+        const config: Record<string, string> = {
+            pending: 'bg-amber-100 text-amber-700',
+            paid: 'bg-green-100 text-green-700',
+            failed: 'bg-red-100 text-red-700',
+            refunded: 'bg-slate-100 text-slate-700'
         };
+        const label = key.charAt(0).toUpperCase() + key.slice(1);
         return (
-            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${config[status as keyof typeof config]}`}>
-                {status}
+            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${config[key] ?? 'bg-slate-100 text-slate-600'}`}>
+                {label}
             </span>
         );
     };
@@ -184,7 +189,7 @@ export default function ReservationsContent() {
                                 >
                                     <Filter className="h-4 w-4 mr-2" />
                                     Filters
-                                    {(filters.status || filters.booking_type || filters.start_date || filters.end_date) && (
+                                    {(filters.status || filters.booking_type || filters.payment_status || filters.start_date || filters.end_date) && (
                                         <span className="ml-2 px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-xs">
                                             Active
                                         </span>
@@ -201,7 +206,7 @@ export default function ReservationsContent() {
                             </div>
 
                             {showFilters && (
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                                     <div>
                                         <label className="block text-xs font-medium text-slate-700 mb-1">
                                             Status
@@ -233,6 +238,23 @@ export default function ReservationsContent() {
                                             <option value="form">Form Booking</option>
                                             <option value="contract">Contract</option>
                                             <option value="manual">Manual</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-700 mb-1">
+                                            Payment
+                                        </label>
+                                        <select
+                                            value={filters.payment_status}
+                                            onChange={(e) => handleFilterChange('payment_status', e.target.value)}
+                                            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                        >
+                                            <option value="">All</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="paid">Paid</option>
+                                            <option value="failed">Failed</option>
+                                            <option value="refunded">Refunded</option>
                                         </select>
                                     </div>
 
@@ -372,6 +394,11 @@ export default function ReservationsContent() {
                                                             <div className="text-xs text-slate-500">
                                                                 {new Date(res.created_at).toLocaleDateString()}
                                                             </div>
+                                                            {res.booking_type === 'form' && res.form_booking_ref && (
+                                                                <div className="text-[10px] font-mono text-slate-400 mt-0.5 max-w-[140px] truncate" title={res.form_booking_ref}>
+                                                                    {res.form_booking_ref}
+                                                                </div>
+                                                            )}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             <div className="flex items-center">

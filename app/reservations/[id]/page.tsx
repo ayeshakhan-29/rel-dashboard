@@ -123,16 +123,18 @@ export default function ReservationDetailPage() {
         );
     };
 
-    const getPaymentStatusBadge = (status: string) => {
-        const config = {
-            'pending': 'bg-amber-100 text-amber-700',
-            'paid': 'bg-green-100 text-green-700',
-            'failed': 'bg-red-100 text-red-700',
-            'refunded': 'bg-slate-100 text-slate-700'
+    const getPaymentStatusBadge = (status: string | undefined) => {
+        const key = (status || 'pending').toLowerCase();
+        const config: Record<string, string> = {
+            pending: 'bg-amber-100 text-amber-700',
+            paid: 'bg-green-100 text-green-700',
+            failed: 'bg-red-100 text-red-700',
+            refunded: 'bg-slate-100 text-slate-700'
         };
+        const label = key.charAt(0).toUpperCase() + key.slice(1);
         return (
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${config[status as keyof typeof config]}`}>
-                {status.charAt(0).toUpperCase() + status.slice(1)}
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${config[key] ?? 'bg-slate-100 text-slate-600'}`}>
+                {label}
             </span>
         );
     };
@@ -383,8 +385,18 @@ export default function ReservationDetailPage() {
                                                 <p className="text-sm font-medium text-slate-500 mb-2">Booking Type</p>
                                                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-700">
                                                     {reservation.booking_type.charAt(0).toUpperCase() + reservation.booking_type.slice(1)}
+                                                    {reservation.booking_type === 'form' && (
+                                                        <span className="ml-2 text-xs text-slate-500">(Stripe)</span>
+                                                    )}
                                                 </span>
                                             </div>
+
+                                            {reservation.booking_type === 'form' && reservation.form_booking_ref && (
+                                                <div>
+                                                    <p className="text-sm font-medium text-slate-500 mb-2">Form / Stripe ref</p>
+                                                    <p className="text-xs font-mono text-slate-800 break-all">{reservation.form_booking_ref}</p>
+                                                </div>
+                                            )}
 
                                             <div>
                                                 <p className="text-sm font-medium text-slate-500 mb-2">Trip Type</p>
