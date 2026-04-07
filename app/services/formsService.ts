@@ -56,6 +56,7 @@ export interface RateConfig {
         corporate: number;
         [key: string]: number;
     };
+    enabled_service_types: string[];
 }
 
 export const getBookings = async (): Promise<Booking[]> => {

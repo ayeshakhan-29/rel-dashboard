@@ -88,16 +88,33 @@ function FormConfigurationContent() {
     const handleUpdateRates = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!rateConfig) return;
+        saveConfig(rateConfig);
+    };
 
+    const handleSaveBehavior = async () => {
+        if (!rateConfig) return;
+        saveConfig(rateConfig);
+    };
+
+    const saveConfig = async (config: RateConfig) => {
         setSaving(true);
         try {
-            await updateRateConfig(rateConfig);
-            setMessage({ type: 'success', text: 'Rate configuration updated successfully.' });
+            await updateRateConfig(config);
+            setMessage({ type: 'success', text: 'Configuration updated successfully.' });
         } catch (err) {
-            setMessage({ type: 'error', text: 'Failed to update rate configuration.' });
+            setMessage({ type: 'error', text: 'Failed to update configuration.' });
         } finally {
             setSaving(false);
         }
+    };
+
+    const handleToggleServiceType = (type: string) => {
+        if (!rateConfig) return;
+        const current = rateConfig.enabled_service_types || [];
+        const newTypes = current.includes(type)
+            ? current.filter(t => t !== type)
+            : [...current, type];
+        setRateConfig({ ...rateConfig, enabled_service_types: newTypes });
     };
 
     const handleToggleVehicleClass = (vehicle: Partial<Vehicle>, serviceClass: string) => {
@@ -409,7 +426,12 @@ function FormConfigurationContent() {
                                                 <span className="font-bold text-gray-700 capitalize">{type}</span>
                                             </div>
                                             <div className="relative">
-                                                <input type="checkbox" defaultChecked className="sr-only peer" />
+                                                <input
+                                                    type="checkbox"
+                                                    checked={rateConfig?.enabled_service_types?.includes(type)}
+                                                    onChange={() => handleToggleServiceType(type)}
+                                                    className="sr-only peer"
+                                                />
                                                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
                                             </div>
                                         </label>
@@ -417,8 +439,12 @@ function FormConfigurationContent() {
                                 </div>
                             </div>
                             <div className="pt-6">
-                                <button className="bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-emerald-700 transition-all active:scale-95">
-                                    Save Behavior Settings
+                                <button
+                                    onClick={handleSaveBehavior}
+                                    disabled={saving}
+                                    className="bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-emerald-700 transition-all active:scale-95 disabled:opacity-50"
+                                >
+                                    {saving ? 'Saving...' : 'Save Behavior Settings'}
                                 </button>
                             </div>
                         </div>
