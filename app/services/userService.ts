@@ -4,7 +4,7 @@ export interface User {
     id: number;
     name: string;
     email: string;
-    role: 'employee' | 'admin';
+    role: 'employee' | 'admin' | 'team' | 'driver' | 'passenger';
     created_at: string;
     updated_at: string;
 }
@@ -26,6 +26,14 @@ export interface CreateUserData {
     name: string;
     email: string;
     password: string;
+    role: 'employee' | 'admin' | 'team' | 'driver' | 'passenger';
+}
+
+export interface UpdateUserData {
+    name?: string;
+    email?: string;
+    password?: string;
+    role?: 'employee' | 'admin' | 'team' | 'driver' | 'passenger';
 }
 
 /**
@@ -53,9 +61,17 @@ export const deleteUser = async (id: number) => {
 };
 
 /**
- * Update user profile
+ * Update user profile (for self)
  */
 export const updateProfile = async (data: UpdateProfileData): Promise<UpdateProfileResponse> => {
     const response = await api.put('/users/profile', data);
+    return response.data;
+};
+
+/**
+ * Update any user by ID (for admin/management)
+ */
+export const updateUserById = async (id: number, data: UpdateUserData) => {
+    const response = await api.put(`/users/${id}`, data);
     return response.data;
 };

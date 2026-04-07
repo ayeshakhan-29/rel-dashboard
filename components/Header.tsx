@@ -1,6 +1,7 @@
 'use client';
 
 import { Menu, Bell, Search, User } from 'lucide-react';
+import NotificationBell from '@/components/NotificationBell';
 import { useAuth } from '@/app/context/AuthContext';
 
 interface HeaderProps {
@@ -31,9 +32,9 @@ export default function Header({ title, onMenuClick }: HeaderProps) {
                             className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-50 w-64"
                         />
                     </div>
-                    <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors">
-                        <Bell className="h-5 w-5" />
-                    </button>
+                    <div className="flex items-center space-x-2">
+                        <NotificationBell />
+                    </div>
                     <div className="flex items-center space-x-2.5 pl-4 border-l border-slate-200">
                         <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
                             <User className="h-4 w-4 text-emerald-600" />

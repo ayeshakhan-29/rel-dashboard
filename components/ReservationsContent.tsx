@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/app/context/AuthContext';
 import {
     Plus,
     Search,
@@ -17,7 +18,8 @@ import {
     Clock,
     CheckCircle,
     XCircle,
-    AlertCircle
+    AlertCircle,
+    Trash2
 } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
@@ -41,16 +43,19 @@ export default function ReservationsContent() {
     const [filters, setFilters] = useState({
         status: searchParams.get('status') || '',
         booking_type: searchParams.get('booking_type') || '',
+        payment_status: searchParams.get('payment_status') || '',
         start_date: '',
         end_date: '',
         search: ''
     });
 
     const [showFilters, setShowFilters] = useState(false);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
     useEffect(() => {
         fetchReservations();
-    }, [pagination.page, filters.status, filters.booking_type, filters.search]);
+    }, [pagination.page, filters.status, filters.booking_type, filters.payment_status, filters.search]);
 
     const fetchReservations = async () => {
         setLoading(true);
@@ -60,6 +65,7 @@ export default function ReservationsContent() {
                 limit: pagination.limit,
                 status: filters.status || undefined,
                 booking_type: filters.booking_type || undefined,
+                payment_status: filters.payment_status || undefined,
                 start_date: filters.start_date || undefined,
                 end_date: filters.end_date || undefined,
                 search: filters.search || undefined
@@ -72,6 +78,8 @@ export default function ReservationsContent() {
             setLoading(false);
         }
     };
+
+    const { isAdmin } = useAuth();
 
     const handleFilterChange = (key: string, value: string) => {
         setFilters(prev => ({ ...prev, [key]: value }));
@@ -88,6 +96,7 @@ export default function ReservationsContent() {
         setFilters({
             status: '',
             booking_type: '',
+            payment_status: '',
             start_date: '',
             end_date: '',
             search: ''
@@ -98,6 +107,20 @@ export default function ReservationsContent() {
     const clearSearch = () => {
         setFilters(prev => ({ ...prev, search: '' }));
         setPagination(prev => ({ ...prev, page: 1 }));
+    };
+
+    const handleDelete = async (id: number) => {
+        setDeletingId(id);
+        try {
+            await reservationService.deleteReservation(id);
+            setReservations(prev => prev.filter(r => r.id !== id));
+            setPagination(prev => ({ ...prev, total: prev.total - 1 }));
+        } catch (error) {
+            console.error('Failed to delete reservation:', error);
+        } finally {
+            setDeletingId(null);
+            setConfirmDeleteId(null);
+        }
     };
 
     const getStatusBadge = (status: string) => {
@@ -115,26 +138,29 @@ export default function ReservationsContent() {
         return (
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
                 <Icon className="h-3 w-3 mr-1" />
-                {status.replace('_', ' ')}
+                {status === 'in_progress' ? 'On Trip' : status.replace('_', ' ')}
             </span>
         );
     };
 
-    const getPaymentStatusBadge = (status: string) => {
-        const config = {
-            'pending': 'bg-amber-100 text-amber-700',
-            'paid': 'bg-green-100 text-green-700',
-            'failed': 'bg-red-100 text-red-700',
-            'refunded': 'bg-slate-100 text-slate-700'
+    const getPaymentStatusBadge = (status: string | undefined) => {
+        const key = (status || 'pending').toLowerCase();
+        const config: Record<string, string> = {
+            pending: 'bg-amber-100 text-amber-700',
+            paid: 'bg-green-100 text-green-700',
+            failed: 'bg-red-100 text-red-700',
+            refunded: 'bg-slate-100 text-slate-700'
         };
+        const label = key.charAt(0).toUpperCase() + key.slice(1);
         return (
-            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${config[status as keyof typeof config]}`}>
-                {status}
+            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${config[key] ?? 'bg-slate-100 text-slate-600'}`}>
+                {label}
             </span>
         );
     };
 
     return (
+        <>
         <div className="flex h-screen bg-slate-50">
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
             
@@ -163,7 +189,7 @@ export default function ReservationsContent() {
                                 >
                                     <Filter className="h-4 w-4 mr-2" />
                                     Filters
-                                    {(filters.status || filters.booking_type || filters.start_date || filters.end_date) && (
+                                    {(filters.status || filters.booking_type || filters.payment_status || filters.start_date || filters.end_date) && (
                                         <span className="ml-2 px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-xs">
                                             Active
                                         </span>
@@ -180,7 +206,7 @@ export default function ReservationsContent() {
                             </div>
 
                             {showFilters && (
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                                     <div>
                                         <label className="block text-xs font-medium text-slate-700 mb-1">
                                             Status
@@ -193,7 +219,7 @@ export default function ReservationsContent() {
                                             <option value="">All Status</option>
                                             <option value="pending">Pending</option>
                                             <option value="assigned">Assigned</option>
-                                            <option value="in_progress">In Progress</option>
+                                            <option value="in_progress">On Trip</option>
                                             <option value="completed">Completed</option>
                                             <option value="cancelled">Cancelled</option>
                                         </select>
@@ -212,6 +238,23 @@ export default function ReservationsContent() {
                                             <option value="form">Form Booking</option>
                                             <option value="contract">Contract</option>
                                             <option value="manual">Manual</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-700 mb-1">
+                                            Payment
+                                        </label>
+                                        <select
+                                            value={filters.payment_status}
+                                            onChange={(e) => handleFilterChange('payment_status', e.target.value)}
+                                            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                        >
+                                            <option value="">All</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="paid">Paid</option>
+                                            <option value="failed">Failed</option>
+                                            <option value="refunded">Refunded</option>
                                         </select>
                                     </div>
 
@@ -351,6 +394,11 @@ export default function ReservationsContent() {
                                                             <div className="text-xs text-slate-500">
                                                                 {new Date(res.created_at).toLocaleDateString()}
                                                             </div>
+                                                            {res.booking_type === 'form' && res.form_booking_ref && (
+                                                                <div className="text-[10px] font-mono text-slate-400 mt-0.5 max-w-[140px] truncate" title={res.form_booking_ref}>
+                                                                    {res.form_booking_ref}
+                                                                </div>
+                                                            )}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             <div className="flex items-center">
@@ -390,14 +438,18 @@ export default function ReservationsContent() {
                                                             </div>
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                }}
-                                                                className="text-slate-400 hover:text-slate-600"
-                                                            >
-                                                                <MoreVertical className="h-4 w-4" />
-                                                            </button>
+                                                            {isAdmin && (
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setConfirmDeleteId(res.id);
+                                                                    }}
+                                                                    className="text-slate-400 hover:text-rose-600 transition-colors"
+                                                                    title="Delete reservation"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </button>
+                                                            )}
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -441,5 +493,39 @@ export default function ReservationsContent() {
                 </main>
             </div>
         </div>
+
+        {/* Delete confirmation modal */}
+        {confirmDeleteId !== null && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm mx-4">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center shrink-0">
+                            <Trash2 className="h-5 w-5 text-rose-600" />
+                        </div>
+                        <div>
+                            <p className="font-semibold text-slate-800">Delete reservation?</p>
+                            <p className="text-sm text-slate-500">This action cannot be undone.</p>
+                        </div>
+                    </div>
+                    <div className="flex gap-3 mt-5">
+                        <button
+                            onClick={() => setConfirmDeleteId(null)}
+                            className="flex-1 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => handleDelete(confirmDeleteId)}
+                            disabled={deletingId === confirmDeleteId}
+                            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-rose-600 hover:bg-rose-700 rounded-lg transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                        >
+                            {deletingId === confirmDeleteId && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     );
 }

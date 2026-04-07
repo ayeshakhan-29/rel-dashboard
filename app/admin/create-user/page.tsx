@@ -17,6 +17,7 @@ export default function CreateUserPage() {
         email: '',
         password: '',
         confirmPassword: '',
+        role: 'employee' as const
     });
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});

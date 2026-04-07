@@ -3,20 +3,7 @@
 import React from "react";
 import { Users, MapPin, Clock, Car, User } from "lucide-react";
 
-interface Trip {
-  id: string;
-  client: string;
-  passengers: number;
-  route: string;
-  dateTime: string;
-  vehicle: string;
-  driver: string;
-  driverStatus: string;
-  payment: { method: string; status: string };
-  price: number;
-  status: string;
-  actions: string[];
-}
+import { Trip } from "./useDispatchData";
 
 interface TripCardsProps {
   trips: Trip[];
@@ -67,13 +54,20 @@ export default function TripCards({ trips, onViewTrip, onAssignDriver }: TripCar
                 <Car className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 {trip.vehicle}
               </div>
-              {trip.driver && (
-                <div className="flex items-center gap-2">
-                  <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                  <span>{trip.driver}</span>
-                  <span className="text-xs text-emerald-600">({trip.driverStatus})</span>
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span className={trip.driver ? "text-slate-700" : "text-slate-400 italic"}>
+                  {trip.driver || "Unassigned"}
+                </span>
+                {!trip.driver && (
+                  <button
+                    onClick={() => onAssignDriver(trip.id)}
+                    className="ml-auto text-[10px] font-bold text-emerald-600 uppercase tracking-wider hover:text-emerald-700 transition-colors"
+                  >
+                    Assign Driver
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

@@ -1,6 +1,7 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import reservationService from "@/app/services/reservationService";
+import { Reservation } from "@/types/reservation.types";
+import { useRouter } from "next/navigation";
 
 export interface Trip {
   id: string;
@@ -18,6 +19,7 @@ export interface Trip {
   price: number;
   status: "unassigned" | "scheduled" | "confirmed" | "dispatched" | "in_progress" | "completed" | "cancelled";
   actions: string[];
+  dbId: number;
 }
 
 export interface StatusFilter {
@@ -26,114 +28,87 @@ export interface StatusFilter {
   count: number;
 }
 
-const mockTrips: Trip[] = [
-  {
-    id: "REL-40800",
-    client: "Guest",
-    passengers: 1,
-    route: "JFK - Manhattan",
-    dateTime: "2026-03-10 14:20:00",
-    vehicle: "Business Sedan",
-    driver: "rimpal",
-    driverStatus: "Available",
-    payment: { method: "Cash", status: "PENDING" },
-    price: 85,
-    status: "completed",
-    actions: ["view", "send"]
-  },
-  {
-    id: "REL-85589",
-    client: "Parveshpreet",
-    passengers: 1,
-    route: "YYZ - JFK",
-    dateTime: "2026-03-12 03:30:00",
-    vehicle: "Mercedes Sprinter",
-    driver: "Marcus",
-    driverStatus: "Available",
-    payment: { method: "Cash", status: "PENDING" },
-    price: 180,
-    status: "dispatched",
-    actions: ["view", "send"]
-  },
-  {
-    id: "REL-17556",
-    client: "Parveshpreet",
-    passengers: 1,
-    route: "JFK - New",
-    dateTime: "2026-03-17 03:40:00",
-    vehicle: "First Class SUV",
-    driver: "rimpal",
-    driverStatus: "Available",
-    payment: { method: "Cash", status: "PENDING" },
-    price: 150,
-    status: "cancelled",
-    actions: ["view", "send"]
-  },
-  {
-    id: "REL-29027",
-    client: "Guest",
-    passengers: 1,
-    route: "JFK - Manhattan",
-    dateTime: "2026-03-24 03:30:00",
-    vehicle: "Mercedes Sprinter",
-    driver: "Marcus",
-    driverStatus: "Available",
-    payment: { method: "Cash", status: "PENDING" },
-    price: 180,
-    status: "confirmed",
-    actions: ["view", "send"]
-  },
-  {
-    id: "REL-23428",
-    client: "Guest",
-    passengers: 1,
-    route: "JFK - NY",
-    dateTime: "2026-03-25 02:30:00",
-    vehicle: "Electric Sedan",
-    driver: "Parveshpreet",
-    driverStatus: "Available",
-    payment: { method: "Cash", status: "PENDING" },
-    price: 110,
-    status: "confirmed",
-    actions: ["view", "send"]
-  },
-  {
-    id: "REL-65331",
-    client: "Parveshpreet",
-    passengers: 1,
-    route: "JFK - Manhattan",
-    dateTime: "2026-03-28 02:30:00",
-    vehicle: "First Class Sedan",
-    driver: "",
-    driverStatus: "",
-    payment: { method: "Cash", status: "PENDING" },
-    price: 120,
-    status: "scheduled",
-    actions: ["view", "assign"]
-  },
-  {
-    id: "REL-26191",
-    client: "Parveshpreet",
-    passengers: 1,
-    route: "JFK - EWR",
-    dateTime: "2026-04-17 03:30:00",
-    vehicle: "First Class SUV",
-    driver: "Parveshpreet",
-    driverStatus: "Available",
-    payment: { method: "Cash", status: "PENDING" },
-    price: 150,
-    status: "confirmed",
-    actions: ["view", "send"]
-  }
-];
+
 
 export function useDispatchData() {
-  const [trips, setTrips] = useState<Trip[]>(mockTrips);
+  const router = useRouter();
+  const [trips, setTrips] = useState<Trip[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"table" | "cards">("table");
-  const [revenue, setRevenue] = useState(825);
+  const [revenue, setRevenue] = useState(0);
   const [activeTrips, setActiveTrips] = useState(0);
+
+  const mapReservationToTrip = useCallback((res: Reservation): Trip => {
+    return {
+      id: res.reservation_number,
+      client: res.passenger_name,
+      passengers: res.passenger_count,
+      route: `${res.pickup_location.split(',')[0]} → ${res.dropoff_location.split(',')[0]}`,
+      dateTime: `${new Date(res.pickup_date).toLocaleDateString()} ${res.pickup_time.substring(0, 5)}`,
+      vehicle: res.vehicle_type || "Standard Sedan",
+      driver: res.driver_name || "",
+      driverStatus: res.driver_name ? "Assigned" : "Unassigned",
+      payment: {
+        method:
+          res.booking_type === "contract"
+            ? "Contract"
+            : res.booking_type === "form"
+              ? "Stripe"
+              : "Cash/Card",
+        status: (res.payment_status || "pending").toUpperCase(),
+      },
+      price: Number(res.price),
+      status: mapStatus(res.reservation_status),
+      actions: res.assigned_driver_id ? ["view", "send"] : ["view", "assign"],
+      dbId: res.id
+    };
+  }, []);
+
+  const mapStatus = (status: string): Trip["status"] => {
+    switch (status) {
+      case 'pending': return 'unassigned';
+      case 'pending_driver_approval': return 'scheduled';
+      case 'assigned': return 'confirmed';
+      case 'confirmed': return 'confirmed';
+      case 'in_progress': return 'in_progress';
+      case 'completed': return 'completed';
+      case 'cancelled': return 'cancelled';
+      case 'rejected': return 'cancelled';
+      case 'driver_denied': return 'unassigned';
+      default: return 'unassigned';
+    }
+  };
+
+  const fetchTrips = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await reservationService.getReservations({ limit: 100 });
+      const realTrips = response.data.map(mapReservationToTrip);
+      setTrips(realTrips);
+      
+      // Calculate stats
+      const totalRevenue = response.data
+        .filter(r => r.reservation_status === 'completed')
+        .reduce((sum, r) => sum + Number(r.price), 0);
+      setRevenue(totalRevenue);
+      
+      const ongoing = response.data.filter(r => 
+        ['assigned', 'confirmed', 'in_progress'].includes(r.reservation_status)
+      ).length;
+      setActiveTrips(ongoing);
+      
+    } catch (error) {
+      console.error("Error fetching dispatch trips:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [mapReservationToTrip]);
+
+  useEffect(() => {
+    fetchTrips();
+  }, [fetchTrips]);
 
   const statusFilters: StatusFilter[] = [
     { key: "all", label: "All Trips", count: trips.length },
@@ -141,7 +116,7 @@ export function useDispatchData() {
     { key: "scheduled", label: "Scheduled", count: trips.filter(t => t.status === "scheduled").length },
     { key: "confirmed", label: "Confirmed", count: trips.filter(t => t.status === "confirmed").length },
     { key: "dispatched", label: "Dispatched", count: trips.filter(t => t.status === "dispatched").length },
-    { key: "in_progress", label: "In Progress", count: trips.filter(t => t.status === "in_progress").length },
+    { key: "in_progress", label: "On Trip", count: trips.filter(t => t.status === "in_progress").length },
     { key: "completed", label: "Completed", count: trips.filter(t => t.status === "completed").length },
     { key: "cancelled", label: "Cancelled", count: trips.filter(t => t.status === "cancelled").length }
   ];
@@ -156,18 +131,22 @@ export function useDispatchData() {
   });
 
   const handleViewTrip = (tripId: string) => {
-    console.log("View trip:", tripId);
-    // TODO: Open trip details modal
+    // We need the numeric DB ID to navigate.
+    const trip = trips.find(t => t.id === tripId);
+    if (trip) {
+      router.push(`/reservations/${trip.dbId}`);
+    }
   };
 
   const handleAssignDriver = (tripId: string) => {
-    console.log("Assign driver for trip:", tripId);
-    // TODO: Open driver assignment modal
+    const trip = trips.find(t => t.id === tripId);
+    if (trip) {
+      router.push(`/dispatch/assign?reservation=${trip.dbId}`);
+    }
   };
 
   const handleNewTrip = () => {
-    console.log("Create new trip");
-    // TODO: Navigate to new trip page or open modal
+    router.push('/reservations/new');
   };
 
   return {
@@ -185,6 +164,7 @@ export function useDispatchData() {
     handleViewTrip,
     handleAssignDriver,
     handleNewTrip,
-    setTrips
+    setTrips,
+    loading
   };
 }

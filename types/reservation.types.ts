@@ -17,12 +17,12 @@ export interface Reservation {
     pickup_time: string;
     vehicle_type_id: number;
     passenger_count: number;
-    luggage_count: number;
+    luggage_count: number | null;
     
     // Booking Details
-    price: number;
+    price: number | null;
     payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
-    reservation_status: 'pending' | 'assigned' | 'in_progress' | 'completed' | 'cancelled';
+    reservation_status: 'pending' | 'assigned' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'rejected' | 'pending_driver_approval' | 'driver_denied';
     
     // Assignment
     assigned_driver_id: number | null;
@@ -41,6 +41,9 @@ export interface Reservation {
     daily_rate?: number | null;
     hourly_rate?: number | null;
     
+    /** Web form booking id (Stripe client_reference_id) when booking_type is form */
+    form_booking_ref?: string | null;
+
     // Metadata
     created_by?: number;
     created_by_name?: string;
@@ -93,8 +96,8 @@ export interface CreateReservationData {
     pickup_time: string;
     vehicle_type_id: number;
     passenger_count: number;
-    luggage_count: number;
-    price: number;
+    luggage_count: number | null;
+    price: number | null;
     payment_status?: 'pending' | 'paid';
     contract_start_date?: string;
     contract_end_date?: string;
@@ -107,6 +110,8 @@ export interface ReservationFilters {
     limit?: number;
     status?: string;
     booking_type?: string;
+    /** Filter by payment_status on reservations (pending | paid | failed | refunded) */
+    payment_status?: string;
     passenger_id?: number;
     driver_id?: number;
     start_date?: string;

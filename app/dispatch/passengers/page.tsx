@@ -1,9 +1,8 @@
 "use client";
-
 import React, { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
-import PrivateRoute from "../../components/auth/PrivateRoute";
+import AdminRoute from "../../components/auth/AdminRoute";
 import { Search, Plus, Phone, Mail, Users, Star, Calendar, DollarSign, Edit, Trash2 } from "lucide-react";
 
 interface Trip { id: string; date: string; route: string; price: number; status: string; driver: string }
@@ -265,5 +264,5 @@ function PassengersContent() {
 }
 
 export default function PassengerManagement() {
-  return <PrivateRoute><PassengersContent /></PrivateRoute>;
+  return <AdminRoute><PassengersContent /></AdminRoute>;
 }
