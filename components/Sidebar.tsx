@@ -80,7 +80,6 @@ const navigationItems: NavigationItem[] = [
         children: [
             { name: 'Create Reservation', href: '/reservations/create', icon: Plus },
             { name: 'Manage Reservations', href: '/reservations', icon: ListTodo },
-            { name: 'Assign Drivers', href: '/dispatch/assign', icon: Users },
         ],
     },
 
