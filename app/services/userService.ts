@@ -75,3 +75,11 @@ export const updateUserById = async (id: number, data: UpdateUserData) => {
     const response = await api.put(`/users/${id}`, data);
     return response.data;
 };
+
+/**
+ * Get all passengers (customers)
+ */
+export const getPassengers = async () => {
+    const response = await api.get('/users/passengers');
+    return response.data;
+};
