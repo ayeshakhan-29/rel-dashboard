@@ -123,3 +123,13 @@ export const updateRateConfig = async (configData: any): Promise<any> => {
         throw error;
     }
 };
+
+export const deleteVehicle = async (id: number): Promise<any> => {
+    try {
+        const response = await api.delete(`/forms/vehicles/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting vehicle:', error);
+        throw error;
+    }
+};

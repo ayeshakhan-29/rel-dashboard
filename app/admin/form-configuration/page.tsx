@@ -11,6 +11,7 @@ import {
     getRateConfig,
     saveVehicle,
     updateRateConfig,
+    deleteVehicle,
     Vehicle,
     RateConfig
 } from '../../services/formsService';
@@ -80,6 +81,21 @@ function FormConfigurationContent() {
             fetchData();
         } catch (err) {
             setMessage({ type: 'error', text: 'Failed to save vehicle.' });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleDeleteVehicle = async (id: number) => {
+        if (!window.confirm('Are you sure you want to delete this vehicle? This action cannot be undone.')) return;
+
+        setSaving(true);
+        try {
+            const response = await deleteVehicle(id);
+            setMessage({ type: 'success', text: response.message || 'Vehicle deleted successfully.' });
+            fetchData();
+        } catch (err) {
+            setMessage({ type: 'error', text: 'Failed to delete vehicle.' });
         } finally {
             setSaving(false);
         }
@@ -244,7 +260,10 @@ function FormConfigurationContent() {
                                                 >
                                                     <Edit2 className="w-4 h-4" />
                                                 </button>
-                                                <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                                                <button 
+                                                    onClick={() => vehicle.id && handleDeleteVehicle(vehicle.id)}
+                                                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
