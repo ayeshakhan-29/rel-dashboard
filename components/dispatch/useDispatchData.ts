@@ -51,8 +51,13 @@ export function useDispatchData() {
       driver: res.driver_name || "",
       driverStatus: res.driver_name ? "Assigned" : "Unassigned",
       payment: {
-        method: res.booking_type === 'contract' ? 'Contract' : 'Cash/Card',
-        status: res.payment_status.toUpperCase()
+        method:
+          res.booking_type === "contract"
+            ? "Contract"
+            : res.booking_type === "form"
+              ? "Stripe"
+              : "Cash/Card",
+        status: (res.payment_status || "pending").toUpperCase(),
       },
       price: Number(res.price),
       status: mapStatus(res.reservation_status),

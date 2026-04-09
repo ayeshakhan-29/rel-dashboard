@@ -22,9 +22,10 @@ const statusStyles: Record<string, string> = {
 };
 
 const paymentStyles: Record<string, string> = {
-  PAID:    "text-emerald-600",
-  PENDING: "text-amber-600",
-  FAILED:  "text-rose-600",
+  PAID:     "text-emerald-600",
+  PENDING:  "text-amber-600",
+  FAILED:   "text-rose-600",
+  REFUNDED: "text-slate-500",
 };
 
 export default function TripTable({ trips, onViewTrip, onAssignDriver }: TripTableProps) {
