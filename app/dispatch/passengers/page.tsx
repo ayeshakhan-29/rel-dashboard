@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import AdminRoute from "../../components/auth/AdminRoute";
-import { getPassengers } from "@/app/services/userService";
+import { getPassengers, deleteUser, updateUserById } from "@/app/services/userService";
 import reservationService from "@/app/services/reservationService";
 import { Search, Plus, Phone, Mail, Users, Star, Calendar, DollarSign, Edit, Trash2, Loader2 } from "lucide-react";
 
@@ -114,6 +114,93 @@ function PassengerModal({ passenger, onClose }: { passenger: Passenger; onClose:
   );
 }
 
+function EditPassengerModal({ passenger, onClose, onSuccess }: { passenger: Passenger; onClose: () => void; onSuccess: (updated: Passenger) => void }) {
+  const [name, setName] = useState(passenger.name || "");
+  const [email, setEmail] = useState(passenger.email || "");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const updateData = { name, email };
+      await updateUserById(Number(passenger.id), updateData);
+      onSuccess({ ...passenger, name, email });
+    } catch (err) {
+      console.error("Failed to update passenger:", err);
+      alert("Failed to update passenger");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all animate-in fade-in duration-200">
+      <div className="bg-card w-full max-w-md rounded-xl p-6 shadow-2xl border border-border animate-in zoom-in-95 duration-200">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Edit Passenger</h3>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-500 mb-1">Name</label>
+            <input required type="text" value={name} onChange={e => setName(e.target.value)} className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-emerald-500" />
+          </div>
+          <div>
+             <label className="block text-sm font-medium text-slate-500 mb-1">Email</label>
+             <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-emerald-500" />
+          </div>
+          <div className="flex justify-end gap-3 mt-6">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-slate-500 hover:text-foreground">Cancel</button>
+            <button type="submit" disabled={loading} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium flex items-center gap-2">
+              {/* Optional loader icon here, omitted to avoid missing import if any */}
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function DeleteConfirmModal({ passenger, onClose, onConfirm }: { passenger: Passenger; onClose: () => void; onConfirm: () => Promise<void> }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleConfirm = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      await onConfirm();
+    } catch (e) {
+      setError("Failed to delete passenger. Please try again.");
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all animate-in fade-in duration-200">
+      <div className="bg-card w-full max-w-sm rounded-xl p-6 shadow-2xl border border-border animate-in zoom-in-95 duration-200">
+        <div className="flex flex-col items-center text-center space-y-4">
+          <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-900/20 flex items-center justify-center">
+            <Trash2 className="w-6 h-6 text-rose-600 dark:text-rose-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">Delete Passenger</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+              Are you sure you want to delete <span className="font-semibold text-foreground">{passenger.name}</span>? This action cannot be undone.
+            </p>
+            {error && <p className="text-sm text-rose-500 mt-2">{error}</p>}
+          </div>
+        </div>
+        <div className="flex gap-3 mt-6">
+          <button onClick={onClose} disabled={loading} className="flex-1 px-4 py-2 border border-border rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-foreground">Cancel</button>
+          <button onClick={handleConfirm} disabled={loading} className="flex-1 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-sm font-medium transition-colors flex justify-center items-center gap-2">
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Delete'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PassengersContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [passengers, setPassengers] = useState<Passenger[]>([]);
@@ -122,6 +209,20 @@ function PassengersContent() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
   const [selected, setSelected] = useState<Passenger | null>(null);
+  const [editingPassenger, setEditingPassenger] = useState<Passenger | null>(null);
+  const [deletingPassenger, setDeletingPassenger] = useState<Passenger | null>(null);
+
+  const handleEditSuccess = (updatedPassenger: Passenger) => {
+    setPassengers((prev) => prev.map((p) => (p.id === updatedPassenger.id ? updatedPassenger : p)));
+    setEditingPassenger(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingPassenger) return;
+    await deleteUser(Number(deletingPassenger.id));
+    setPassengers((prev) => prev.filter((p) => p.id !== deletingPassenger.id));
+    setDeletingPassenger(null);
+  };
 
   useEffect(() => {
     const fetchPassengers = async () => {
@@ -236,8 +337,8 @@ function PassengersContent() {
                       View Details
                     </button>
                     <div className="flex gap-1">
-                      <button className="p-1.5 bg-background hover:bg-slate-100 dark:hover:bg-slate-800 border border-border rounded transition-colors" title="Edit"><Edit className="w-3.5 h-3.5 text-slate-500" /></button>
-                      <button className="p-1.5 bg-background hover:bg-rose-50 dark:hover:bg-rose-900/20 border border-border hover:border-rose-200 dark:hover:border-rose-900/30 rounded transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5 text-slate-500 hover:text-rose-600" /></button>
+                      <button onClick={() => setEditingPassenger(p)} className="p-1.5 bg-background hover:bg-slate-100 dark:hover:bg-slate-800 border border-border rounded transition-colors" title="Edit"><Edit className="w-3.5 h-3.5 text-slate-500" /></button>
+                      <button onClick={() => setDeletingPassenger(p)} className="p-1.5 bg-background hover:bg-rose-50 dark:hover:bg-rose-900/20 border border-border hover:border-rose-200 dark:hover:border-rose-900/30 rounded transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5 text-slate-500 hover:text-rose-600" /></button>
                     </div>
                   </div>
                 </div>
@@ -276,8 +377,8 @@ function PassengersContent() {
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
                           <button onClick={() => setSelected(p)} className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-foreground transition-all uppercase tracking-wider">View</button>
-                          <button className="p-1 container-bg hover:bg-slate-100 dark:hover:bg-slate-800 border border-border rounded transition-colors"><Edit className="w-3.5 h-3.5 text-slate-500" /></button>
-                          <button className="p-1 container-bg hover:bg-rose-50 dark:hover:bg-rose-900/20 border border-border hover:border-rose-200 dark:hover:border-rose-900/30 rounded transition-colors"><Trash2 className="w-3.5 h-3.5 text-slate-500 hover:text-rose-600" /></button>
+                          <button onClick={() => setEditingPassenger(p)} className="p-1 container-bg hover:bg-slate-100 dark:hover:bg-slate-800 border border-border rounded transition-colors"><Edit className="w-3.5 h-3.5 text-slate-500" /></button>
+                          <button onClick={() => setDeletingPassenger(p)} className="p-1 container-bg hover:bg-rose-50 dark:hover:bg-rose-900/20 border border-border hover:border-rose-200 dark:hover:border-rose-900/30 rounded transition-colors"><Trash2 className="w-3.5 h-3.5 text-slate-500 hover:text-rose-600" /></button>
                         </div>
                       </td>
                     </tr>
@@ -290,6 +391,8 @@ function PassengersContent() {
       </div>
 
       {selected && <PassengerModal passenger={selected} onClose={() => setSelected(null)} />}
+      {editingPassenger && <EditPassengerModal passenger={editingPassenger} onClose={() => setEditingPassenger(null)} onSuccess={handleEditSuccess} />}
+      {deletingPassenger && <DeleteConfirmModal passenger={deletingPassenger} onClose={() => setDeletingPassenger(null)} onConfirm={handleDeleteConfirm} />}
     </div>
   );
 }
