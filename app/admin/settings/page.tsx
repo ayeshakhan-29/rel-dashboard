@@ -28,13 +28,13 @@ function SettingsContent() {
     };
 
     return (
-        <div className="flex h-screen bg-slate-50">
+        <div className="flex h-screen bg-background text-foreground transition-colors duration-300">
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
             <div className="flex-1 flex flex-col overflow-hidden">
                 <Header title="Settings" onMenuClick={() => setSidebarOpen(true)} />
 
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-6 transition-colors duration-300">
                     <div className="max-w-4xl mx-auto">
                         {/* Security Card */}
                         <div className="mb-6">
@@ -45,14 +45,14 @@ function SettingsContent() {
                             {/* All Users */}
                             {isAdmin && (
                                 <Link href="/admin/all-users">
-                                    <div className="bg-white rounded-lg border border-slate-200 p-6 hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer">
+                                    <div className="bg-card rounded-2xl border border-border p-6 hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-800 transition-all cursor-pointer group">
                                         <div className="flex items-center space-x-3 mb-4">
-                                            <div className="p-2 bg-slate-100 rounded-lg">
-                                                <Users className="h-5 w-5 text-slate-700" />
+                                            <div className="p-2.5 bg-background dark:bg-slate-800 rounded-xl border border-border">
+                                                <Users className="h-5 w-5 text-foreground" />
                                             </div>
-                                            <h3 className="text-base font-semibold text-slate-900">All Users</h3>
+                                            <h3 className="text-base font-bold text-foreground">All Users</h3>
                                         </div>
-                                        <p className="text-sm text-slate-600">
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
                                             View and manage all users in the system
                                         </p>
                                     </div>
@@ -62,14 +62,14 @@ function SettingsContent() {
                             {/* Create User */}
                             {isAdmin && (
                                 <Link href="/admin/create-user">
-                                    <div className="bg-white rounded-lg border border-slate-200 p-6 hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer">
+                                    <div className="bg-card rounded-2xl border border-border p-6 hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-800 transition-all cursor-pointer group">
                                         <div className="flex items-center space-x-3 mb-4">
-                                            <div className="p-2 bg-blue-50 rounded-lg">
-                                                <UserPlus className="h-5 w-5 text-blue-600" />
+                                            <div className="p-2.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                                                <UserPlus className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                             </div>
-                                            <h3 className="text-base font-semibold text-slate-900">Create User</h3>
+                                            <h3 className="text-base font-bold text-foreground">Create User</h3>
                                         </div>
-                                        <p className="text-sm text-slate-600">
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
                                             Add a new user to the system
                                         </p>
                                     </div>
@@ -77,16 +77,16 @@ function SettingsContent() {
                             )}
 
                             {/* Logout Section */}
-                            <div className="bg-white rounded-lg border border-red-200 p-6 md:col-span-2">
+                            <div className="bg-card rounded-2xl border border-red-200 dark:border-red-900/30 p-6 md:col-span-2 transition-colors">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <div className="flex items-center space-x-3 mb-2">
-                                            <div className="p-2 bg-red-50 rounded-lg">
-                                                <LogOut className="h-5 w-5 text-red-600" />
+                                            <div className="p-2.5 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-100 dark:border-red-900/30">
+                                                <LogOut className="h-5 w-5 text-red-600 dark:text-red-400" />
                                             </div>
-                                            <h3 className="text-base font-semibold text-slate-900">Logout</h3>
+                                            <h3 className="text-base font-bold text-foreground">Logout</h3>
                                         </div>
-                                        <p className="text-sm text-slate-600">
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
                                             Sign out of your account
                                         </p>
                                     </div>
@@ -123,7 +123,7 @@ function SettingsContent() {
 export default function SettingsPage() {
     return (
         <Suspense fallback={
-            <div className="flex h-screen bg-slate-50 items-center justify-center">
+            <div className="flex h-screen bg-background items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
             </div>
         }>

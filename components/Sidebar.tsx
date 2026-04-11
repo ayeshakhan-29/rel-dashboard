@@ -142,11 +142,6 @@ const navigationItems: NavigationItem[] = [
     adminOnly: true,
     children: [
       {
-        name: "Today's Attendance",
-        href: "/admin/attendance/today",
-        icon: Clock,
-      },
-      {
         name: "Attendance Record",
         href: "/admin/attendance/record",
         icon: FileText,
@@ -295,29 +290,29 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
 
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform ${
+      className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform ${
         isOpen ? "translate-x-0" : "-translate-x-full"
-      } transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex flex-col`}
+      } transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex flex-col`}
     >
-      <div className="flex items-center justify-between h-16 px-6 border-b border-slate-200 flex-shrink-0">
+      <div className="flex items-center justify-between h-16 px-6 border-b border-slate-200 dark:border-slate-800 flex-shrink-0 transition-colors">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
-            <span className="text-xs font-bold text-emerald-600">
+          <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
               {user?.name ? user.name.charAt(0).toUpperCase() : "L"}
             </span>
           </div>
           <div className="flex flex-col">
-            <h1 className="text-sm font-semibold text-slate-900 truncate w-32">
+            <h1 className="text-sm font-semibold text-slate-900 dark:text-white truncate w-32">
               {user?.name || "Lead CRM"}
             </h1>
-            <span className="text-xs text-slate-500 capitalize">
+            <span className="text-xs text-slate-500 dark:text-slate-400 capitalize">
               {user?.role || "Employee"}
             </span>
           </div>
         </div>
         <button
           onClick={onClose}
-          className="lg:hidden text-slate-400 hover:text-slate-600 transition-colors"
+          className="lg:hidden text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
         >
           <X className="h-5 w-5" />
         </button>
@@ -347,16 +342,16 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                       onClick={() => toggleMenu(item.name)}
                       className={`w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
                         active
-                          ? "text-slate-900 bg-slate-50"
-                          : "text-slate-600 hover:bg-emerald-50 hover:text-emerald-700"
+                          ? "text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800"
+                          : "text-slate-600 dark:text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-700 dark:hover:text-emerald-400"
                       }`}
                     >
                       <div className="flex items-center">
                         <Icon
                           className={`h-5 w-5 mr-3 ${
                             active
-                              ? "text-emerald-600"
-                              : "text-slate-500 group-hover:text-emerald-600"
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : "text-slate-500 dark:text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400"
                           }`}
                         />
                         {item.name}
@@ -380,8 +375,8 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                               onClick={onClose}
                               className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                                 childActive
-                                  ? "text-white bg-slate-900 shadow-sm"
-                                  : "text-slate-500 hover:bg-emerald-50 hover:text-emerald-700"
+                                  ? "text-white bg-slate-900 dark:bg-emerald-600 shadow-sm"
+                                  : "text-slate-500 dark:text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-700 dark:hover:text-emerald-400"
                               }`}
                             >
                               <ChildIcon
@@ -400,8 +395,8 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
                     onClick={onClose}
                     className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
                       active
-                        ? "text-white bg-slate-900 shadow-sm"
-                        : "text-slate-600 hover:bg-emerald-50 hover:text-emerald-700"
+                        ? "text-white bg-slate-900 dark:bg-emerald-600 shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-700 dark:hover:text-emerald-400"
                     }`}
                   >
                     <div className="relative flex items-center flex-1">
@@ -430,10 +425,10 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
         </div>
       </nav>
 
-      <div className="p-4 border-t border-slate-200">
+      <div className="p-4 border-t border-slate-200 dark:border-slate-800 transition-colors">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center px-3 py-2.5 text-sm font-medium text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+          className="w-full flex items-center px-3 py-2.5 text-sm font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors"
         >
           <LogOut className="h-5 w-5 mr-3" />
           Sign Out
@@ -447,10 +442,10 @@ export default function Sidebar(props: SidebarProps) {
   return (
     <Suspense
       fallback={
-        <div className="w-64 bg-white border-r border-slate-200 h-screen hidden lg:flex flex-col animate-pulse">
-          <div className="h-16 border-b border-slate-100 flex items-center px-6">
-            <div className="w-8 h-8 bg-slate-100 rounded-full" />
-            <div className="ml-3 h-4 bg-slate-100 rounded w-24" />
+        <div className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen hidden lg:flex flex-col animate-pulse">
+          <div className="h-16 border-b border-slate-100 dark:border-slate-800 flex items-center px-6">
+            <div className="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-full" />
+            <div className="ml-3 h-4 bg-slate-100 dark:bg-slate-800 rounded w-24" />
           </div>
           <div className="mt-6 px-3 space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (

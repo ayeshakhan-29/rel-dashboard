@@ -10,6 +10,7 @@ import TripFilters from "@/components/dispatch/TripFilters";
 import TripTable from "@/components/dispatch/TripTable";
 import TripCards from "@/components/dispatch/TripCards";
 import { useDispatchData } from "@/components/dispatch/useDispatchData";
+import { Loader2 } from "lucide-react";
 
 function DispatchContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -33,11 +34,11 @@ function DispatchContent() {
   } = useDispatchData();
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen bg-background overflow-hidden transition-colors duration-300">
       {/* Sidebar overlay for mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden transition-opacity"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -50,7 +51,7 @@ function DispatchContent() {
           onMenuClick={() => setSidebarOpen(true)}
         />
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background transition-colors duration-300">
           <DispatchHeader
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -70,18 +71,18 @@ function DispatchContent() {
           <div className="overflow-x-auto">
             {loading ? (
               <div className="flex items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800"></div>
-                <span className="ml-3 text-slate-600 font-medium">Loading dispatch board...</span>
+                <Loader2 className="h-8 w-8 text-emerald-600 animate-spin" />
+                <span className="ml-3 text-slate-500 dark:text-slate-400 font-medium">Loading dispatch board...</span>
               </div>
             ) : trips.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="bg-slate-100 p-4 rounded-full mb-4 text-slate-400">
+                <div className="bg-card p-4 rounded-full mb-4 text-slate-400 border border-border">
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-slate-800">No trips found</h3>
-                <p className="text-slate-500 max-w-sm mx-auto mt-1">There are no reservations matching your current search and filters.</p>
+                <h3 className="text-lg font-semibold text-foreground">No trips found</h3>
+                <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1">There are no reservations matching your current search and filters.</p>
               </div>
             ) : viewMode === "table" ? (
               <TripTable

@@ -129,30 +129,30 @@ export default function TeamManagementPage() {
     const getRoleBadge = (role: string) => {
         switch(role) {
             case 'admin':
-                return 'bg-violet-100 text-violet-700 border-violet-200';
+                return 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border-violet-200 dark:border-violet-900/30';
             case 'team':
-                return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+                return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/30';
             case 'employee':
-                return 'bg-blue-100 text-blue-700 border-blue-200';
+                return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900/30';
             default:
-                return 'bg-slate-100 text-slate-700 border-slate-200';
+                return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-700';
         }
     };
 
     return (
         <AdminRoute>
-            <div className="flex h-screen bg-slate-50">
+            <div className="flex h-screen bg-background text-foreground transition-colors duration-300">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Header title="Team Management" onMenuClick={() => setSidebarOpen(true)} />
 
-                    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
+                    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-6 transition-colors duration-300">
                         <div className="max-w-6xl mx-auto">
                             <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                 <div>
-                                    <h1 className="text-2xl font-semibold text-slate-900">Staff & Team</h1>
-                                    <p className="mt-1 text-sm text-slate-500">Manage dashboard users and their access levels.</p>
+                                    <h1 className="text-2xl font-semibold text-foreground">Staff & Team</h1>
+                                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Manage dashboard users and their access levels.</p>
                                 </div>
                                 <div className="flex flex-col md:flex-row gap-3">
                                     <div className="relative">
@@ -162,13 +162,13 @@ export default function TeamManagementPage() {
                                             placeholder="Search team..." 
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
-                                            className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-slate-900/10 min-w-[200px]"
+                                            className="pl-10 pr-4 py-2 bg-card border border-border rounded-xl text-sm text-foreground outline-none focus:ring-1 focus:ring-emerald-500 transition-all min-w-[200px]"
                                         />
                                     </div>
                                     <button
                                         type="button"
                                         onClick={() => router.push('/admin/team/register')}
-                                        className="inline-flex items-center rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+                                        className="inline-flex items-center rounded-xl bg-slate-900 dark:bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 dark:hover:bg-emerald-500"
                                     >
                                         <Plus className="mr-2 h-4 w-4" />
                                         Add Member
@@ -178,61 +178,61 @@ export default function TeamManagementPage() {
 
                             <div className="mb-6">
                                 {loading ? (
-                                    <div className="flex items-center justify-center py-20 bg-white rounded-3xl border border-slate-200">
-                                        <Loader2 className="h-6 w-6 animate-spin text-slate-500" />
+                                    <div className="flex items-center justify-center py-20 bg-card rounded-3xl border border-border transition-colors">
+                                        <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
                                     </div>
                                 ) : apiError ? (
-                                    <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                                    <div className="rounded-2xl border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 p-4 text-sm text-red-700 dark:text-red-400">
                                         {apiError}
                                     </div>
                                 ) : filteredUsers.length === 0 ? (
-                                    <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center">
-                                        <UserIcon className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                                        <h3 className="text-lg font-medium text-slate-900">No members found</h3>
-                                        <p className="text-slate-500 mt-1">Try adjusting your search or add a new team member.</p>
+                                    <div className="rounded-3xl border border-border bg-card p-12 text-center transition-colors">
+                                        <UserIcon className="h-12 w-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+                                        <h3 className="text-lg font-medium text-foreground">No members found</h3>
+                                        <p className="text-slate-500 dark:text-slate-400 mt-1">Try adjusting your search or add a new team member.</p>
                                     </div>
                                 ) : (
-                                    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                                    <div className="rounded-3xl border border-border bg-card shadow-sm overflow-hidden transition-colors">
                                         <div className="overflow-x-auto">
-                                            <table className="min-w-full text-left text-sm text-slate-600">
-                                                <thead className="border-b border-slate-200 bg-slate-50 text-slate-900">
+                                            <table className="min-w-full text-left text-sm">
+                                                <thead className="border-b border-border bg-background transition-colors">
                                                     <tr>
-                                                        <th className="px-6 py-4 font-semibold uppercase tracking-wider text-[11px]">User</th>
-                                                        <th className="px-6 py-4 font-semibold uppercase tracking-wider text-[11px]">Email</th>
-                                                        <th className="px-6 py-4 font-semibold uppercase tracking-wider text-[11px]">Role</th>
-                                                        <th className="px-6 py-4 font-semibold uppercase tracking-wider text-[11px]">Joined</th>
-                                                        <th className="px-6 py-4 font-semibold uppercase tracking-wider text-[11px] text-right">Actions</th>
+                                                        <th className="px-6 py-4 font-bold uppercase tracking-wider text-[11px] text-foreground h-12">User</th>
+                                                        <th className="px-6 py-4 font-bold uppercase tracking-wider text-[11px] text-foreground h-12">Email</th>
+                                                        <th className="px-6 py-4 font-bold uppercase tracking-wider text-[11px] text-foreground h-12">Role</th>
+                                                        <th className="px-6 py-4 font-bold uppercase tracking-wider text-[11px] text-foreground h-12">Joined</th>
+                                                        <th className="px-6 py-4 font-bold uppercase tracking-wider text-[11px] text-foreground h-12 text-right">Actions</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="divide-y divide-slate-100">
+                                                <tbody className="divide-y divide-border">
                                                     {filteredUsers.map((user) => (
-                                                        <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
+                                                        <tr key={user.id} className="hover:bg-background transition-colors">
                                                             <td className="px-6 py-4">
                                                                 <div className="flex items-center">
-                                                                    <div className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-xs ring-2 ring-slate-50">
+                                                                    <div className="h-10 w-10 rounded-full bg-background dark:bg-slate-800 border border-border flex items-center justify-center text-foreground font-bold text-xs">
                                                                         {user.name.charAt(0).toUpperCase()}
                                                                     </div>
-                                                                    <div className="ml-3">
-                                                                        <div className="font-semibold text-slate-900">{user.name}</div>
-                                                                        <div className="text-[11px] text-slate-400 font-mono">ID: {user.id}</div>
+                                                                    <div className="ml-4">
+                                                                        <div className="font-bold text-foreground">{user.name}</div>
+                                                                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono tracking-tighter">ID: {user.id}</div>
                                                                     </div>
                                                                 </div>
                                                             </td>
                                                             <td className="px-6 py-4">
-                                                                <div className="flex items-center text-slate-600">
-                                                                    <Mail className="h-3.5 w-3.5 mr-2 text-slate-400" />
+                                                                <div className="flex items-center text-slate-600 dark:text-slate-400">
+                                                                    <Mail className="h-3.5 w-3.5 mr-2 opacity-50" />
                                                                     {user.email}
                                                                 </div>
                                                             </td>
                                                             <td className="px-6 py-4">
-                                                                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border ${getRoleBadge(user.role)}`}>
-                                                                    <Shield className="mr-1 h-3 w-3" />
+                                                                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase border tracking-wider ${getRoleBadge(user.role)}`}>
+                                                                    <Shield className="mr-1.5 h-3 w-3" />
                                                                     {user.role}
                                                                 </span>
                                                             </td>
                                                             <td className="px-6 py-4 text-slate-500">
-                                                                <div className="flex items-center">
-                                                                    <Calendar className="h-3.5 w-3.5 mr-2 text-slate-400" />
+                                                                <div className="flex items-center text-[13px]">
+                                                                    <Calendar className="h-3.5 w-3.5 mr-2 opacity-50" />
                                                                     {new Date(user.created_at).toLocaleDateString()}
                                                                 </div>
                                                             </td>
@@ -240,14 +240,14 @@ export default function TeamManagementPage() {
                                                                 <div className="flex items-center justify-end gap-2">
                                                                     <button
                                                                         onClick={() => handleEditClick(user)}
-                                                                        className="p-2 text-slate-400 hover:text-slate-900 hover:bg-white rounded-xl border border-transparent hover:border-slate-200 transition-all shadow-none hover:shadow-sm"
+                                                                        className="p-2 text-slate-400 hover:text-foreground hover:bg-background rounded-xl border border-transparent hover:border-border transition-all"
                                                                     >
                                                                         <Edit className="h-4 w-4" />
                                                                     </button>
                                                                     <button
                                                                         onClick={() => handleDelete(user.id)}
                                                                         disabled={deletingId === user.id}
-                                                                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-transparent hover:border-rose-100 transition-all disabled:opacity-50"
+                                                                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl border border-transparent hover:border-rose-100 dark:hover:border-rose-900/30 transition-all disabled:opacity-50"
                                                                     >
                                                                         {deletingId === user.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                                                                     </button>
@@ -268,50 +268,50 @@ export default function TeamManagementPage() {
 
             {/* Edit Modal */}
             {isEditModalOpen && editingUser && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px] p-4">
-                    <div className="w-full max-w-lg rounded-3xl bg-white shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-                        <div className="flex items-center justify-between border-b border-slate-100 p-6">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="w-full max-w-lg rounded-3xl bg-card shadow-2xl overflow-hidden border border-border animate-in zoom-in-95 duration-200 transition-colors">
+                        <div className="flex items-center justify-between border-b border-border p-6 bg-card transition-colors">
                             <div>
-                                <h3 className="text-xl font-bold text-slate-900">Edit Member</h3>
-                                <p className="text-sm text-slate-500">Update access for {editingUser.name}</p>
+                                <h3 className="text-xl font-bold text-foreground">Edit Member</h3>
+                                <p className="text-sm text-slate-500 dark:text-slate-400">Update access for {editingUser.name}</p>
                             </div>
                             <button 
                                 onClick={() => setIsEditModalOpen(false)}
-                                className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+                                className="rounded-full p-2 text-slate-400 hover:bg-background hover:text-foreground transition-colors"
                             >
                                 <X className="h-6 w-6" />
                             </button>
                         </div>
 
-                        <form onSubmit={handleUpdateUser} className="p-6 space-y-4">
+                        <form onSubmit={handleUpdateUser} className="p-6 space-y-4 bg-background/50 transition-colors">
                             <div className="space-y-1">
-                                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Full Name</label>
+                                <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Full Name</label>
                                 <input
                                     type="text"
                                     required
                                     value={editFormData.name}
                                     onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-900 focus:bg-white transition"
+                                    className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground outline-none focus:ring-1 focus:ring-emerald-500 transition-all"
                                 />
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Email (Important)</label>
+                                <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Email Address</label>
                                 <input
                                     type="email"
                                     required
                                     value={editFormData.email}
                                     onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
-                                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-900 focus:bg-white transition"
+                                    className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground outline-none focus:ring-1 focus:ring-emerald-500 transition-all"
                                 />
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Assign Role</label>
+                                <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Assign Role</label>
                                 <select
                                     value={editFormData.role}
                                     onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value as any })}
-                                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-900 focus:bg-white transition appearance-none"
+                                    className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground outline-none focus:ring-1 focus:ring-emerald-500 transition-all appearance-none cursor-pointer"
                                 >
                                     <option value="team">Team Member</option>
                                     <option value="admin">Administrator</option>
@@ -321,18 +321,18 @@ export default function TeamManagementPage() {
                                 </select>
                             </div>
 
-                            <div className="flex gap-3 pt-4">
+                            <div className="flex gap-3 pt-6 border-t border-border mt-4">
                                 <button
                                     type="button"
                                     onClick={() => setIsEditModalOpen(false)}
-                                    className="flex-1 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                                    className="flex-1 rounded-2xl border border-border bg-background px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-800"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={updateLoading}
-                                    className="flex-1 inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:opacity-50"
+                                    className="flex-1 inline-flex items-center justify-center rounded-2xl bg-slate-900 dark:bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 dark:hover:bg-emerald-500 disabled:opacity-50"
                                 >
                                     {updateLoading ? (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

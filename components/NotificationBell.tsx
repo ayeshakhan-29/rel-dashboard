@@ -96,19 +96,19 @@ export default function NotificationBell() {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2.5 bg-white rounded-2xl border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition active:scale-95 shadow-sm"
+                className="relative p-2.5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition active:scale-95 shadow-sm"
             >
                 <Bell className="h-6 w-6" />
                 {unreadCount > 0 && (
-                    <span className="absolute top-2 right-2 w-5 h-5 bg-emerald-500 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white shadow-sm ring-1 ring-emerald-100">
+                    <span className="absolute top-2 right-2 w-5 h-5 bg-emerald-500 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white dark:border-slate-800 shadow-sm ring-1 ring-emerald-100 dark:ring-emerald-900/30">
                         {unreadCount}
                     </span>
                 )}
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-3 w-80 md:w-96 bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden z-[100] animate-in fade-in zoom-in duration-200 origin-top-right">
-                    <div className="p-6 bg-slate-900 text-white flex items-center justify-between">
+                <div className="absolute right-0 mt-3 w-80 md:w-96 bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden z-[100] animate-in fade-in zoom-in duration-200 origin-top-right">
+                    <div className="p-6 bg-slate-900 dark:bg-slate-950 text-white flex items-center justify-between">
                         <div>
                             <h3 className="text-lg font-black tracking-tight">Notifications</h3>
                             <p className="text-white/50 text-xs font-bold uppercase tracking-widest mt-0.5">{unreadCount} New Alerts</p>
@@ -123,39 +123,39 @@ export default function NotificationBell() {
                         )}
                     </div>
 
-                    <div className="max-h-[400px] overflow-y-auto bg-slate-50/30">
+                    <div className="max-h-[400px] overflow-y-auto bg-slate-50/30 dark:bg-slate-900/50">
                         {notifications.length === 0 ? (
                             <div className="p-12 text-center">
-                                <div className="w-16 h-16 bg-white border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-200 shadow-sm">
+                                <div className="w-16 h-16 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-200 dark:text-slate-600 shadow-sm">
                                     <Bell className="h-8 w-8" />
                                 </div>
-                                <p className="text-slate-400 font-bold text-sm">No new notifications</p>
+                                <p className="text-slate-400 dark:text-slate-500 font-bold text-sm">No new notifications</p>
                             </div>
                         ) : (
-                            <div className="divide-y divide-slate-100">
+                            <div className="divide-y divide-slate-100 dark:divide-slate-800">
                                 {notifications.map((notification) => (
                                     <div 
                                         key={notification.id}
                                         className={clsx(
                                             "p-5 transition-colors group relative",
-                                            notification.is_read ? "bg-transparent opacity-70" : "bg-white"
+                                            notification.is_read ? "bg-transparent opacity-70" : "bg-white dark:bg-slate-900"
                                         )}
                                     >
                                         <div className="flex gap-4">
                                             <div className={clsx(
                                                 "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm border",
-                                                notification.is_read ? "bg-slate-50 border-slate-100" : "bg-white border-slate-200"
+                                                notification.is_read ? "bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
                                             )}>
                                                 {getIcon(notification.type)}
                                             </div>
                                             <div className="flex-1 min-w-0 pr-12">
                                                 <div className="flex items-center justify-between gap-2 mb-1">
-                                                    <h4 className="text-sm font-black text-slate-900 truncate tracking-tight">{notification.title}</h4>
-                                                    <span className="text-[10px] font-bold text-slate-400 whitespace-nowrap">
+                                                    <h4 className="text-sm font-black text-slate-900 dark:text-white truncate tracking-tight">{notification.title}</h4>
+                                                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 whitespace-nowrap">
                                                         {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
                                                     </span>
                                                 </div>
-                                                <p className="text-sm text-slate-500 leading-snug font-medium line-clamp-2">
+                                                <p className="text-sm text-slate-500 dark:text-slate-400 leading-snug font-medium line-clamp-2">
                                                     {notification.message}
                                                 </p>
                                             </div>
@@ -190,10 +190,10 @@ export default function NotificationBell() {
                         )}
                     </div>
                     
-                    <div className="p-4 bg-white border-t border-slate-100 text-center">
+                    <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 text-center">
                         <button 
                             onClick={() => setIsOpen(false)}
-                            className="text-xs font-black text-slate-400 hover:text-slate-900 transition tracking-widest uppercase italic"
+                            className="text-xs font-black text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition tracking-widest uppercase italic"
                         >
                             Close Notifications
                         </button>

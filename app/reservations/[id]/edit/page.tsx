@@ -191,7 +191,7 @@ export default function EditReservationPage() {
 };
     if (loading) {
         return (
-            <div className="flex h-screen bg-slate-50">
+            <div className="flex h-screen bg-background">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
                 <div className="flex-1 flex items-center justify-center">
                     <Loader2 className="h-8 w-8 text-emerald-600 animate-spin" />
@@ -202,17 +202,17 @@ export default function EditReservationPage() {
 
     if (success) {
         return (
-            <div className="flex h-screen bg-slate-50">
+            <div className="flex h-screen bg-background">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Header title="Edit Reservation" onMenuClick={() => setSidebarOpen(true)} />
                     <div className="flex-1 flex items-center justify-center">
-                        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
-                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div className="bg-card rounded-xl shadow-lg p-8 max-w-md w-full text-center border border-border">
+                            <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <CheckCircle className="h-8 w-8 text-green-600" />
                             </div>
-                            <h2 className="text-2xl font-bold text-slate-900 mb-2">Reservation Updated!</h2>
-                            <p className="text-slate-600 mb-6">Your reservation has been updated successfully.</p>
+                            <h2 className="text-2xl font-bold text-foreground mb-2">Reservation Updated!</h2>
+                            <p className="text-slate-600 dark:text-slate-400 mb-6">Your reservation has been updated successfully.</p>
                             <p className="text-sm text-slate-500">Redirecting to reservation details...</p>
                             <div className="mt-6 flex justify-center">
                                 <Loader2 className="h-6 w-6 text-emerald-600 animate-spin" />
@@ -226,34 +226,34 @@ export default function EditReservationPage() {
 
     return (
         <AdminRoute>
-            <div className="flex h-screen bg-slate-50">
+            <div className="flex h-screen bg-background text-foreground transition-colors duration-300">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
                 
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Header title="Edit Reservation" onMenuClick={() => setSidebarOpen(true)} />
 
-                    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
+                    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-6">
                         <div className="max-w-4xl mx-auto">
                             {errors.submit && (
-                                <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
+                                <div className="mb-6 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-lg p-4 flex items-start space-x-3">
                                     <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-                                    <p className="text-sm text-red-700">{errors.submit}</p>
+                                    <p className="text-sm text-red-700 dark:text-red-400">{errors.submit}</p>
                                 </div>
                             )}
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 {/* Booking Type Display (Read-only) */}
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                    <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                         <FileText className="h-5 w-5 mr-2 text-emerald-600" />
                                         Booking Type
                                     </h2>
                                     <div className="flex items-center space-x-4">
-                                        <span className="px-4 py-2 bg-slate-100 rounded-lg text-sm font-medium text-slate-700">
+                                        <span className="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300">
                                             {formData.booking_type === 'form' ? 'Form Booking' : 
                                              formData.booking_type === 'contract' ? 'Contract Booking' : 'Manual Entry'}
                                         </span>
-                                        <span className="px-4 py-2 bg-slate-100 rounded-lg text-sm font-medium text-slate-700">
+                                        <span className="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300">
                                             {formData.trip_type === 'distance' ? 'Distance Based' : 
                                              formData.trip_type === 'hourly' ? 'Hourly' : 'Contract'}
                                         </span>
@@ -261,14 +261,14 @@ export default function EditReservationPage() {
                                 </div>
 
                                 {/* Passenger Information */}
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                    <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                         <User className="h-5 w-5 mr-2 text-emerald-600" />
                                         Passenger Information
                                     </h2>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Full Name <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -278,8 +278,8 @@ export default function EditReservationPage() {
                                                     name="passenger_name"
                                                     value={formData.passenger_name}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                                                        errors.passenger_name ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
+                                                        errors.passenger_name ? 'border-red-500' : 'border-border'
                                                     }`}
                                                     placeholder="Enter passenger name"
                                                 />
@@ -290,7 +290,7 @@ export default function EditReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Email <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -300,8 +300,8 @@ export default function EditReservationPage() {
                                                     name="passenger_email"
                                                     value={formData.passenger_email}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                                                        errors.passenger_email ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
+                                                        errors.passenger_email ? 'border-red-500' : 'border-border'
                                                     }`}
                                                     placeholder="passenger@example.com"
                                                 />
@@ -312,7 +312,7 @@ export default function EditReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Phone <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -322,8 +322,8 @@ export default function EditReservationPage() {
                                                     name="passenger_phone"
                                                     value={formData.passenger_phone}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                                                        errors.passenger_phone ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
+                                                        errors.passenger_phone ? 'border-red-500' : 'border-border'
                                                     }`}
                                                     placeholder="+1 (234) 567-8900"
                                                 />
@@ -334,7 +334,7 @@ export default function EditReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Passenger Count
                                             </label>
                                             <div className="relative">
@@ -346,7 +346,7 @@ export default function EditReservationPage() {
                                                     onChange={handleInputChange}
                                                     min="1"
                                                     max="20"
-                                                    className="text-slate-900 w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                    className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                 />
                                             </div>
                                         </div>
@@ -354,14 +354,14 @@ export default function EditReservationPage() {
                                 </div>
 
                                 {/* Trip Details */}
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                    <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                         <MapPin className="h-5 w-5 mr-2 text-emerald-600" />
                                         Trip Details
                                     </h2>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Pickup Location <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -371,8 +371,8 @@ export default function EditReservationPage() {
                                                     name="pickup_location"
                                                     value={formData.pickup_location}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                                                        errors.pickup_location ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
+                                                        errors.pickup_location ? 'border-red-500' : 'border-border'
                                                     }`}
                                                     placeholder="Enter pickup address"
                                                 />
@@ -383,7 +383,7 @@ export default function EditReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Dropoff Location <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -393,8 +393,8 @@ export default function EditReservationPage() {
                                                     name="dropoff_location"
                                                     value={formData.dropoff_location}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                                                        errors.dropoff_location ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
+                                                        errors.dropoff_location ? 'border-red-500' : 'border-border'
                                                     }`}
                                                     placeholder="Enter dropoff address"
                                                 />
@@ -405,7 +405,7 @@ export default function EditReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Pickup Date <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -416,8 +416,8 @@ export default function EditReservationPage() {
                                                     value={formData.pickup_date}
                                                     onChange={handleInputChange}
                                                     min={new Date().toISOString().split('T')[0]}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                                                        errors.pickup_date ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
+                                                        errors.pickup_date ? 'border-red-500' : 'border-border'
                                                     }`}
                                                 />
                                             </div>
@@ -427,7 +427,7 @@ export default function EditReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Pickup Time <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -437,8 +437,8 @@ export default function EditReservationPage() {
                                                     name="pickup_time"
                                                     value={formData.pickup_time}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                                                        errors.pickup_time ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
+                                                        errors.pickup_time ? 'border-red-500' : 'border-border'
                                                     }`}
                                                 />
                                             </div>
@@ -448,7 +448,7 @@ export default function EditReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Vehicle Type <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -457,8 +457,8 @@ export default function EditReservationPage() {
                                                     name="vehicle_type_id"
                                                     value={formData.vehicle_type_id || ''}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                                                        errors.vehicle_type_id ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
+                                                        errors.vehicle_type_id ? 'border-red-500' : 'border-border'
                                                     }`}
                                                 >
                                                     <option value="">Select a vehicle</option>
@@ -475,7 +475,7 @@ export default function EditReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Luggage Count
                                             </label>
                                             <div className="relative">
@@ -487,7 +487,7 @@ export default function EditReservationPage() {
                                                     onChange={handleInputChange}
                                                     min="0"
                                                     max="10"
-                                                    className="text-slate-900 w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                    className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                 />
                                             </div>
                                         </div>
@@ -495,15 +495,15 @@ export default function EditReservationPage() {
                                 </div>
 
                                 {/* Pricing */}
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                    <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                         <DollarSign className="h-5 w-5 mr-2 text-emerald-600" />
                                         Pricing
                                     </h2>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Price ($) <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -515,8 +515,8 @@ export default function EditReservationPage() {
                                                     onChange={handleInputChange}
                                                     min="0"
                                                     step="0.01"
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                                                        errors.price ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
+                                                        errors.price ? 'border-red-500' : 'border-border'
                                                     }`}
                                                     placeholder="0.00"
                                                 />
@@ -527,7 +527,7 @@ export default function EditReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Payment Status
                                             </label>
                                             <div className="relative">
@@ -536,7 +536,7 @@ export default function EditReservationPage() {
                                                     name="payment_status"
                                                     value={formData.payment_status}
                                                     onChange={handleInputChange}
-                                                    className="text-slate-900 w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                    className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                 >
                                                     <option value="pending">Pending</option>
                                                     <option value="paid">Paid</option>
@@ -547,11 +547,11 @@ export default function EditReservationPage() {
 
                                     {/* Contract fields */}
                                     {formData.booking_type === 'contract' && (
-                                        <div className="mt-6 pt-6 border-t border-slate-200">
-                                            <h3 className="text-md font-medium text-slate-900 mb-4">Contract Details</h3>
+                                        <div className="mt-6 pt-6 border-t border-border">
+                                            <h3 className="text-md font-medium text-foreground mb-4">Contract Details</h3>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 <div>
-                                                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                         Start Date
                                                     </label>
                                                     <div className="relative">
@@ -561,12 +561,12 @@ export default function EditReservationPage() {
                                                             name="contract_start_date"
                                                             value={formData.contract_start_date}
                                                             onChange={handleInputChange}
-                                                            className="text-slate-900 w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                            className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                         />
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                         End Date
                                                     </label>
                                                     <div className="relative">
@@ -576,12 +576,12 @@ export default function EditReservationPage() {
                                                             name="contract_end_date"
                                                             value={formData.contract_end_date}
                                                             onChange={handleInputChange}
-                                                            className="text-slate-900 w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                            className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                         />
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                         Daily Rate ($)
                                                     </label>
                                                     <input
@@ -591,12 +591,12 @@ export default function EditReservationPage() {
                                                         onChange={handleInputChange}
                                                         min="0"
                                                         step="0.01"
-                                                        className="text-slate-900 w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                        className="bg-card text-foreground w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                         placeholder="0.00"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                         Hourly Rate ($)
                                                     </label>
                                                     <input
@@ -606,7 +606,7 @@ export default function EditReservationPage() {
                                                         onChange={handleInputChange}
                                                         min="0"
                                                         step="0.01"
-                                                        className="text-slate-900 w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                        className="bg-card text-foreground w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                         placeholder="0.00"
                                                     />
                                                 </div>
@@ -615,19 +615,19 @@ export default function EditReservationPage() {
                                     )}
 
                                     {/* Submit Button */}
-                                    <div className="mt-8 pt-4 border-t border-slate-200">
+                                    <div className="mt-8 pt-4 border-t border-border">
                                         <div className="flex justify-end gap-3">
                                             <button
                                                 type="button"
                                                 onClick={() => router.push(`/reservations/${id}`)}
-                                                className="px-6 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+                                                className="px-6 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 bg-card border border-border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                                             >
                                                 Cancel
                                             </button>
                                             <button
                                                 type="submit"
                                                 disabled={submitting}
-                                                className="px-6 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                                                className="px-6 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 shadow-sm shadow-emerald-500/20 transition-all font-semibold"
                                             >
                                                 {submitting ? (
                                                     <>

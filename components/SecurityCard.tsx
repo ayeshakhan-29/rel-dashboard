@@ -121,21 +121,21 @@ export default function SecurityCard() {
     };
 
     return (
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
+        <div className="bg-card rounded-2xl border border-border p-6 transition-colors">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-emerald-50 rounded-lg">
-                        <Shield className="h-5 w-5 text-emerald-600" />
+                    <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                        <Shield className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <div>
-                        <h3 className="text-base font-semibold text-slate-900">Security Settings</h3>
-                        <p className="text-sm text-slate-600">Manage your account security and personal information</p>
+                        <h3 className="text-base font-bold text-foreground">Security Settings</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Manage your account security and personal information</p>
                     </div>
                 </div>
                 {!isEditing && (
                     <button
                         onClick={() => setIsEditing(true)}
-                        className="px-4 py-2 text-sm font-medium text-slate-900 hover:text-slate-700 border border-slate-200 hover:border-slate-300 rounded-lg transition-colors"
+                        className="px-4 py-2 text-sm font-bold text-foreground border border-border hover:bg-background rounded-xl transition-all"
                     >
                         Edit Profile
                     </button>
@@ -144,17 +144,17 @@ export default function SecurityCard() {
 
             {/* Success Message */}
             {success && (
-                <div className="mb-4 bg-emerald-50 border border-emerald-200 rounded-lg p-3 flex items-center">
-                    <CheckCircle className="h-4 w-4 text-emerald-600 mr-2" />
-                    <span className="text-sm text-emerald-700">{success}</span>
+                <div className="mb-4 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-900/30 rounded-xl p-3 flex items-center">
+                    <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mr-2" />
+                    <span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">{success}</span>
                 </div>
             )}
 
             {/* Error Message */}
             {error && (
-                <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3 flex items-center">
-                    <AlertCircle className="h-4 w-4 text-red-600 mr-2" />
-                    <span className="text-sm text-red-700">{error}</span>
+                <div className="mb-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-xl p-3 flex items-center">
+                    <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400 mr-2" />
+                    <span className="text-sm font-medium text-red-700 dark:text-red-400">{error}</span>
                 </div>
             )}
 
@@ -162,7 +162,7 @@ export default function SecurityCard() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Name Field */}
                     <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
+                        <label htmlFor="name" className="block text-sm font-bold text-foreground mb-2">
                             Full Name
                         </label>
                         <div className="relative">
@@ -173,19 +173,19 @@ export default function SecurityCard() {
                                 name="name"
                                 value={formData.name}
                                 onChange={handleChange}
-                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${errors.name ? 'border-red-300 bg-red-50' : 'border-slate-300 bg-white'
+                                className={`w-full pl-10 pr-4 py-2.5 border rounded-xl text-foreground focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all ${errors.name ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : 'border-border bg-background'
                                     }`}
                                 placeholder="Enter your full name"
                             />
                         </div>
                         {errors.name && (
-                            <p className="text-xs text-red-600 mt-1">{errors.name}</p>
+                            <p className="text-xs font-bold text-red-600 dark:text-red-400 mt-1">{errors.name}</p>
                         )}
                     </div>
 
                     {/* Email Field */}
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
+                        <label htmlFor="email" className="block text-sm font-bold text-foreground mb-2">
                             Email Address
                         </label>
                         <div className="relative">
@@ -196,23 +196,23 @@ export default function SecurityCard() {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                className={`w-full pl-10 pr-4 py-2.5 border text-gray-900 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${errors.email ? 'border-red-300 bg-red-50' : 'border-slate-300 bg-white'
+                                className={`w-full pl-10 pr-4 py-2.5 border rounded-xl text-foreground focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all ${errors.email ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : 'border-border bg-background'
                                     }`}
                                 placeholder="Enter your email address"
                             />
                         </div>
                         {errors.email && (
-                            <p className="text-xs text-red-600 mt-1">{errors.email}</p>
+                            <p className="text-xs font-bold text-red-600 dark:text-red-400 mt-1">{errors.email}</p>
                         )}
                     </div>
 
                     {/* Password Change Section */}
-                    <div className="pt-4 border-t border-slate-200">
-                        <h4 className="text-sm font-medium text-slate-900 mb-3">Change Password (Optional)</h4>
+                    <div className="pt-4 border-t border-border">
+                        <h4 className="text-sm font-bold text-foreground mb-3">Change Password (Optional)</h4>
 
                         {/* Current Password */}
                         <div className="mb-4">
-                            <label htmlFor="currentPassword" className="block text-sm font-medium text-slate-700 mb-2">
+                            <label htmlFor="currentPassword" className="block text-sm font-bold text-foreground mb-2">
                                 Current Password
                             </label>
                             <div className="relative">
@@ -223,26 +223,26 @@ export default function SecurityCard() {
                                     name="currentPassword"
                                     value={formData.currentPassword}
                                     onChange={handleChange}
-                                    className={`w-full pl-10 pr-12 py-2.5 border text-gray-900 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${errors.currentPassword ? 'border-red-300 bg-red-50' : 'border-slate-300 bg-white'
+                                    className={`w-full pl-10 pr-12 py-2.5 border rounded-xl text-foreground focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all ${errors.currentPassword ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : 'border-border bg-background'
                                         }`}
                                     placeholder="Enter current password"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-foreground"
                                 >
                                     {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                 </button>
                             </div>
                             {errors.currentPassword && (
-                                <p className="text-xs text-red-600 mt-1">{errors.currentPassword}</p>
+                                <p className="text-xs font-bold text-red-600 dark:text-red-400 mt-1">{errors.currentPassword}</p>
                             )}
                         </div>
 
                         {/* New Password */}
                         <div className="mb-4">
-                            <label htmlFor="newPassword" className="block text-sm font-medium text-slate-700 mb-2">
+                            <label htmlFor="newPassword" className="block text-sm font-bold text-foreground mb-2">
                                 New Password
                             </label>
                             <div className="relative">
@@ -253,26 +253,26 @@ export default function SecurityCard() {
                                     name="newPassword"
                                     value={formData.newPassword}
                                     onChange={handleChange}
-                                    className={`w-full pl-10 pr-12 py-2.5 text-gray-900 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${errors.newPassword ? 'border-red-300 bg-red-50' : 'border-slate-300 bg-white'
+                                    className={`w-full pl-10 pr-12 py-2.5 border rounded-xl text-foreground focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all ${errors.newPassword ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : 'border-border bg-background'
                                         }`}
                                     placeholder="Enter new password"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowNewPassword(!showNewPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-foreground"
                                 >
                                     {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                 </button>
                             </div>
                             {errors.newPassword && (
-                                <p className="text-xs text-red-600 mt-1">{errors.newPassword}</p>
+                                <p className="text-xs font-bold text-red-600 dark:text-red-400 mt-1">{errors.newPassword}</p>
                             )}
                         </div>
 
                         {/* Confirm Password */}
                         <div>
-                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-2">
+                            <label htmlFor="confirmPassword" className="block text-sm font-bold text-foreground mb-2">
                                 Confirm New Password
                             </label>
                             <div className="relative">
@@ -283,31 +283,31 @@ export default function SecurityCard() {
                                     name="confirmPassword"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
-                                    className={`w-full pl-10 pr-4 py-2.5 border text-gray-900 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${errors.confirmPassword ? 'border-red-300 bg-red-50' : 'border-slate-300 bg-white'
+                                    className={`w-full pl-10 pr-4 py-2.5 border rounded-xl text-foreground focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all ${errors.confirmPassword ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : 'border-border bg-background'
                                         }`}
                                     placeholder="Confirm new password"
                                 />
                             </div>
                             {errors.confirmPassword && (
-                                <p className="text-xs text-red-600 mt-1">{errors.confirmPassword}</p>
+                                <p className="text-xs font-bold text-red-600 dark:text-red-400 mt-1">{errors.confirmPassword}</p>
                             )}
                         </div>
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex items-center justify-end space-x-3 pt-4">
+                    <div className="flex items-center justify-end space-x-3 pt-4 border-t border-border mt-4">
                         <button
                             type="button"
                             onClick={handleCancel}
                             disabled={loading}
-                            className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50"
+                            className="px-4 py-2 text-sm font-bold text-foreground bg-background border border-border rounded-xl hover:bg-card transition-colors disabled:opacity-50"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-4 py-2 text-sm font-medium text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50 flex items-center"
+                            className="px-4 py-2 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50 flex items-center shadow-md active:scale-95"
                         >
                             {loading ? (
                                 <>
@@ -325,22 +325,22 @@ export default function SecurityCard() {
                     <div className="flex items-center space-x-3">
                         <User className="h-4 w-4 text-slate-400" />
                         <div>
-                            <p className="text-sm font-medium text-slate-900">{user?.name}</p>
-                            <p className="text-xs text-slate-500">Full Name</p>
+                            <p className="text-sm font-bold text-foreground">{user?.name}</p>
+                            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-0.5">Full Name</p>
                         </div>
                     </div>
                     <div className="flex items-center space-x-3">
                         <Mail className="h-4 w-4 text-slate-400" />
                         <div>
-                            <p className="text-sm font-medium text-slate-900">{user?.email}</p>
-                            <p className="text-xs text-slate-500">Email Address</p>
+                            <p className="text-sm font-bold text-foreground">{user?.email}</p>
+                            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-0.5">Email Address</p>
                         </div>
                     </div>
                     <div className="flex items-center space-x-3">
                         <Lock className="h-4 w-4 text-slate-400" />
                         <div>
-                            <p className="text-sm font-medium text-slate-900">••••••••</p>
-                            <p className="text-xs text-slate-500">Password</p>
+                            <p className="text-sm font-bold text-foreground">••••••••</p>
+                            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-0.5">Password</p>
                         </div>
                     </div>
                 </div>

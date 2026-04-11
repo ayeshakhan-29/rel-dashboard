@@ -117,14 +117,14 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                 <Link
                     href="/admin/analytics"
-                    className="bg-white rounded-lg border border-slate-200 p-4 hover:shadow-md hover:border-emerald-300 transition-all duration-200 group"
+                    className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700 transition-all duration-300 group"
                 >
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm font-medium text-slate-600">Analytics</p>
-                            <p className="text-xs text-slate-500 mt-1">View insights</p>
+                            <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Analytics</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">View insights</p>
                         </div>
-                        <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-emerald-600 transition-colors" />
+                        <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
                     </div>
                 </Link>
             </div>
@@ -132,12 +132,12 @@ export default function AdminDashboard() {
             {/* Performance Metrics, Tasks & Trip Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Performance Metrics */}
-                <div className="bg-white rounded-lg border border-slate-200 p-6">
+                <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6 transition-colors">
                     <div className="flex items-center justify-between mb-5">
-                        <h3 className="text-base font-semibold text-slate-900">Performance Metrics</h3>
+                        <h3 className="text-base font-semibold text-slate-900 dark:text-white">Performance Metrics</h3>
                         <Link
                             href="/admin/analytics"
-                            className="text-emerald-600 hover:text-emerald-700 text-xs font-semibold"
+                            className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 text-xs font-semibold"
                         >
                             View analytics
                         </Link>
@@ -149,16 +149,16 @@ export default function AdminDashboard() {
                             <p className="text-sm text-slate-500">No metrics available</p>
                         ) : (
                             performanceMetrics.map((metric, index) => (
-                                <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                                <div key={index} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg transition-colors">
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between mb-2">
-                                            <p className="text-sm font-medium text-slate-900">{metric.metric}</p>
+                                            <p className="text-sm font-medium text-slate-900 dark:text-white">{metric.metric}</p>
                                             <div className="flex items-center space-x-2">
-                                                <span className="text-sm font-semibold text-slate-900">{metric.value}</span>
-                                                <span className="text-xs text-slate-500">/ {metric.target}</span>
+                                                <span className="text-sm font-semibold text-slate-900 dark:text-white">{metric.value}</span>
+                                                <span className="text-xs text-slate-500 dark:text-slate-400">/ {metric.target}</span>
                                             </div>
                                         </div>
-                                        <div className="w-full bg-slate-200 rounded-full h-2">
+                                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                                             <div
                                                 className={`h-2 rounded-full transition-all duration-300 ${metric.progress >= 90 ? 'bg-green-500' :
                                                     metric.progress >= 70 ? 'bg-blue-500' :
@@ -177,13 +177,13 @@ export default function AdminDashboard() {
 
 
                 {/* Recent Trip Activity */}
-                <div className="bg-white rounded-lg border border-slate-200 p-6">
+                <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6 transition-colors">
                     <div className="flex items-center justify-between mb-5">
-                        <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
-                            <Activity className="h-4 w-4 text-emerald-600" />
+                        <h3 className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                            <Activity className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                             Trip Activity
                         </h3>
-                        <Link href="/reservations" className="text-emerald-600 hover:text-emerald-700 text-xs font-semibold">
+                        <Link href="/reservations" className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 text-xs font-semibold">
                             View all
                         </Link>
                     </div>
@@ -197,21 +197,21 @@ export default function AdminDashboard() {
                                 <Link
                                     key={log.id}
                                     href={`/reservations/${log.reservation_id}`}
-                                    className="block p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors"
+                                    className="block p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                                 >
                                     <div className="flex items-center justify-between gap-2 mb-1">
-                                        <span className="text-xs font-semibold text-slate-700 truncate">
+                                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">
                                             #{log.reservation_number} — {log.passenger_name}
                                         </span>
-                                        <span className={`flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[log.to_status] ?? 'bg-slate-100 text-slate-600'}`}>
+                                        <span className={`flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[log.to_status] ?? 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'}`}>
                                             {log.to_status.replace(/_/g, ' ')}
                                         </span>
                                     </div>
-                                    <p className="text-xs text-slate-500">
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">
                                         by {log.changed_by_name} · {new Date(log.created_at).toLocaleString()}
                                     </p>
                                     {log.note && (
-                                        <p className="text-xs text-slate-400 italic mt-0.5 truncate">"{log.note}"</p>
+                                        <p className="text-xs text-slate-400 dark:text-slate-500 italic mt-0.5 truncate">"{log.note}"</p>
                                     )}
                                 </Link>
                             ))

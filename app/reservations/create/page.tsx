@@ -206,20 +206,19 @@ export default function CreateReservationPage() {
 
     const estimatedPrice = calculateEstimatedPrice();
 
-    // Success Screen
     if (success) {
         return (
-            <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
+            <div className="flex h-screen w-screen overflow-hidden bg-background">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Header title="Create Reservation" onMenuClick={() => setSidebarOpen(true)} />
                     <div className="flex-1 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
-                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <CheckCircle className="h-8 w-8 text-green-600" />
+                        <div className="bg-card rounded-xl shadow-lg p-8 max-w-md w-full text-center border border-border">
+                            <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <CheckCircle className="h-8 w-8 text-emerald-600" />
                             </div>
-                            <h2 className="text-2xl font-bold text-slate-900 mb-2">Reservation Created!</h2>
-                            <p className="text-slate-600 mb-6">Your reservation has been created successfully.</p>
+                            <h2 className="text-2xl font-bold text-foreground mb-2">Reservation Created!</h2>
+                            <p className="text-slate-600 dark:text-slate-400 mb-6">Your reservation has been created successfully.</p>
                             <p className="text-sm text-slate-500">Redirecting to reservation details...</p>
                             <div className="mt-6 flex justify-center">
                                 <Loader2 className="h-6 w-6 text-emerald-600 animate-spin" />
@@ -233,25 +232,25 @@ export default function CreateReservationPage() {
 
     return (
         <AdminRoute>
-            <div className="flex h-screen w-full overflow-hidden bg-slate-50 text-slate-900">
+            <div className="flex h-screen w-full overflow-hidden bg-background text-foreground transition-colors duration-300">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
                 <div className="flex-1 flex flex-col overflow-hidden min-h-0">
                     <Header title="Create New Reservation" onMenuClick={() => setSidebarOpen(true)} />
 
-                    <main ref={mainRef} className="flex-1 min-h-0 overflow-y-auto p-4 md:p-6 bg-slate-50">
+                    <main ref={mainRef} className="flex-1 min-h-0 overflow-y-auto p-4 md:p-6 bg-background">
                         <div ref={formContainerRef} className="max-w-4xl mx-auto pb-32">
                             {errors.submit && (
-                                <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
+                                <div className="mb-6 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-lg p-4 flex items-start space-x-3">
                                     <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-                                    <p className="text-sm text-red-700">{errors.submit}</p>
+                                    <p className="text-sm text-red-700 dark:text-red-400">{errors.submit}</p>
                                 </div>
                             )}
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 {/* Booking Type Selection */}
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                    <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                         <FileText className="h-5 w-5 mr-2 text-emerald-600" />
                                         Booking Type
                                     </h2>
@@ -259,10 +258,10 @@ export default function CreateReservationPage() {
                                         {['form', 'manual', 'contract'].map((type) => (
                                             <label
                                                 key={type}
-                                                className={`relative flex items-center p-4 border rounded-lg cursor-pointer ${
+                                                className={`relative flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
                                                     formData.booking_type === type
-                                                        ? 'border-emerald-500 bg-emerald-50'
-                                                        : 'border-slate-200 hover:border-emerald-300'
+                                                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/10'
+                                                        : 'border-border hover:border-emerald-300 dark:hover:border-emerald-800'
                                                 }`}
                                             >
                                                 <input
@@ -274,8 +273,8 @@ export default function CreateReservationPage() {
                                                     className="absolute inset-0 opacity-0 cursor-pointer"
                                                 />
                                                 <div>
-                                                    <p className="font-medium text-slate-900 capitalize">{type} Booking</p>
-                                                    <p className="text-xs text-slate-500">
+                                                    <p className="font-medium text-foreground capitalize">{type} Booking</p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400">
                                                         {type === 'form' && 'Standard web form booking'}
                                                         {type === 'manual' && 'Created by operations team'}
                                                         {type === 'contract' && 'Long-term / multi-day'}
@@ -287,15 +286,14 @@ export default function CreateReservationPage() {
                                 </div>
 
                                 {/* Passenger Information */}
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                    <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                         <User className="h-5 w-5 mr-2 text-emerald-600" />
                                         Passenger Information
                                     </h2>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        {/* ... Passenger fields (same as before) ... */}
                                         <div className="relative">
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Full Name <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -305,23 +303,24 @@ export default function CreateReservationPage() {
                                                     name="passenger_name"
                                                     value={formData.passenger_name}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.passenger_name ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2.5 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 transition-colors ${
+                                                        errors.passenger_name ? 'border-red-500' : 'border-border'
                                                     }`}
                                                     placeholder="Enter passenger name"
                                                 />
                                             </div>
                                             {errors.passenger_name && <p className="mt-1 text-xs text-red-600">{errors.passenger_name}</p>}
                                             {showPassengerSearch && passengers.length > 0 && (
-                                                <div className="absolute z-10 mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                                <div className="absolute z-10 mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-60 overflow-y-auto">
                                                     {passengers.map(p => (
                                                         <button
                                                             key={p.id}
                                                             type="button"
                                                             onClick={() => selectPassenger(p)}
-                                                            className="w-full text-left px-4 py-2 hover:bg-slate-50 border-b last:border-b-0"
+                                                            className="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 border-border border-b last:border-b-0"
                                                         >
-                                                            <p className="font-medium text-slate-900">{p.first_name} {p.last_name}</p>
-                                                            <p className="text-xs text-slate-500">{p.email} • {p.phone}</p>
+                                                            <p className="font-medium text-foreground">{p.first_name} {p.last_name}</p>
+                                                            <p className="text-xs text-slate-500 dark:text-slate-400">{p.email} • {p.phone}</p>
                                                         </button>
                                                     ))}
                                                 </div>
@@ -329,7 +328,7 @@ export default function CreateReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Email <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -339,7 +338,8 @@ export default function CreateReservationPage() {
                                                     name="passenger_email"
                                                     value={formData.passenger_email}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.passenger_email ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2.5 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 transition-colors ${
+                                                        errors.passenger_email ? 'border-red-500' : 'border-border'
                                                     }`}
                                                     placeholder="passenger@example.com"
                                                 />
@@ -348,7 +348,7 @@ export default function CreateReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Phone <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -358,7 +358,8 @@ export default function CreateReservationPage() {
                                                     name="passenger_phone"
                                                     value={formData.passenger_phone}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.passenger_phone ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2.5 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 transition-colors ${
+                                                        errors.passenger_phone ? 'border-red-500' : 'border-border'
                                                     }`}
                                                     placeholder="+92 300 1234567"
                                                 />
@@ -367,7 +368,7 @@ export default function CreateReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">Passenger Count</label>
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Passenger Count</label>
                                             <div className="relative">
                                                 <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                                 <input
@@ -377,7 +378,7 @@ export default function CreateReservationPage() {
                                                     onChange={handleInputChange}
                                                     min="1"
                                                     max="20"
-                                                    className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                    className="w-full pl-10 pr-4 py-2.5 bg-card text-foreground border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                 />
                                             </div>
                                         </div>
@@ -385,15 +386,14 @@ export default function CreateReservationPage() {
                                 </div>
 
                                 {/* Trip Details */}
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                    <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                         <MapPin className="h-5 w-5 mr-2 text-emerald-600" />
                                         Trip Details
                                     </h2>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        {/* ... Trip Details fields (same as before) ... */}
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Pickup Location <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -403,7 +403,8 @@ export default function CreateReservationPage() {
                                                     name="pickup_location"
                                                     value={formData.pickup_location}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.pickup_location ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2.5 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 transition-colors ${
+                                                        errors.pickup_location ? 'border-red-500' : 'border-border'
                                                     }`}
                                                     placeholder="Enter pickup address"
                                                 />
@@ -412,7 +413,7 @@ export default function CreateReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Dropoff Location <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -422,7 +423,8 @@ export default function CreateReservationPage() {
                                                     name="dropoff_location"
                                                     value={formData.dropoff_location}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.dropoff_location ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2.5 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 transition-colors ${
+                                                        errors.dropoff_location ? 'border-red-500' : 'border-border'
                                                     }`}
                                                     placeholder="Enter dropoff address"
                                                 />
@@ -431,7 +433,7 @@ export default function CreateReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Pickup Date <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -442,7 +444,8 @@ export default function CreateReservationPage() {
                                                     value={formData.pickup_date}
                                                     onChange={handleInputChange}
                                                     min={new Date().toISOString().split('T')[0]}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.pickup_date ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2.5 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 transition-colors ${
+                                                        errors.pickup_date ? 'border-red-500' : 'border-border'
                                                     }`}
                                                 />
                                             </div>
@@ -450,7 +453,7 @@ export default function CreateReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Pickup Time <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -460,7 +463,8 @@ export default function CreateReservationPage() {
                                                     name="pickup_time"
                                                     value={formData.pickup_time}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.pickup_time ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2.5 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 transition-colors ${
+                                                        errors.pickup_time ? 'border-red-500' : 'border-border'
                                                     }`}
                                                 />
                                             </div>
@@ -468,7 +472,7 @@ export default function CreateReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Vehicle Type <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -477,7 +481,8 @@ export default function CreateReservationPage() {
                                                     name="vehicle_type_id"
                                                     value={formData.vehicle_type_id || ''}
                                                     onChange={handleInputChange}
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.vehicle_type_id ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2.5 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 transition-colors ${
+                                                        errors.vehicle_type_id ? 'border-red-500' : 'border-border'
                                                     }`}
                                                 >
                                                     <option value="">Select a vehicle</option>
@@ -492,7 +497,7 @@ export default function CreateReservationPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">Luggage Count</label>
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Luggage Count</label>
                                             <div className="relative">
                                                 <Luggage className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                                 <input
@@ -502,7 +507,7 @@ export default function CreateReservationPage() {
                                                     onChange={handleInputChange}
                                                     min="0"
                                                     max="10"
-                                                    className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                    className="w-full pl-10 pr-4 py-2.5 bg-card text-foreground border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                 />
                                             </div>
                                         </div>
@@ -510,81 +515,48 @@ export default function CreateReservationPage() {
                                 </div>
 
                                 {/* Trip Type & Pricing */}
-                                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                    <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                    <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                         <DollarSign className="h-5 w-5 mr-2 text-emerald-600" />
                                         Trip Type & Pricing
                                     </h2>
 
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                        <label
-                                            className={`relative flex items-center p-4 border rounded-lg cursor-pointer ${
-                                                formData.trip_type === 'distance'
-                                                    ? 'border-emerald-500 bg-emerald-50'
-                                                    : 'border-slate-200 hover:border-emerald-300'
-                                            }`}
-                                        >
-                                            <input
-                                                type="radio"
-                                                name="trip_type"
-                                                value="distance"
-                                                checked={formData.trip_type === 'distance'}
-                                                onChange={handleInputChange}
-                                                className="absolute inset-0 opacity-0 cursor-pointer"
-                                            />
-                                            <div>
-                                                <p className="font-medium text-slate-900">Distance Based</p>
-                                                <p className="text-xs text-slate-500">Pay per mile/km</p>
-                                            </div>
-                                        </label>
-                                        <label
-                                            className={`relative flex items-center p-4 border rounded-lg cursor-pointer ${
-                                                formData.trip_type === 'hourly'
-                                                    ? 'border-emerald-500 bg-emerald-50'
-                                                    : 'border-slate-200 hover:border-emerald-300'
-                                            }`}
-                                        >
-                                            <input
-                                                type="radio"
-                                                name="trip_type"
-                                                value="hourly"
-                                                checked={formData.trip_type === 'hourly'}
-                                                onChange={handleInputChange}
-                                                className="absolute inset-0 opacity-0 cursor-pointer"
-                                            />
-                                            <div>
-                                                <p className="font-medium text-slate-900">Hourly</p>
-                                                <p className="text-xs text-slate-500">Pay per hour</p>
-                                            </div>
-                                        </label>
-                                        <label
-                                            className={`relative flex items-center p-4 border rounded-lg cursor-pointer ${
-                                                formData.trip_type === 'contract'
-                                                    ? 'border-emerald-500 bg-emerald-50'
-                                                    : 'border-slate-200 hover:border-emerald-300'
-                                            }`}
-                                        >
-                                            <input
-                                                type="radio"
-                                                name="trip_type"
-                                                value="contract"
-                                                checked={formData.trip_type === 'contract'}
-                                                onChange={handleInputChange}
-                                                className="absolute inset-0 opacity-0 cursor-pointer"
-                                            />
-                                            <div>
-                                                <p className="font-medium text-slate-900">Contract</p>
-                                                <p className="text-xs text-slate-500">Multi-day rate</p>
-                                            </div>
-                                        </label>
+                                        {['distance', 'hourly', 'contract'].map((type) => (
+                                            <label
+                                                key={type}
+                                                className={`relative flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
+                                                    formData.trip_type === type
+                                                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/10'
+                                                        : 'border-border hover:border-emerald-300 dark:hover:border-emerald-800'
+                                                }`}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    name="trip_type"
+                                                    value={type}
+                                                    checked={formData.trip_type === type}
+                                                    onChange={handleInputChange}
+                                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                                />
+                                                <div>
+                                                    <p className="font-medium text-foreground capitalize">{type === 'distance' ? 'Distance Based' : type}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                                                        {type === 'distance' && 'Pay per mile/km'}
+                                                        {type === 'hourly' && 'Pay per hour'}
+                                                        {type === 'contract' && 'Multi-day rate'}
+                                                    </p>
+                                                </div>
+                                            </label>
+                                        ))}
                                     </div>
 
                                 {/* Dynamic Fields Container */}
                                 <div className="min-h-[100px]">
                                         {/* Distance Based Fields */}
                                         {formData.trip_type === 'distance' && (
-                                            <div className="mb-6 p-4 bg-slate-50 rounded-lg">
-                                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <div className="mb-6 p-4 bg-background border border-border rounded-lg">
+                                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                     Distance (miles/km) <span className="text-red-500">*</span>
                                                 </label>
                                                 <div className="relative">
@@ -596,18 +568,18 @@ export default function CreateReservationPage() {
                                                         onChange={handleInputChange}
                                                         min="1"
                                                         step="0.1"
-                                                        className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                        className="w-full pl-10 pr-4 py-2.5 bg-card text-foreground border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                         placeholder="Enter distance"
                                                     />
                                                 </div>
-                                                <p className="mt-1 text-xs text-slate-500">Base fare + per mile rate × distance</p>
+                                                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Base fare + per mile rate × distance</p>
                                             </div>
                                         )}
 
                                         {/* Hourly Based Fields */}
                                         {formData.trip_type === 'hourly' && (
-                                            <div className="mb-6 p-4 bg-slate-50 rounded-lg">
-                                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <div className="mb-6 p-4 bg-background border border-border rounded-lg">
+                                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                     Hours <span className="text-red-500">*</span>
                                                 </label>
                                                 <div className="relative">
@@ -619,18 +591,18 @@ export default function CreateReservationPage() {
                                                         onChange={handleInputChange}
                                                         min="1"
                                                         step="0.5"
-                                                        className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                        className="w-full pl-10 pr-4 py-2.5 bg-card text-foreground border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                         placeholder="Enter number of hours"
                                                     />
                                                 </div>
-                                                <p className="mt-1 text-xs text-slate-500">Hourly rate × number of hours</p>
+                                                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Hourly rate × number of hours</p>
                                             </div>
                                         )}
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                 Price ($) <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -642,26 +614,27 @@ export default function CreateReservationPage() {
                                                     onChange={handleInputChange}
                                                     min="0"
                                                     step="0.01"
-                                                    className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                    errors.price ? 'border-red-500' : 'border-slate-300'
+                                                    className={`w-full pl-10 pr-4 py-2.5 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 transition-colors ${
+                                                        errors.price ? 'border-red-500' : 'border-border'
                                                     }`}
                                                     placeholder="0.00"
                                                 />
                                             </div>
                                             {errors.price && <p className="mt-1 text-xs text-red-600">{errors.price}</p>}
                                             {formData.vehicle_type_id !== 0 && (
-                                                <p className="mt-1 text-xs text-slate-500">Estimated: ${estimatedPrice.toFixed(2)}</p>
+                                                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Estimated: ${estimatedPrice.toFixed(2)}</p>
                                             )}
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">Payment Status</label>
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Payment Status</label>
                                             <div className="relative">
                                                 <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                                 <select
                                                     name="payment_status"
                                                     value={formData.payment_status}
                                                     onChange={handleInputChange}
-                                                    className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                    className="w-full pl-10 pr-4 py-2.5 bg-card text-foreground border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                 >
                                                     <option value="pending">Pending</option>
                                                     <option value="paid">Paid</option>
@@ -672,11 +645,11 @@ export default function CreateReservationPage() {
 
                                     {/* Contract Fields */}
                                     {formData.trip_type === 'contract' && (
-                                        <div className="mt-6 pt-6 border-t border-slate-200">
-                                            <h3 className="text-md font-medium text-slate-900 mb-4">Contract Details</h3>
+                                        <div className="mt-6 pt-6 border-t border-border">
+                                            <h3 className="text-md font-medium text-foreground mb-4">Contract Details</h3>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 <div>
-                                                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                         Start Date <span className="text-red-500">*</span>
                                                     </label>
                                                     <div className="relative">
@@ -686,14 +659,15 @@ export default function CreateReservationPage() {
                                                             name="contract_start_date"
                                                             value={formData.contract_start_date}
                                                             onChange={handleInputChange}
-                                                            className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                            errors.contract_start_date ? 'border-red-500' : 'border-slate-300'
+                                                            className={`w-full pl-10 pr-4 py-2.5 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
+                                                                errors.contract_start_date ? 'border-red-500' : 'border-border'
                                                             }`}
                                                         />
                                                     </div>
                                                     {errors.contract_start_date && <p className="mt-1 text-xs text-red-600">{errors.contract_start_date}</p>}
                                                 </div>
                                                 <div>
-                                                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                         End Date <span className="text-red-500">*</span>
                                                     </label>
                                                     <div className="relative">
@@ -703,14 +677,15 @@ export default function CreateReservationPage() {
                                                             name="contract_end_date"
                                                             value={formData.contract_end_date}
                                                             onChange={handleInputChange}
-                                                            className={`text-slate-900 w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-400 ${                                                            errors.contract_end_date ? 'border-red-500' : 'border-slate-300'
+                                                            className={`w-full pl-10 pr-4 py-2.5 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
+                                                                errors.contract_end_date ? 'border-red-500' : 'border-border'
                                                             }`}
                                                         />
                                                     </div>
                                                     {errors.contract_end_date && <p className="mt-1 text-xs text-red-600">{errors.contract_end_date}</p>}
                                                 </div>
                                                 <div>
-                                                    <label className="block text-sm font-medium text-slate-700 mb-2">Daily Rate ($)</label>
+                                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Daily Rate ($)</label>
                                                     <div className="relative">
                                                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                                         <input
@@ -720,13 +695,13 @@ export default function CreateReservationPage() {
                                                             onChange={handleInputChange}
                                                             min="0"
                                                             step="0.01"
-                                                            className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                            className="w-full pl-10 pr-4 py-2.5 bg-card text-foreground border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                             placeholder="0.00"
                                                         />
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <label className="block text-sm font-medium text-slate-700 mb-2">Hourly Rate ($)</label>
+                                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Hourly Rate ($)</label>
                                                     <div className="relative">
                                                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                                         <input
@@ -736,7 +711,7 @@ export default function CreateReservationPage() {
                                                             onChange={handleInputChange}
                                                             min="0"
                                                             step="0.01"
-                                                            className="text-slate-900 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                            className="w-full pl-10 pr-4 py-2.5 bg-card text-foreground border border-border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                                             placeholder="0.00"
                                                         />
                                                     </div>
@@ -751,14 +726,14 @@ export default function CreateReservationPage() {
                                     <button
                                         type="button"
                                         onClick={() => router.push('/reservations')}
-                                        className="px-6 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+                                        className="px-6 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 bg-card border border-border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={submitting}
-                                        className="px-6 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                        className="px-6 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-sm shadow-emerald-500/20"
                                     >
                                         {submitting ? (
                                             <>

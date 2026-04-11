@@ -60,22 +60,22 @@ function AnalyticsContent() {
   };
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-screen bg-background text-foreground transition-colors duration-300">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header title="Analytics" onMenuClick={() => setSidebarOpen(true)} />
 
         {/* Analytics content */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-6 transition-colors duration-300">
           {loading && (
             <div className="flex justify-center items-center h-64">
-              <div className="text-slate-600">Loading analytics data...</div>
+              <div className="text-slate-500 dark:text-slate-400">Loading analytics data...</div>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+            <div className="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 text-red-700 dark:text-red-400 px-4 py-3 rounded-xl mb-4">
               {error}
             </div>
           )}
@@ -87,7 +87,7 @@ function AnalyticsContent() {
                 <div className="flex items-center space-x-2">
                   <Calendar className="h-4 w-4 text-slate-400" />
                   <select
-                    className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white text-slate-700"
+                    className="border border-border rounded-xl px-3 py-2 text-sm focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-card text-foreground transition-all"
                     value={selectedPeriod}
                     onChange={(e) => setSelectedPeriod(e.target.value)}
                   >
@@ -97,11 +97,11 @@ function AnalyticsContent() {
                   </select>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <button className="flex items-center px-3.5 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors duration-150">
+                  <button className="flex items-center px-3.5 py-2 bg-slate-900 dark:bg-emerald-700 text-white text-sm font-semibold rounded-xl hover:bg-slate-800 dark:hover:bg-emerald-600 transition-colors">
                     <Filter className="h-4 w-4 mr-1.5" />
                     Filter
                   </button>
-                  <button className="flex items-center px-3.5 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors duration-150">
+                  <button className="flex items-center px-3.5 py-2 border border-border bg-card text-foreground text-sm font-semibold rounded-xl hover:bg-background transition-colors">
                     <Download className="h-4 w-4 mr-1.5" />
                     Export
                   </button>
@@ -110,17 +110,17 @@ function AnalyticsContent() {
               {/* Performance Metrics */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
                 {performanceData.map((metric, index) => (
-                  <div key={index} className="bg-white rounded-lg border border-slate-200 p-5 hover:shadow-md hover:border-slate-300 transition-all duration-200">
+                  <div key={index} className="bg-card rounded-2xl border border-border p-5 hover:shadow-md transition-all duration-200 transition-colors">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{metric.metric}</p>
-                        <p className="text-3xl font-bold text-slate-900 mt-2">{metric.value}</p>
+                        <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{metric.metric}</p>
+                        <p className="text-3xl font-bold text-foreground mt-2">{metric.value}</p>
                         <div className="mt-3">
-                          <div className="flex items-center justify-between text-xs mb-1">
-                            <span className="text-slate-500">Target: {metric.target}</span>
-                            <span className="font-semibold text-slate-700">{metric.progress}%</span>
+                          <div className="flex items-center justify-between text-xs mb-1.5">
+                            <span className="text-slate-500 dark:text-slate-400">Target: {metric.target}</span>
+                            <span className="font-bold text-foreground">{metric.progress}%</span>
                           </div>
-                          <div className="w-full bg-slate-100 rounded-full h-1.5">
+                          <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5">
                             <div
                               className="bg-emerald-500 h-1.5 rounded-full transition-all duration-300"
                               style={{ width: `${metric.progress}%` }}
@@ -128,8 +128,8 @@ function AnalyticsContent() {
                           </div>
                         </div>
                       </div>
-                      <div className="p-2.5 rounded-lg bg-slate-50">
-                        <TrendingUp className="h-5 w-5 text-slate-600" />
+                      <div className="p-2.5 rounded-xl bg-background dark:bg-slate-800">
+                        <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                       </div>
                     </div>
                   </div>
@@ -139,8 +139,8 @@ function AnalyticsContent() {
               {/* Charts */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 {/* Booking Trend */}
-                <div className="bg-white rounded-lg border border-slate-200 p-6">
-                  <h3 className="text-base font-semibold text-slate-900 mb-5">Booking & Revenue Trend</h3>
+                <div className="bg-card rounded-2xl border border-border p-6 transition-colors">
+                  <h3 className="text-base font-bold text-foreground mb-5">Booking & Revenue Trend</h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <LineChart data={revenueData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -194,8 +194,8 @@ function AnalyticsContent() {
                 </div>
 
                 {/* Passenger Distribution */}
-                <div className="bg-white rounded-lg border border-slate-200 p-6">
-                  <h3 className="text-base font-semibold text-slate-900 mb-5">Passenger Count Distribution</h3>
+                <div className="bg-card rounded-2xl border border-border p-6 transition-colors">
+                  <h3 className="text-base font-bold text-foreground mb-5">Passenger Count Distribution</h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={conversionData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -227,8 +227,8 @@ function AnalyticsContent() {
               </div>
 
               {/* Location Distribution */}
-              <div className="bg-white rounded-lg border border-slate-200 p-6">
-                <h3 className="text-base font-semibold text-slate-900 mb-5">Top Pickup Locations</h3>
+              <div className="bg-card rounded-2xl border border-border p-6 transition-colors">
+                <h3 className="text-base font-bold text-foreground mb-5">Top Pickup Locations</h3>
                 <div className="flex items-center justify-center">
                   <ResponsiveContainer width="100%" height={400}>
                     <PieChart>
@@ -269,7 +269,7 @@ function AnalyticsContent() {
 export default function Analytics() {
   return (
     <Suspense fallback={
-      <div className="flex h-screen items-center justify-center bg-slate-50">
+      <div className="flex h-screen items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
       </div>
     }>

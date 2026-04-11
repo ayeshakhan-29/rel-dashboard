@@ -141,7 +141,7 @@ export default function ReservationDetailPage() {
 
     if (loading) {
         return (
-            <div className="flex h-screen bg-slate-50">
+            <div className="flex h-screen bg-background">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
                 <div className="flex-1 flex items-center justify-center">
                     <Loader2 className="h-8 w-8 text-emerald-600 animate-spin" />
@@ -152,13 +152,13 @@ export default function ReservationDetailPage() {
 
     if (error || !reservation) {
         return (
-            <div className="flex h-screen bg-slate-50">
+            <div className="flex h-screen bg-background">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
                 <div className="flex-1 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
+                    <div className="bg-card rounded-xl shadow-lg p-8 max-w-md w-full text-center border border-border">
                         <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-                        <h2 className="text-xl font-bold text-slate-900 mb-2">Error Loading Reservation</h2>
-                        <p className="text-slate-600 mb-6">{error || 'Reservation not found'}</p>
+                        <h2 className="text-xl font-bold text-foreground mb-2">Error Loading Reservation</h2>
+                        <p className="text-slate-600 dark:text-slate-400 mb-6">{error || 'Reservation not found'}</p>
                         <Link
                             href="/reservations"
                             className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700"
@@ -174,19 +174,19 @@ export default function ReservationDetailPage() {
 
     return (
         <AdminRoute>
-            <div className="flex h-screen bg-slate-50">
+            <div className="flex h-screen bg-background text-foreground transition-colors duration-300">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
                 
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Header title={`Reservation #${reservation.reservation_number}`} onMenuClick={() => setSidebarOpen(true)} />
 
-                    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
+                    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-6">
                         <div className="max-w-7xl mx-auto">
                             {/* Header Actions */}
                             <div className="flex justify-end mb-6 space-x-3">
                                 <Link
                                     href={`/reservations/${id}/edit`}
-                                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+                                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-card border border-border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                                 >
                                     <Edit className="h-4 w-4 mr-2" />
                                     Edit
@@ -194,39 +194,39 @@ export default function ReservationDetailPage() {
                                 <div className="relative  actions-dropdown">
                                     <button
                                         onClick={() => setShowActions(!showActions)}
-                                        className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+                                        className="p-2 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
                                     >
                                         <MoreVertical className="h-5 w-5" />
                                     </button>
                                     
                                     {showActions && (
-                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-20">
+                                        <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg py-1 z-20">
                                             <button
                                                 onClick={() => handleStatusUpdate('assigned')}
                                                 disabled={reservation.reservation_status !== 'pending'}
-                                                className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 Mark as Assigned
                                             </button>
                                             <button
                                                 onClick={() => handleStatusUpdate('in_progress')}
                                                 disabled={reservation.reservation_status !== 'assigned'}
-                                                className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 Mark as On Trip
                                             </button>
                                             <button
                                                 onClick={() => handleStatusUpdate('completed')}
                                                 disabled={reservation.reservation_status !== 'in_progress'}
-                                                className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 Mark as Completed
                                             </button>
-                                            <div className="border-t border-slate-200 my-1"></div>
+                                            <div className="border-t border-border my-1"></div>
                                             <button
                                                 onClick={handleCancel}
                                                 disabled={reservation.reservation_status === 'completed' || reservation.reservation_status === 'cancelled'}
-                                                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 Cancel Reservation
                                             </button>
@@ -247,25 +247,25 @@ export default function ReservationDetailPage() {
                                     </div>
 
                                     {/* Passenger Information */}
-                                    <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                        <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                    <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                        <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                             <User className="h-5 w-5 mr-2 text-emerald-600" />
                                             Passenger Information
                                         </h2>
                                         <div className="flex items-start">
-                                            <div className="h-12 w-12 bg-emerald-100 rounded-full flex items-center justify-center">
+                                            <div className="h-12 w-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
                                                 <User className="h-6 w-6 text-emerald-600" />
                                             </div>
                                             <div className="ml-4 flex-1">
-                                                <h3 className="text-lg font-medium text-slate-900">
+                                                <h3 className="text-lg font-medium text-foreground">
                                                     {reservation.passenger_name}
                                                 </h3>
                                                 <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                    <div className="flex items-center text-sm text-slate-600">
+                                                    <div className="flex items-center text-sm text-slate-600 dark:text-slate-400">
                                                         <Mail className="h-4 w-4 mr-2 text-slate-400" />
                                                         {reservation.passenger_email}
                                                     </div>
-                                                    <div className="flex items-center text-sm text-slate-600">
+                                                    <div className="flex items-center text-sm text-slate-600 dark:text-slate-400">
                                                         <Phone className="h-4 w-4 mr-2 text-slate-400" />
                                                         {reservation.passenger_phone}
                                                     </div>
@@ -275,43 +275,43 @@ export default function ReservationDetailPage() {
                                     </div>
 
                                     {/* Trip Details */}
-                                    <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                        <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                    <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                        <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                             <MapPin className="h-5 w-5 mr-2 text-emerald-600" />
                                             Trip Details
                                         </h2>
                                         
                                         <div className="space-y-4">
                                             <div className="flex items-start">
-                                                <div className="h-8 w-8 bg-emerald-100 rounded-full flex items-center justify-center mr-3">
+                                                <div className="h-8 w-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mr-3">
                                                     <MapPin className="h-4 w-4 text-emerald-600" />
                                                 </div>
                                                 <div className="flex-1">
-                                                    <p className="text-sm font-medium text-slate-500">Pickup Location</p>
-                                                    <p className="text-base text-slate-900">{reservation.pickup_location}</p>
+                                                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Pickup Location</p>
+                                                    <p className="text-base text-foreground">{reservation.pickup_location}</p>
                                                 </div>
                                             </div>
                                             
                                             <div className="flex items-start">
-                                                <div className="h-8 w-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                                                <div className="h-8 w-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mr-3">
                                                     <MapPin className="h-4 w-4 text-red-600" />
                                                 </div>
                                                 <div className="flex-1">
-                                                    <p className="text-sm font-medium text-slate-500">Dropoff Location</p>
-                                                    <p className="text-base text-slate-900">{reservation.dropoff_location}</p>
+                                                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Dropoff Location</p>
+                                                    <p className="text-base text-foreground">{reservation.dropoff_location}</p>
                                                 </div>
                                             </div>
 
-                                            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                                            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
                                                 <div>
-                                                    <p className="text-sm font-medium text-slate-500">Pickup Date & Time</p>
-                                                    <p className="text-base text-slate-900">
+                                                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Pickup Date & Time</p>
+                                                    <p className="text-base text-foreground">
                                                         {new Date(reservation.pickup_date).toLocaleDateString()} at {reservation.pickup_time}
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-medium text-slate-500">Passengers / Luggage</p>
-                                                    <p className="text-base text-slate-900">
+                                                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Passengers / Luggage</p>
+                                                    <p className="text-base text-foreground">
                                                         {reservation.passenger_count} passengers • {reservation.luggage_count} luggage
                                                     </p>
                                                 </div>
@@ -320,28 +320,28 @@ export default function ReservationDetailPage() {
                                     </div>
 
                                     {/* Vehicle & Assignment */}
-                                    <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                        <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                    <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                        <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                             <Car className="h-5 w-5 mr-2 text-emerald-600" />
                                             Vehicle & Assignment
                                         </h2>
                                         
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
-                                                <p className="text-sm font-medium text-slate-500">Vehicle Type</p>
-                                                <p className="text-base text-slate-900">{reservation.vehicle_type || `ID: ${reservation.vehicle_type_id}`}</p>
+                                                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Vehicle Type</p>
+                                                <p className="text-base text-foreground">{reservation.vehicle_type || `ID: ${reservation.vehicle_type_id}`}</p>
                                                 {reservation.vehicle_code && (
-                                                    <p className="text-sm text-slate-500">Code: {reservation.vehicle_code}</p>
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400">Code: {reservation.vehicle_code}</p>
                                                 )}
                                             </div>
                                             
                                             <div>
-                                                <p className="text-sm font-medium text-slate-500">Driver</p>
+                                                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Driver</p>
                                                 {reservation.assigned_driver_id ? (
                                                     <>
-                                                        <p className="text-base text-slate-900">{reservation.driver_name || 'Driver assigned'}</p>
+                                                        <p className="text-base text-foreground">{reservation.driver_name || 'Driver assigned'}</p>
                                                         {reservation.driver_phone && (
-                                                            <p className="text-sm text-slate-500">{reservation.driver_phone}</p>
+                                                            <p className="text-sm text-slate-500 dark:text-slate-400">{reservation.driver_phone}</p>
                                                         )}
                                                     </>
                                                 ) : (
@@ -352,8 +352,8 @@ export default function ReservationDetailPage() {
                                     </div>
 
                                     {/* Status History */}
-                                    <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                        <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                    <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                        <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                             <Clock className="h-5 w-5 mr-2 text-emerald-600" />
                                             Status History
                                         </h2>
@@ -364,26 +364,26 @@ export default function ReservationDetailPage() {
                                 {/* Right Column - Billing & Status */}
                                 <div className="space-y-6">
                                     {/* Billing Information */}
-                                    <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                        <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                    <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                        <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                             <DollarSign className="h-5 w-5 mr-2 text-emerald-600" />
                                             Billing Information
                                         </h2>
                                         
                                         <div className="space-y-4">
-                                            <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                                                <span className="text-sm text-slate-500">Trip Price</span>
-                                                <span className="text-lg font-semibold text-slate-900">${reservation.price}</span>
+                                            <div className="flex justify-between items-center py-2 border-b border-border">
+                                                <span className="text-sm text-slate-500 dark:text-slate-400">Trip Price</span>
+                                                <span className="text-lg font-semibold text-foreground">${reservation.price}</span>
                                             </div>
                                             
                                             <div>
-                                                <p className="text-sm font-medium text-slate-500 mb-2">Payment Status</p>
+                                                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Payment Status</p>
                                                 {getPaymentStatusBadge(reservation.payment_status)}
                                             </div>
 
                                             <div>
-                                                <p className="text-sm font-medium text-slate-500 mb-2">Booking Type</p>
-                                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-700">
+                                                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Booking Type</p>
+                                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                                                     {reservation.booking_type.charAt(0).toUpperCase() + reservation.booking_type.slice(1)}
                                                     {reservation.booking_type === 'form' && (
                                                         <span className="ml-2 text-xs text-slate-500">(Stripe)</span>
@@ -393,14 +393,14 @@ export default function ReservationDetailPage() {
 
                                             {reservation.booking_type === 'form' && reservation.form_booking_ref && (
                                                 <div>
-                                                    <p className="text-sm font-medium text-slate-500 mb-2">Form / Stripe ref</p>
-                                                    <p className="text-xs font-mono text-slate-800 break-all">{reservation.form_booking_ref}</p>
+                                                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Form / Stripe ref</p>
+                                                    <p className="text-xs font-mono text-foreground break-all">{reservation.form_booking_ref}</p>
                                                 </div>
                                             )}
 
                                             <div>
-                                                <p className="text-sm font-medium text-slate-500 mb-2">Trip Type</p>
-                                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-700">
+                                                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Trip Type</p>
+                                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                                                     {reservation.trip_type.charAt(0).toUpperCase() + reservation.trip_type.slice(1)}
                                                 </span>
                                             </div>
@@ -409,31 +409,31 @@ export default function ReservationDetailPage() {
 
                                     {/* Contract Details (if applicable) */}
                                     {reservation.booking_type === 'contract' && (
-                                        <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                            <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                                        <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                                                 <FileText className="h-5 w-5 mr-2 text-emerald-600" />
                                                 Contract Details
                                             </h2>
                                             
                                             <div className="space-y-3">
                                                 <div>
-                                                    <p className="text-sm font-medium text-slate-500">Contract Period</p>
-                                                    <p className="text-base text-slate-900">
+                                                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Contract Period</p>
+                                                    <p className="text-base text-foreground">
                                                         {reservation.contract_start_date ? new Date(reservation.contract_start_date).toLocaleDateString() : 'N/A'} - {reservation.contract_end_date ? new Date(reservation.contract_end_date).toLocaleDateString() : 'N/A'}
                                                     </p>
                                                 </div>
                                                 
                                                 {reservation.daily_rate && (
                                                     <div className="flex justify-between">
-                                                        <span className="text-sm text-slate-500">Daily Rate</span>
-                                                        <span className="text-sm font-medium text-slate-900">${reservation.daily_rate}/day</span>
+                                                        <span className="text-sm text-slate-500 dark:text-slate-400">Daily Rate</span>
+                                                        <span className="text-sm font-medium text-foreground">${reservation.daily_rate}/day</span>
                                                     </div>
                                                 )}
                                                 
                                                 {reservation.hourly_rate && (
                                                     <div className="flex justify-between">
-                                                        <span className="text-sm text-slate-500">Hourly Rate</span>
-                                                        <span className="text-sm font-medium text-slate-900">${reservation.hourly_rate}/hour</span>
+                                                        <span className="text-sm text-slate-500 dark:text-slate-400">Hourly Rate</span>
+                                                        <span className="text-sm font-medium text-foreground">${reservation.hourly_rate}/hour</span>
                                                     </div>
                                                 )}
                                             </div>
@@ -441,13 +441,13 @@ export default function ReservationDetailPage() {
                                     )}
 
                                     {/* Quick Actions */}
-                                    <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                        <h2 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h2>
+                                    <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+                                        <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
                                         
                                         <div className="space-y-3">
                                             <Link
                                                 href={`/dispatch/assign?reservation=${reservation.id}`}
-                                                className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700"
+                                                className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 shadow-sm shadow-emerald-500/20"
                                             >
                                                 <UserPlus className="h-4 w-4 mr-2" />
                                                 Assign Driver
@@ -455,7 +455,7 @@ export default function ReservationDetailPage() {
                                             
                                             <Link
                                                 href={`/reservations/${id}/edit`}
-                                                className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50"
+                                                className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-card border border-border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                                             >
                                                 <Edit className="h-4 w-4 mr-2" />
                                                 Edit Reservation
@@ -464,7 +464,7 @@ export default function ReservationDetailPage() {
                                             {reservation.reservation_status !== 'cancelled' && reservation.reservation_status !== 'completed' && (
                                                 <button
                                                     onClick={handleCancel}
-                                                    className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-300 rounded-lg hover:bg-red-50"
+                                                    className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-red-600 bg-card border border-red-200 dark:border-red-900/30 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                                                 >
                                                     <XCircle className="h-4 w-4 mr-2" />
                                                     Cancel Reservation

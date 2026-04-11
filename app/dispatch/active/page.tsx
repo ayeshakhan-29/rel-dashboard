@@ -46,25 +46,25 @@ const statusConfig: Record<
 > = {
   in_progress: {
     label: "On Trip",
-    className: "text-orange-700 bg-orange-50 border border-orange-200",
+    className: "text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/30",
     dot: "bg-orange-500",
   },
   assigned: {
     label: "Assigned",
-    className: "text-sky-700 bg-sky-50 border border-sky-200",
+    className: "text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-900/30",
     dot: "bg-sky-500",
   },
   pending_driver_approval: {
     label: "Pending Approval",
-    className: "text-amber-700 bg-amber-50 border border-amber-200",
+    className: "text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/30",
     dot: "bg-amber-500",
   },
 };
 
 const paymentStyles: Record<string, string> = {
-  paid: "text-emerald-600",
-  pending: "text-amber-600",
-  failed: "text-rose-600",
+  paid: "text-emerald-600 dark:text-emerald-400",
+  pending: "text-amber-600 dark:text-amber-400",
+  failed: "text-rose-600 dark:text-rose-400",
 };
 
 function formatTime(time: string) {
@@ -117,7 +117,7 @@ function ActiveTripsContent() {
   );
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen bg-background text-foreground overflow-hidden transition-colors duration-300">
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/40 lg:hidden"
@@ -133,9 +133,9 @@ function ActiveTripsContent() {
           onMenuClick={() => setSidebarOpen(true)}
         />
 
-        <main className="flex-1 overflow-y-auto bg-slate-50">
+        <main className="flex-1 overflow-y-auto bg-background transition-colors duration-300">
           {/* Sub-header */}
-          <div className="bg-white border-b border-slate-200 px-4 sm:px-6 py-4">
+          <div className="bg-card border-b border-border px-4 sm:px-6 py-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-4">
                 <StatPill
@@ -156,12 +156,12 @@ function ActiveTripsContent() {
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-slate-500">
                   Updated {lastRefresh.toLocaleTimeString()}
                 </span>
                 <button
                   onClick={() => { setLoading(true); fetchActiveTrips(); }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 bg-background hover:bg-slate-100 dark:hover:bg-slate-800 border border-border rounded-lg transition-colors"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   Refresh
@@ -179,7 +179,7 @@ function ActiveTripsContent() {
             )}
 
             {!loading && error && (
-              <div className="flex items-center gap-3 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700">
+              <div className="flex items-center gap-3 p-4 bg-rose-50 dark:bg-rose-900/10 border border-rose-200 dark:border-rose-900/30 rounded-xl text-rose-700 dark:text-rose-400">
                 <AlertCircle className="w-5 h-5 shrink-0" />
                 {error}
               </div>
@@ -193,8 +193,8 @@ function ActiveTripsContent() {
                   Trips will appear here once assigned or on trip
                 </p>
                 <Link
-                  href="/dispatch/assign"
-                  className="mt-4 px-4 py-2 text-sm font-medium bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors"
+                  href="/dispatch"
+                  className="mt-4 px-4 py-2 text-sm font-medium bg-slate-800 dark:bg-emerald-600 text-white rounded-lg hover:bg-slate-900 dark:hover:bg-emerald-700 transition-colors shadow-sm"
                 >
                   Assign a Driver
                 </Link>
@@ -225,10 +225,10 @@ function StatPill({
   count: number;
 }) {
   return (
-    <div className="flex items-center gap-1.5 text-sm text-slate-600">
+    <div className="flex items-center gap-1.5 text-sm text-foreground/80">
       <span className={`w-2 h-2 rounded-full ${dot}`} />
       <span className="font-medium">{count}</span>
-      <span className="text-slate-400 hidden sm:inline">{label}</span>
+      <span className="text-slate-500 dark:text-slate-400 hidden sm:inline">{label}</span>
     </div>
   );
 }
@@ -237,14 +237,14 @@ function TripCard({ trip }: { trip: ActiveTrip }) {
   const cfg = statusConfig[trip.reservation_status] ?? statusConfig.assigned;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow p-4 flex flex-col gap-3">
+    <div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-300 p-4 flex flex-col gap-3 group">
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="font-mono text-xs text-slate-400">
+          <p className="font-mono text-xs text-slate-500 dark:text-slate-400">
             {trip.reservation_number}
           </p>
-          <p className="font-semibold text-slate-800 mt-0.5">
+          <p className="font-semibold text-foreground mt-0.5 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
             {trip.passenger_name}
           </p>
         </div>
@@ -258,51 +258,51 @@ function TripCard({ trip }: { trip: ActiveTrip }) {
 
       {/* Route */}
       <div className="space-y-1.5 text-sm">
-        <div className="flex items-start gap-2 text-slate-700">
+        <div className="flex items-start gap-2 text-foreground/90">
           <MapPin className="w-3.5 h-3.5 mt-0.5 text-emerald-500 shrink-0" />
           <span className="line-clamp-1">{trip.pickup_location}</span>
         </div>
-        <div className="flex items-start gap-2 text-slate-500">
+        <div className="flex items-start gap-2 text-slate-500 dark:text-slate-400">
           <MapPin className="w-3.5 h-3.5 mt-0.5 text-rose-400 shrink-0" />
           <span className="line-clamp-1">{trip.dropoff_location}</span>
         </div>
       </div>
 
       {/* Date / Time */}
-      <div className="flex items-center gap-1.5 text-xs text-slate-500">
+      <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
         <Clock className="w-3.5 h-3.5" />
         {formatDate(trip.pickup_date)} · {formatTime(trip.pickup_time)}
       </div>
 
-      <div className="border-t border-slate-100" />
+      <div className="border-t border-border" />
 
       {/* Driver & Vehicle */}
       <div className="space-y-1.5 text-sm">
-        <div className="flex items-center gap-2 text-slate-700">
+        <div className="flex items-center gap-2 text-foreground/90">
           <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
           {trip.driver_name ? (
             <span>{trip.driver_name}</span>
           ) : (
-            <span className="text-slate-400 italic">No driver assigned</span>
+            <span className="text-slate-500 italic">No driver assigned</span>
           )}
           {trip.driver_phone && (
             <a
               href={`tel:${trip.driver_phone}`}
-              className="ml-auto text-slate-400 hover:text-slate-700"
+              className="ml-auto text-slate-400 hover:text-emerald-600 transition-colors"
             >
               <Phone className="w-3.5 h-3.5" />
             </a>
           )}
         </div>
-        <div className="flex items-center gap-2 text-slate-500">
+        <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
           <Car className="w-3.5 h-3.5 text-slate-400 shrink-0" />
           {trip.vehicle_label ?? <span className="italic">No vehicle</span>}
         </div>
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-1">
-        <span className="text-sm font-semibold text-slate-800">
+      <div className="flex items-center justify-between pt-1 mt-auto">
+        <span className="text-sm font-semibold text-foreground">
           ${Number(trip.price).toFixed(2)}
         </span>
         <span
@@ -314,7 +314,7 @@ function TripCard({ trip }: { trip: ActiveTrip }) {
         </span>
         <Link
           href={`/reservations/${trip.id}`}
-          className="text-xs font-medium text-slate-500 hover:text-slate-800 underline-offset-2 hover:underline"
+          className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 underline-offset-2 hover:underline transition-colors"
         >
           View details
         </Link>

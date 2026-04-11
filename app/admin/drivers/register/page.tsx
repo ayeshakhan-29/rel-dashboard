@@ -94,52 +94,52 @@ export default function RegisterDriverPage() {
 
     return (
         <AdminRoute>
-            <div className="flex h-screen bg-slate-50">
+            <div className="flex h-screen bg-background text-foreground transition-colors duration-300">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Header title="Register Driver" onMenuClick={() => setSidebarOpen(true)} />
 
-                    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
+                    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-6 transition-colors duration-300">
                         <div className="max-w-3xl mx-auto">
                             <button
                                 type="button"
                                 onClick={() => router.push('/admin/drivers')}
-                                className="inline-flex items-center text-slate-600 hover:text-slate-900 mb-6 transition-colors"
+                                className="inline-flex items-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors"
                             >
                                 <ArrowLeft className="h-4 w-4 mr-2" />
                                 Back to drivers
                             </button>
 
                             {success && (
-                                <div className="mb-6 bg-emerald-50 border border-emerald-200 rounded-lg p-4 shadow-sm">
+                                <div className="mb-6 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-900/30 rounded-2xl p-4 shadow-sm animate-in slide-in-from-top duration-300">
                                     <div className="flex items-start gap-3">
-                                        <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                                        <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                                         <div>
-                                            <p className="font-semibold text-emerald-900">Driver registered successfully.</p>
-                                            <p className="text-sm text-emerald-700">You will be redirected to the Drivers page shortly.</p>
+                                            <p className="font-semibold text-emerald-900 dark:text-emerald-400">Driver registered successfully.</p>
+                                            <p className="text-sm text-emerald-700 dark:text-emerald-500/80">You will be redirected to the Drivers page shortly.</p>
                                         </div>
                                     </div>
                                 </div>
                             )}
 
                             {apiError && (
-                                <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 shadow-sm">
+                                <div className="mb-6 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-2xl p-4 shadow-sm animate-in slide-in-from-top duration-300">
                                     <div className="flex items-start gap-3">
-                                        <AlertCircle className="h-5 w-5 text-red-600" />
-                                        <p className="text-sm text-red-700">{apiError}</p>
+                                        <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                                        <p className="text-sm text-red-700 dark:text-red-400">{apiError}</p>
                                     </div>
                                 </div>
                             )}
 
-                            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
-                                <div className="flex items-center gap-4 mb-6">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
+                            <div className="bg-card rounded-3xl border border-border shadow-sm p-6 md:p-8 transition-colors duration-300">
+                                <div className="flex items-center gap-4 mb-8">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
                                         <UserPlus className="h-6 w-6" />
                                     </div>
                                     <div>
-                                        <h1 className="text-2xl font-semibold text-slate-900">Register Driver</h1>
-                                        <p className="text-sm text-slate-500">
+                                        <h1 className="text-2xl font-bold text-foreground">Register Driver</h1>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
                                             Add a new driver profile for dispatch and trip assignments.
                                         </p>
                                     </div>
@@ -147,8 +147,8 @@ export default function RegisterDriverPage() {
 
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
+                                        <div className="space-y-2">
+                                            <label htmlFor="name" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
                                                 Full Name <span className="text-red-500">*</span>
                                             </label>
                                             <input
@@ -156,14 +156,14 @@ export default function RegisterDriverPage() {
                                                 name="name"
                                                 value={formData.name}
                                                 onChange={handleChange}
-                                                className={`w-full rounded-2xl border px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 ${errors.name ? 'border-red-300 bg-red-50' : 'border-slate-200 bg-white'}`}
-                                                placeholder="Driver full name"
+                                                className={`w-full rounded-2xl border px-4 py-3 text-sm text-foreground bg-background focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all ${errors.name ? 'border-red-300 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10' : 'border-border'}`}
+                                                placeholder="John Doe"
                                             />
-                                            {errors.name && <p className="mt-2 text-xs text-red-600">{errors.name}</p>}
+                                            {errors.name && <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium ml-1">{errors.name}</p>}
                                         </div>
 
-                                        <div>
-                                            <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
+                                        <div className="space-y-2">
+                                            <label htmlFor="email" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
                                                 Email Address <span className="text-red-500">*</span>
                                             </label>
                                             <input
@@ -172,14 +172,14 @@ export default function RegisterDriverPage() {
                                                 type="email"
                                                 value={formData.email}
                                                 onChange={handleChange}
-                                                className={`w-full rounded-2xl border px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 ${errors.email ? 'border-red-300 bg-red-50' : 'border-slate-200 bg-white'}`}
+                                                className={`w-full rounded-2xl border px-4 py-3 text-sm text-foreground bg-background focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all ${errors.email ? 'border-red-300 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10' : 'border-border'}`}
                                                 placeholder="driver@example.com"
                                             />
-                                            {errors.email && <p className="mt-2 text-xs text-red-600">{errors.email}</p>}
+                                            {errors.email && <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium ml-1">{errors.email}</p>}
                                         </div>
 
-                                        <div>
-                                            <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">
+                                        <div className="space-y-2">
+                                            <label htmlFor="phone" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
                                                 Phone Number
                                             </label>
                                             <input
@@ -187,27 +187,27 @@ export default function RegisterDriverPage() {
                                                 name="phone"
                                                 value={formData.phone}
                                                 onChange={handleChange}
-                                                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                                                placeholder="+1 555 123 4567"
+                                                className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                                                placeholder="+1 (555) 000-0000"
                                             />
                                         </div>
 
-                                        <div>
-                                            <label htmlFor="vehicleId" className="block text-sm font-medium text-slate-700 mb-2">
-                                                Vehicle ID (optional)
+                                        <div className="space-y-2">
+                                            <label htmlFor="vehicleId" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
+                                                Vehicle ID <small className="opacity-60">(optional)</small>
                                             </label>
                                             <input
                                                 id="vehicleId"
                                                 name="vehicleId"
                                                 value={formData.vehicleId}
                                                 onChange={handleChange}
-                                                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                                                placeholder="123"
+                                                className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                                                placeholder="e.g. VH-102"
                                             />
                                         </div>
 
-                                        <div>
-                                            <label htmlFor="licenseNumber" className="block text-sm font-medium text-slate-700 mb-2">
+                                        <div className="space-y-2">
+                                            <label htmlFor="licenseNumber" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
                                                 License Number <span className="text-red-500">*</span>
                                             </label>
                                             <input
@@ -215,14 +215,14 @@ export default function RegisterDriverPage() {
                                                 name="licenseNumber"
                                                 value={formData.licenseNumber}
                                                 onChange={handleChange}
-                                                className={`w-full rounded-2xl border px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 ${errors.licenseNumber ? 'border-red-300 bg-red-50' : 'border-slate-200 bg-white'}`}
-                                                placeholder="DL12345"
+                                                className={`w-full rounded-2xl border px-4 py-3 text-sm text-foreground bg-background font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all ${errors.licenseNumber ? 'border-red-300 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10' : 'border-border'}`}
+                                                placeholder="DL-000000"
                                             />
-                                            {errors.licenseNumber && <p className="mt-2 text-xs text-red-600">{errors.licenseNumber}</p>}
+                                            {errors.licenseNumber && <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium ml-1">{errors.licenseNumber}</p>}
                                         </div>
 
-                                        <div>
-                                            <label htmlFor="licenseExpiry" className="block text-sm font-medium text-slate-700 mb-2">
+                                        <div className="space-y-2">
+                                            <label htmlFor="licenseExpiry" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
                                                 License Expiry
                                             </label>
                                             <input
@@ -231,12 +231,12 @@ export default function RegisterDriverPage() {
                                                 type="date"
                                                 value={formData.licenseExpiry}
                                                 onChange={handleChange}
-                                                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                                className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all color-scheme-light dark:color-scheme-dark"
                                             />
                                         </div>
 
-                                        <div>
-                                            <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
+                                        <div className="space-y-2">
+                                            <label htmlFor="password" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
                                                 Password <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -246,22 +246,22 @@ export default function RegisterDriverPage() {
                                                     type={showPassword ? "text" : "password"}
                                                     value={formData.password}
                                                     onChange={handleChange}
-                                                    className={`w-full rounded-2xl border px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 ${errors.password ? 'border-red-300 bg-red-50' : 'border-slate-200 bg-white'}`}
-                                                    placeholder="Create secure password"
+                                                    className={`w-full rounded-2xl border px-4 py-3 text-sm text-foreground bg-background focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all ${errors.password ? 'border-red-300 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10' : 'border-border'}`}
+                                                    placeholder="••••••••"
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowPassword(!showPassword)}
-                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-foreground transition-colors"
                                                 >
                                                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                                 </button>
                                             </div>
-                                            {errors.password && <p className="mt-2 text-xs text-red-600">{errors.password}</p>}
+                                            {errors.password && <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium ml-1">{errors.password}</p>}
                                         </div>
 
-                                        <div>
-                                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-2">
+                                        <div className="space-y-2">
+                                            <label htmlFor="confirmPassword" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
                                                 Confirm Password <span className="text-red-500">*</span>
                                             </label>
                                             <div className="relative">
@@ -271,33 +271,33 @@ export default function RegisterDriverPage() {
                                                     type={showConfirmPassword ? "text" : "password"}
                                                     value={formData.confirmPassword}
                                                     onChange={handleChange}
-                                                    className={`w-full rounded-2xl border px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 ${errors.confirmPassword ? 'border-red-300 bg-red-50' : 'border-slate-200 bg-white'}`}
-                                                    placeholder="Confirm password"
+                                                    className={`w-full rounded-2xl border px-4 py-3 text-sm text-foreground bg-background focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all ${errors.confirmPassword ? 'border-red-300 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10' : 'border-border'}`}
+                                                    placeholder="••••••••"
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-foreground transition-colors"
                                                 >
                                                     {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                                 </button>
                                             </div>
-                                            {errors.confirmPassword && <p className="mt-2 text-xs text-red-600">{errors.confirmPassword}</p>}
+                                            {errors.confirmPassword && <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium ml-1">{errors.confirmPassword}</p>}
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-end gap-3 pt-4">
+                                    <div className="flex items-center justify-end gap-3 pt-6 border-t border-border mt-6">
                                         <button
                                             type="button"
                                             onClick={() => router.push('/admin/drivers')}
-                                            className="rounded-2xl border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                                            className="rounded-2xl border border-border bg-background px-6 py-3 text-sm font-semibold text-slate-600 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95"
                                         >
                                             Cancel
                                         </button>
                                         <button
                                             type="submit"
                                             disabled={loading || success}
-                                            className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                                            className="inline-flex items-center justify-center rounded-2xl bg-slate-900 dark:bg-emerald-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-slate-800 dark:hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60 active:scale-95 shadow-lg shadow-emerald-500/10"
                                         >
                                             {loading ? (
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
