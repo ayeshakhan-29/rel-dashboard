@@ -8,6 +8,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import AdminRoute from '@/app/components/auth/AdminRoute';
 import { getDrivers, deleteDriver, updateDriver, Driver, UpdateDriverData } from '@/app/services/driversService';
 import { Plus, Loader2, Trash2, Edit, X, Save, LayoutGrid, List, Phone, Mail, User, Calendar, CheckCircle, Clock, XCircle } from 'lucide-react';
+import Pagination from '@/components/Pagination';
 
 export default function DriversPage() {
     const router = useRouter();
@@ -22,6 +23,11 @@ export default function DriversPage() {
     const [updateLoading, setUpdateLoading] = useState(false);
     const [editFormData, setEditFormData] = useState<UpdateDriverData>({});
     const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 9;
+
+    const totalPages = Math.ceil(drivers.length / itemsPerPage);
+    const currentDrivers = drivers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     useEffect(() => {
         const loadDrivers = async () => {
@@ -190,7 +196,7 @@ export default function DriversPage() {
                                                         </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-border">
-                                                        {drivers.map((driver) => (
+                                                        {currentDrivers.map((driver) => (
                                                             <tr 
                                                                 key={driver.id} 
                                                                 className="hover:bg-background cursor-pointer transition-colors"
@@ -248,7 +254,7 @@ export default function DriversPage() {
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {drivers.map((driver) => (
+                                        {currentDrivers.map((driver) => (
                                             <div 
                                                 key={driver.id} 
                                                 onClick={() => handleEditClick(driver)}
@@ -317,6 +323,16 @@ export default function DriversPage() {
                                             </div>
                                         ))}
                                     </div>
+                                )}
+                                
+                                {drivers.length > 0 && !loading && !apiError && (
+                                    <Pagination
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        onPageChange={setCurrentPage}
+                                        itemsPerPage={itemsPerPage}
+                                        totalItems={drivers.length}
+                                    />
                                 )}
                             </div>
                         </div>

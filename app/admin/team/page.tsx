@@ -22,6 +22,7 @@ import {
     UserCheck,
     Briefcase
 } from 'lucide-react';
+import Pagination from '@/components/Pagination';
 
 export default function TeamManagementPage() {
     const router = useRouter();
@@ -37,6 +38,8 @@ export default function TeamManagementPage() {
     const [updateLoading, setUpdateLoading] = useState(false);
     const [editFormData, setEditFormData] = useState<UpdateUserData>({});
     const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 8;
 
     useEffect(() => {
         loadUsers();
@@ -53,7 +56,11 @@ export default function TeamManagementPage() {
                 u.role.toLowerCase().includes(term)
             ));
         }
+        setCurrentPage(1);
     }, [searchTerm, users]);
+
+    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+    const currentUsers = filteredUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     const loadUsers = async () => {
         try {
@@ -205,7 +212,7 @@ export default function TeamManagementPage() {
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-border">
-                                                    {filteredUsers.map((user) => (
+                                                    {currentUsers.map((user) => (
                                                         <tr key={user.id} className="hover:bg-background transition-colors">
                                                             <td className="px-6 py-4">
                                                                 <div className="flex items-center">
@@ -258,6 +265,15 @@ export default function TeamManagementPage() {
                                                 </tbody>
                                             </table>
                                         </div>
+                                        {filteredUsers.length > 0 && (
+                                            <Pagination
+                                                currentPage={currentPage}
+                                                totalPages={totalPages}
+                                                onPageChange={setCurrentPage}
+                                                itemsPerPage={itemsPerPage}
+                                                totalItems={filteredUsers.length}
+                                            />
+                                        )}
                                     </div>
                                 )}
                             </div>

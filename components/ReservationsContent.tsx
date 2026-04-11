@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
+import Pagination from '@/components/Pagination';
 import reservationService from '@/app/services/reservationService';
 import { Reservation } from '@/types/reservation.types';
 
@@ -458,34 +459,13 @@ export default function ReservationsContent() {
                                     </div>
 
                                     {/* Pagination */}
-                                    {pagination.totalPages > 1 && (
-                                        <div className="px-6 py-4 bg-card border-t border-border flex items-center justify-between transition-colors">
-                                            <div className="text-sm text-slate-500 dark:text-slate-400">
-                                                Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
-                                                {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-                                                {pagination.total} results
-                                            </div>
-                                            <div className="flex items-center space-x-2">
-                                                <button
-                                                    onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
-                                                    disabled={pagination.page === 1}
-                                                    className="p-2 border border-border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 text-foreground transition-colors"
-                                                >
-                                                    <ChevronLeft className="h-4 w-4" />
-                                                </button>
-                                                <span className="text-sm text-foreground">
-                                                    Page {pagination.page} of {pagination.totalPages}
-                                                </span>
-                                                <button
-                                                    onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
-                                                    disabled={pagination.page === pagination.totalPages}
-                                                    className="p-2 border border-border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 text-foreground transition-colors"
-                                                >
-                                                    <ChevronRight className="h-4 w-4" />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
+                                    <Pagination
+                                        currentPage={pagination.page}
+                                        totalPages={pagination.totalPages}
+                                        onPageChange={(page) => setPagination(prev => ({ ...prev, page }))}
+                                        itemsPerPage={pagination.limit}
+                                        totalItems={pagination.total}
+                                    />
                                 </>
                             )}
                         </div>

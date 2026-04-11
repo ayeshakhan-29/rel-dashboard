@@ -11,6 +11,7 @@ import { Reservation } from '@/types/reservation.types';
 import {
     Car, Calendar, Clock, ArrowRight, Loader2, AlertCircle, RefreshCw, Circle,
 } from 'lucide-react';
+import Pagination from '@/components/Pagination';
 
 // ── Trip status config ────────────────────────────────────────────────────────
 const TRIP_STATUS_STYLES: Record<string, string> = {
@@ -76,6 +77,9 @@ function TripsContent() {
     const [tripsError, setTripsError] = useState<string | null>(null);
     const [updating, setUpdating] = useState<number | null>(null);
     const [selected, setSelected] = useState<Record<number, string>>({});
+    
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 8;
 
     // Driver profile state
     const [driverStatus, setDriverStatus] = useState<string>('');
@@ -144,6 +148,9 @@ function TripsContent() {
         }
     };
 
+    const totalPages = Math.ceil(trips.length / itemsPerPage);
+    const currentTrips = trips.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
     return (
         <DriverRoute>
             <div className="flex h-screen bg-slate-50">
@@ -210,8 +217,8 @@ function TripsContent() {
                                 <p className="text-slate-400 text-sm mt-1">Check back later for new assignments.</p>
                             </div>
                         ) : (
-                            <div className="space-y-3 max-w-3xl mx-auto">
-                                {trips.map((trip) => {
+                            <div className="space-y-3 max-w-3xl mx-auto pb-8">
+                                {currentTrips.map((trip) => {
                                     const isUpdating = updating === trip.id;
                                     const nextOpts = NEXT_TRIP_STATUSES[trip.reservation_status];
                                     return (
@@ -280,6 +287,18 @@ function TripsContent() {
                                         </div>
                                     );
                                 })}
+                                
+                                {trips.length > 0 && (
+                                    <div className="pt-4">
+                                        <Pagination
+                                            currentPage={currentPage}
+                                            totalPages={totalPages}
+                                            onPageChange={setCurrentPage}
+                                            itemsPerPage={itemsPerPage}
+                                            totalItems={trips.length}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         )}
                     </main>

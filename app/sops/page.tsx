@@ -5,6 +5,7 @@ import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import PrivateRoute from "../components/auth/PrivateRoute";
 import { FileText } from "lucide-react";
+import Pagination from "@/components/Pagination";
 
 interface SOP {
   id: string;
@@ -25,6 +26,17 @@ export default function SopsPage() {
     if (filter === "all") return sops;
     return sops.filter((s) => s.shift === filter);
   };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+  
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter]);
+
+  const filtered = sopsFilter();
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const currentSops = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   useEffect(() => {
     // Placeholder data - replace with real API later
@@ -99,11 +111,12 @@ export default function SopsPage() {
               </div>
 
               <div className="flex-1 overflow-y-auto">
-                {sopsFilter().length === 0 ? (
+                {filtered.length === 0 ? (
                   <div className="p-6 text-slate-500">No SOPs available</div>
                 ) : (
-                  <div className="divide-y divide-slate-100">
-                    {sopsFilter().map((sop) => (
+                  <div className="flex flex-col h-full">
+                    <div className="divide-y divide-slate-100 flex-1">
+                      {currentSops.map((sop) => (
                       <div
                         key={sop.id}
                         onClick={() => setSelected(sop)}
@@ -127,6 +140,18 @@ export default function SopsPage() {
                         </p>
                       </div>
                     ))}
+                    </div>
+                    {filtered.length > 0 && (
+                      <div className="p-2 border-t border-slate-100">
+                        <Pagination 
+                          currentPage={currentPage}
+                          totalPages={totalPages}
+                          onPageChange={setCurrentPage}
+                          itemsPerPage={itemsPerPage}
+                          totalItems={filtered.length}
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

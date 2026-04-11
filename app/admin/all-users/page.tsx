@@ -6,6 +6,7 @@ import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import AdminRoute from '../../components/auth/AdminRoute';
 import { getAllUsers, deleteUser, User as UserType } from '../../services/userService';
+import Pagination from '@/components/Pagination';
 
 export default function AllUsersPage() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -13,6 +14,8 @@ export default function AllUsersPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     // Fetch all users
     useEffect(() => {
@@ -145,7 +148,7 @@ export default function AllUsersPage() {
                                                         </td>
                                                     </tr>
                                                 ) : (
-                                                    users.map((user) => (
+                                                    users.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((user) => (
                                                         <tr key={user.id} className="hover:bg-slate-50 transition-colors">
                                                             <td className="px-6 py-4 whitespace-nowrap">
                                                                 <div className="flex items-center">
@@ -191,6 +194,16 @@ export default function AllUsersPage() {
                                             </tbody>
                                         </table>
                                     </div>
+                                    
+                                    {users.length > 0 && (
+                                        <Pagination
+                                            currentPage={currentPage}
+                                            totalPages={Math.ceil(users.length / itemsPerPage)}
+                                            onPageChange={setCurrentPage}
+                                            itemsPerPage={itemsPerPage}
+                                            totalItems={users.length}
+                                        />
+                                    )}
                                 </div>
                             )}
                         </div>

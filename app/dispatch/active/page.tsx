@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import api from "@/app/services/api";
 import Link from "next/link";
+import Pagination from "@/components/Pagination";
 
 interface ActiveTrip {
   id: number;
@@ -90,6 +91,8 @@ function ActiveTripsContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
   const fetchActiveTrips = useCallback(async () => {
     try {
@@ -115,6 +118,9 @@ function ActiveTripsContent() {
   const pendingApproval = trips.filter(
     (t) => t.reservation_status === "pending_driver_approval"
   );
+  
+  const totalPages = Math.ceil(trips.length / itemsPerPage);
+  const currentTrips = trips.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="flex h-screen bg-background text-foreground overflow-hidden transition-colors duration-300">
@@ -202,10 +208,19 @@ function ActiveTripsContent() {
             )}
 
             {!loading && !error && trips.length > 0 && (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {trips.map((trip) => (
-                  <TripCard key={trip.id} trip={trip} />
-                ))}
+              <div>
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {currentTrips.map((trip) => (
+                    <TripCard key={trip.id} trip={trip} />
+                  ))}
+                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  itemsPerPage={itemsPerPage}
+                  totalItems={trips.length}
+                />
               </div>
             )}
           </div>

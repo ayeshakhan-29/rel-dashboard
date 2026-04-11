@@ -6,6 +6,7 @@ import AdminRoute from "../../components/auth/AdminRoute";
 import { getPassengers, deleteUser, updateUserById } from "@/app/services/userService";
 import reservationService from "@/app/services/reservationService";
 import { Search, Plus, Phone, Mail, Users, Star, Calendar, DollarSign, Edit, Trash2, Loader2 } from "lucide-react";
+import Pagination from "@/components/Pagination";
 
 interface Trip { id: string; date: string; route: string; price: number; status: string; driver: string }
 interface Passenger {
@@ -212,6 +213,13 @@ function PassengersContent() {
   const [editingPassenger, setEditingPassenger] = useState<Passenger | null>(null);
   const [deletingPassenger, setDeletingPassenger] = useState<Passenger | null>(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter]);
+
   const handleEditSuccess = (updatedPassenger: Passenger) => {
     setPassengers((prev) => prev.map((p) => (p.id === updatedPassenger.id ? updatedPassenger : p)));
     setEditingPassenger(null);
@@ -248,6 +256,9 @@ function PassengersContent() {
     const matchStatus = statusFilter === "all" || p.status === statusFilter;
     return matchSearch && matchStatus;
   });
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const currentPassengers = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const inputCls = "px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-colors";
 
@@ -306,7 +317,7 @@ function PassengersContent() {
             </div>
           ) : viewMode === "cards" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filtered.map((p) => (
+              {currentPassengers.map((p) => (
                 <div key={p.id} className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-300 group">
                   <div className="p-4">
                     <div className="flex justify-between items-start mb-4">
@@ -356,7 +367,7 @@ function PassengersContent() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {filtered.map((p) => (
+                  {currentPassengers.map((p) => (
                     <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
                       <td className="py-3 px-4">
                         <div className="font-semibold text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{p.name}</div>
@@ -386,6 +397,16 @@ function PassengersContent() {
                 </tbody>
               </table>
             </div>
+          )}
+          
+          {filtered.length > 0 && !loading && (
+            <Pagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              itemsPerPage={itemsPerPage}
+              totalItems={filtered.length}
+            />
           )}
         </main>
       </div>
