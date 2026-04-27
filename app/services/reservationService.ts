@@ -100,10 +100,10 @@ class ReservationService {
     /**
      * Get available drivers
      */
-   async getAvailableDrivers(): Promise<Driver[]> {
-    const response = await api.get('/reservations/drivers/available');
-    return response.data.data;
-}
+    async getAvailableDrivers(): Promise<Driver[]> {
+        const response = await api.get('/reservations/drivers/available');
+        return response.data.data;
+    }
 
     /**
      * Get reservation statistics
@@ -139,6 +139,14 @@ class ReservationService {
 
     async deleteReservation(id: number): Promise<void> {
         await api.delete(`/reservations/${id}`);
+    }
+
+    /**
+     * Manually retry a failed payment immediately
+     */
+    async retryPayment(bookingId: string): Promise<any> {
+        const response = await api.post('/stripe/retry-charge', { bookingId });
+        return response.data;
     }
 }
 

@@ -1,15 +1,15 @@
 'use client';
-import { Vehicle ,CreateReservationData} from '@/types/reservation.types';
+import { Vehicle, CreateReservationData } from '@/types/reservation.types';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { 
-    Car, 
-    User, 
-    MapPin, 
-    Calendar, 
-    Clock, 
-    Users, 
-    Luggage, 
+import {
+    Car,
+    User,
+    MapPin,
+    Calendar,
+    Clock,
+    Users,
+    Luggage,
     DollarSign,
     FileText,
     AlertCircle,
@@ -43,13 +43,13 @@ export default function EditReservationPage() {
         // Booking Type
         booking_type: 'form' as 'form' | 'contract' | 'manual',
         trip_type: 'distance' as 'hourly' | 'distance' | 'contract',
-        
+
         // Passenger Information
         passenger_id: 0,
         passenger_name: '',
         passenger_email: '',
         passenger_phone: '',
-        
+
         // Trip Details
         pickup_location: '',
         dropoff_location: '',
@@ -58,11 +58,11 @@ export default function EditReservationPage() {
         vehicle_type_id: 0,
         passenger_count: 1,
         luggage_count: null as number | null,
-        
+
         // Booking Details
         price: null as number | null,
-        payment_status: 'pending' as 'pending' | 'paid' | 'failed' | 'refunded',
-        
+        payment_status: 'pending' as 'pending' | 'scheduled' | 'paid' | 'failed' | 'refunded',
+
         // Contract specific
         contract_start_date: '',
         contract_end_date: '',
@@ -120,15 +120,15 @@ export default function EditReservationPage() {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        
+
         let processedValue: string | number | null = value;
-        if (name === 'vehicle_type_id' || name === 'passenger_count' || name === 'luggage_count' || 
+        if (name === 'vehicle_type_id' || name === 'passenger_count' || name === 'luggage_count' ||
             name === 'price' || name === 'daily_rate' || name === 'hourly_rate') {
             processedValue = value === '' ? null : Number(value);
         }
-        
+
         setFormData(prev => ({ ...prev, [name]: processedValue }));
-        
+
         if (errors[name]) {
             setErrors(prev => {
                 const newErrors = { ...prev };
@@ -144,7 +144,7 @@ export default function EditReservationPage() {
         if (!formData.passenger_name) newErrors.passenger_name = 'Passenger name is required';
         if (!formData.passenger_email) newErrors.passenger_email = 'Email is required';
         else if (!/\S+@\S+\.\S+/.test(formData.passenger_email)) newErrors.passenger_email = 'Invalid email format';
-        
+
         if (!formData.passenger_phone) newErrors.passenger_phone = 'Phone is required';
         if (!formData.pickup_location) newErrors.pickup_location = 'Pickup location is required';
         if (!formData.dropoff_location) newErrors.dropoff_location = 'Dropoff location is required';
@@ -157,38 +157,38 @@ export default function EditReservationPage() {
         return Object.keys(newErrors).length === 0;
     };
 
- const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-    }
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
 
-    setSubmitting(true);
-    try {
-        // Format dates and ensure correct types
-      const formattedData: Partial<CreateReservationData> = {
-    ...formData,
-    pickup_date: formData.pickup_date ? new Date(formData.pickup_date).toISOString().split('T')[0] : undefined,
-    contract_start_date: formData.contract_start_date ? new Date(formData.contract_start_date).toISOString().split('T')[0] : undefined,
-    contract_end_date: formData.contract_end_date ? new Date(formData.contract_end_date).toISOString().split('T')[0] : undefined,
-    payment_status: formData.payment_status === 'paid' ? 'paid' : 'pending',
-};
-        
-        await reservationService.updateReservation(id, formattedData);
-        setSuccess(true);
-        
-        setTimeout(() => {
-            router.push(`/reservations/${id}`);
-        }, 2000);
-    } catch (error: any) {
-        console.error('Failed to update reservation:', error);
-        setErrors({ submit: error.response?.data?.message || 'Failed to update reservation' });
-    } finally {
-        setSubmitting(false);
-    }
-};
+        if (!validateForm()) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+
+        setSubmitting(true);
+        try {
+            // Format dates and ensure correct types
+            const formattedData: Partial<CreateReservationData> = {
+                ...formData,
+                pickup_date: formData.pickup_date ? new Date(formData.pickup_date).toISOString().split('T')[0] : undefined,
+                contract_start_date: formData.contract_start_date ? new Date(formData.contract_start_date).toISOString().split('T')[0] : undefined,
+                contract_end_date: formData.contract_end_date ? new Date(formData.contract_end_date).toISOString().split('T')[0] : undefined,
+                payment_status: formData.payment_status,
+            };
+
+            await reservationService.updateReservation(id, formattedData);
+            setSuccess(true);
+
+            setTimeout(() => {
+                router.push(`/reservations/${id}`);
+            }, 2000);
+        } catch (error: any) {
+            console.error('Failed to update reservation:', error);
+            setErrors({ submit: error.response?.data?.message || 'Failed to update reservation' });
+        } finally {
+            setSubmitting(false);
+        }
+    };
     if (loading) {
         return (
             <div className="flex h-screen bg-background">
@@ -228,7 +228,7 @@ export default function EditReservationPage() {
         <AdminRoute>
             <div className="flex h-screen bg-background text-foreground transition-colors duration-300">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-                
+
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Header title="Edit Reservation" onMenuClick={() => setSidebarOpen(true)} />
 
@@ -250,12 +250,12 @@ export default function EditReservationPage() {
                                     </h2>
                                     <div className="flex items-center space-x-4">
                                         <span className="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300">
-                                            {formData.booking_type === 'form' ? 'Form Booking' : 
-                                             formData.booking_type === 'contract' ? 'Contract Booking' : 'Manual Entry'}
+                                            {formData.booking_type === 'form' ? 'Form Booking' :
+                                                formData.booking_type === 'contract' ? 'Contract Booking' : 'Manual Entry'}
                                         </span>
                                         <span className="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300">
-                                            {formData.trip_type === 'distance' ? 'Distance Based' : 
-                                             formData.trip_type === 'hourly' ? 'Hourly' : 'Contract'}
+                                            {formData.trip_type === 'distance' ? 'Distance Based' :
+                                                formData.trip_type === 'hourly' ? 'Hourly' : 'Contract'}
                                         </span>
                                     </div>
                                 </div>
@@ -278,9 +278,8 @@ export default function EditReservationPage() {
                                                     name="passenger_name"
                                                     value={formData.passenger_name}
                                                     onChange={handleInputChange}
-                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
-                                                        errors.passenger_name ? 'border-red-500' : 'border-border'
-                                                    }`}
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${errors.passenger_name ? 'border-red-500' : 'border-border'
+                                                        }`}
                                                     placeholder="Enter passenger name"
                                                 />
                                             </div>
@@ -300,9 +299,8 @@ export default function EditReservationPage() {
                                                     name="passenger_email"
                                                     value={formData.passenger_email}
                                                     onChange={handleInputChange}
-                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
-                                                        errors.passenger_email ? 'border-red-500' : 'border-border'
-                                                    }`}
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${errors.passenger_email ? 'border-red-500' : 'border-border'
+                                                        }`}
                                                     placeholder="passenger@example.com"
                                                 />
                                             </div>
@@ -322,9 +320,8 @@ export default function EditReservationPage() {
                                                     name="passenger_phone"
                                                     value={formData.passenger_phone}
                                                     onChange={handleInputChange}
-                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
-                                                        errors.passenger_phone ? 'border-red-500' : 'border-border'
-                                                    }`}
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${errors.passenger_phone ? 'border-red-500' : 'border-border'
+                                                        }`}
                                                     placeholder="+1 (234) 567-8900"
                                                 />
                                             </div>
@@ -371,9 +368,8 @@ export default function EditReservationPage() {
                                                     name="pickup_location"
                                                     value={formData.pickup_location}
                                                     onChange={handleInputChange}
-                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
-                                                        errors.pickup_location ? 'border-red-500' : 'border-border'
-                                                    }`}
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${errors.pickup_location ? 'border-red-500' : 'border-border'
+                                                        }`}
                                                     placeholder="Enter pickup address"
                                                 />
                                             </div>
@@ -393,9 +389,8 @@ export default function EditReservationPage() {
                                                     name="dropoff_location"
                                                     value={formData.dropoff_location}
                                                     onChange={handleInputChange}
-                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
-                                                        errors.dropoff_location ? 'border-red-500' : 'border-border'
-                                                    }`}
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${errors.dropoff_location ? 'border-red-500' : 'border-border'
+                                                        }`}
                                                     placeholder="Enter dropoff address"
                                                 />
                                             </div>
@@ -416,9 +411,8 @@ export default function EditReservationPage() {
                                                     value={formData.pickup_date}
                                                     onChange={handleInputChange}
                                                     min={new Date().toISOString().split('T')[0]}
-                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
-                                                        errors.pickup_date ? 'border-red-500' : 'border-border'
-                                                    }`}
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${errors.pickup_date ? 'border-red-500' : 'border-border'
+                                                        }`}
                                                 />
                                             </div>
                                             {errors.pickup_date && (
@@ -437,9 +431,8 @@ export default function EditReservationPage() {
                                                     name="pickup_time"
                                                     value={formData.pickup_time}
                                                     onChange={handleInputChange}
-                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
-                                                        errors.pickup_time ? 'border-red-500' : 'border-border'
-                                                    }`}
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${errors.pickup_time ? 'border-red-500' : 'border-border'
+                                                        }`}
                                                 />
                                             </div>
                                             {errors.pickup_time && (
@@ -457,9 +450,8 @@ export default function EditReservationPage() {
                                                     name="vehicle_type_id"
                                                     value={formData.vehicle_type_id || ''}
                                                     onChange={handleInputChange}
-                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
-                                                        errors.vehicle_type_id ? 'border-red-500' : 'border-border'
-                                                    }`}
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${errors.vehicle_type_id ? 'border-red-500' : 'border-border'
+                                                        }`}
                                                 >
                                                     <option value="">Select a vehicle</option>
                                                     {vehicles.map(v => (
@@ -515,9 +507,8 @@ export default function EditReservationPage() {
                                                     onChange={handleInputChange}
                                                     min="0"
                                                     step="0.01"
-                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
-                                                        errors.price ? 'border-red-500' : 'border-border'
-                                                    }`}
+                                                    className={`w-full pl-10 pr-4 py-2 bg-card text-foreground border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${errors.price ? 'border-red-500' : 'border-border'
+                                                        }`}
                                                     placeholder="0.00"
                                                 />
                                             </div>
