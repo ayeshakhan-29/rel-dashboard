@@ -48,8 +48,8 @@ interface NavigationItem {
   icon: any;
   divider?: boolean;
   adminOnly?: boolean;
-  teamOnly?: boolean;
-  adminOrTeamOnly?: boolean;
+  dispatcherOnly?: boolean;
+  adminOrDispatcherOnly?: boolean;
   employeeOnly?: boolean;
   driverOnly?: boolean;
   notDriverOnly?: boolean;
@@ -85,7 +85,7 @@ const navigationItems: NavigationItem[] = [
     name: "Reservations",
     href: "/reservations",
     icon: Ticket,
-    adminOrTeamOnly: true,
+    adminOrDispatcherOnly: true,
     children: [
       { name: "Create Reservation", href: "/reservations/create", icon: Plus },
       { name: "Manage Reservations", href: "/reservations", icon: ListTodo },
@@ -96,7 +96,7 @@ const navigationItems: NavigationItem[] = [
     name: "Dispatch Board",
     href: "/dispatch",
     icon: Car,
-    adminOrTeamOnly: true,
+    adminOrDispatcherOnly: true,
     children: [
       { name: "Dispatch Board", href: "/dispatch", icon: Car },
       { name: "Assign Drivers", href: "/dispatch/assign", icon: Users },
@@ -109,7 +109,7 @@ const navigationItems: NavigationItem[] = [
     name: "Driver Management",
     href: "/admin/drivers",
     icon: UserPlus,
-    adminOrTeamOnly: true,
+    adminOrDispatcherOnly: true,
     children: [
       {
         name: "Register Driver",
@@ -121,17 +121,17 @@ const navigationItems: NavigationItem[] = [
     ],
   },
   {
-    name: "Team Management",
+    name: "Dispatcher Management",
     href: "/admin/team",
     icon: UsersIcon,
     adminOnly: true,
     children: [
       {
-        name: "Register Team Member",
+        name: "Register Dispatcher",
         href: "/admin/team/register",
         icon: Plus,
       },
-      { name: "Manage Team", href: "/admin/team", icon: UsersIcon },
+      { name: "Manage Dispatchers", href: "/admin/team", icon: UsersIcon },
     ],
   },
 
@@ -169,7 +169,7 @@ const navigationItems: NavigationItem[] = [
 function SidebarContent({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { user, isAdmin, isTeam, isEmployee, isDriver, logout } = useAuth();
+  const { user, isAdmin, isDispatcher, isEmployee, isDriver, logout } = useAuth();
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
     "Attendance Admin": true, // Default expanded
   });
@@ -197,7 +197,7 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
     });
 
     setExpandedMenus(() => activeSubmenus);
-  }, [pathname, searchParams, isAdmin, isTeam, isEmployee]);
+  }, [pathname, searchParams, isAdmin, isDispatcher, isEmployee]);
 
   // Fetch unread notifications count for employees
   useEffect(() => {
@@ -236,8 +236,8 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
   const filteredNavigationItems = navigationItems
     .filter((item) => {
       if (item.adminOnly && !isAdmin) return false;
-      if (item.teamOnly && !isTeam) return false;
-      if (item.adminOrTeamOnly && !(isAdmin || isTeam)) return false;
+      if (item.dispatcherOnly && !isDispatcher) return false;
+      if (item.adminOrDispatcherOnly && !(isAdmin || isDispatcher)) return false;
       if (item.employeeOnly && !isEmployee) return false;
       if (item.driverOnly && !isDriver) return false;
       if (item.notDriverOnly && isDriver) return false;
@@ -249,8 +249,8 @@ function SidebarContent({ isOpen, onClose }: SidebarProps) {
           ...item,
           children: item.children.filter((child) => {
             if (child.adminOnly && !isAdmin) return false;
-            if (child.teamOnly && !isTeam) return false;
-            if (child.adminOrTeamOnly && !(isAdmin || isTeam)) return false;
+            if (child.dispatcherOnly && !isDispatcher) return false;
+            if (child.adminOrDispatcherOnly && !(isAdmin || isDispatcher)) return false;
             if (child.employeeOnly && !isEmployee) return false;
             if (child.driverOnly && !isDriver) return false;
             return true;

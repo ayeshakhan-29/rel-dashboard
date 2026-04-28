@@ -9,11 +9,11 @@ import { useAuth } from './context/AuthContext';
 import AdminDashboard from '@/components/dashboards/AdminDashboard';
 import EmployeeDashboard from '@/components/dashboards/EmployeeDashboard';
 import DriverDashboard from '@/components/dashboards/DriverDashboard';
-import TeamDashboard from '@/components/dashboards/TeamDashboard';
+import DispatcherDashboard from '@/components/dashboards/TeamDashboard';
 
 function DashboardContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { user, isAdmin, isTeam, isDriver, loading } = useAuth();
+  const { user, isAdmin, isDispatcher, isDriver, loading } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const tab = searchParams.get('tab');
@@ -37,7 +37,7 @@ function DashboardContent() {
   const getTitle = () => {
     if (isAdmin) return "Admin Dashboard";
     if (isDriver) return "Driver Dashboard";
-    if (isTeam && (!tab || tab === 'home')) return "Team Dashboard";
+    if (isDispatcher && (!tab || tab === 'home')) return "Dispatcher Dashboard";
 
     switch (tab) {
       case 'profile': return 'My Profile';
@@ -63,8 +63,8 @@ function DashboardContent() {
             <AdminDashboard />
           ) : isDriver ? (
             <DriverDashboard />
-          ) : isTeam && (!tab || tab === 'home') ? (
-            <TeamDashboard />
+          ) : isDispatcher && (!tab || tab === 'home') ? (
+            <DispatcherDashboard />
           ) : (
             <EmployeeDashboard />
           )}

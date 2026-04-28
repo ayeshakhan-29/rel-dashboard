@@ -12,18 +12,18 @@ interface AdminRouteProps {
  * AdminRoute component - Protects routes that require admin role
  */
 const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
-    const { isAuthenticated, isAdmin, isTeam, loading } = useAuth();
+    const { isAuthenticated, isAdmin, isDispatcher, loading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
         if (!loading) {
             if (!isAuthenticated) {
                 router.push('/login');
-            } else if (!isAdmin && !isTeam) {
+            } else if (!isAdmin && !isDispatcher) {
                 router.push('/');
             }
         }
-    }, [isAuthenticated, isAdmin, isTeam, loading, router]);
+    }, [isAuthenticated, isAdmin, isDispatcher, loading, router]);
 
     // Show loading state while checking authentication
     if (loading) {
@@ -38,7 +38,7 @@ const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
     }
 
     // Don't render children if not authenticated or not authorized
-    if (!isAuthenticated || (!isAdmin && !isTeam)) {
+    if (!isAuthenticated || (!isAdmin && !isDispatcher)) {
         return null;
     }
 

@@ -16,7 +16,7 @@ export default function RegisterTeamMemberPage() {
         email: '',
         password: '',
         confirmPassword: '',
-        role: 'team' as const
+        role: 'dispatcher' as const
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [apiError, setApiError] = useState<string | null>(null);
@@ -90,7 +90,7 @@ export default function RegisterTeamMemberPage() {
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
                 <div className="flex-1 flex flex-col overflow-hidden">
-                    <Header title="Register Team Member" onMenuClick={() => setSidebarOpen(true)} />
+                    <Header title="Register Dispatcher" onMenuClick={() => setSidebarOpen(true)} />
 
                     <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-6 transition-colors duration-300">
                         <div className="max-w-3xl mx-auto">
@@ -100,7 +100,7 @@ export default function RegisterTeamMemberPage() {
                                 className="inline-flex items-center text-slate-500 dark:text-slate-400 hover:text-foreground mb-6 transition-colors"
                             >
                                 <ArrowLeft className="h-4 w-4 mr-2" />
-                                Back to Team Management
+                                Back to Dispatcher Management
                             </button>
 
                             {success && (
@@ -108,7 +108,7 @@ export default function RegisterTeamMemberPage() {
                                     <div className="flex items-start gap-3">
                                         <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                                         <div>
-                                            <p className="font-semibold text-emerald-900 dark:text-emerald-400">Team member registered successfully.</p>
+                                            <p className="font-semibold text-emerald-900 dark:text-emerald-400">Dispatcher registered successfully.</p>
                                             <p className="text-sm text-emerald-700 dark:text-emerald-500/80">You will be redirected shortly.</p>
                                         </div>
                                     </div>
@@ -130,7 +130,7 @@ export default function RegisterTeamMemberPage() {
                                         <UserPlus className="h-6 w-6" />
                                     </div>
                                     <div>
-                                        <h1 className="text-2xl font-bold text-foreground">Register Team Member</h1>
+                                        <h1 className="text-2xl font-bold text-foreground">Register Dispatcher</h1>
                                         <p className="text-sm text-slate-500 dark:text-slate-400">
                                             Add a new staff member to the platform.
                                         </p>
@@ -177,7 +177,7 @@ export default function RegisterTeamMemberPage() {
                                             <input
                                                 type="text"
                                                 disabled
-                                                value="Team"
+                                                value="Dispatcher"
                                                 className="w-full rounded-2xl border border-border bg-background/50 px-4 py-3 text-sm text-slate-500 dark:text-slate-400 cursor-not-allowed opacity-70"
                                             />
                                             <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-500 italic ml-1">This role is automatically assigned for new staff members.</p>
@@ -252,7 +252,7 @@ export default function RegisterTeamMemberPage() {
                                             ) : (
                                                 <UserPlus className="mr-2 h-4 w-4" />
                                             )}
-                                            Register Staff Member
+                                            Register Dispatcher
                                         </button>
                                     </div>
                                 </form>

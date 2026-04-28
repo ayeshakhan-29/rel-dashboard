@@ -137,7 +137,7 @@ export default function TeamManagementPage() {
         switch(role) {
             case 'admin':
                 return 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border-violet-200 dark:border-violet-900/30';
-            case 'team':
+            case 'dispatcher':
                 return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/30';
             case 'employee':
                 return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900/30';
@@ -152,13 +152,14 @@ export default function TeamManagementPage() {
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
                 <div className="flex-1 flex flex-col overflow-hidden">
-                    <Header title="Team Management" onMenuClick={() => setSidebarOpen(true)} />
+                    <Header title="Dispatcher Management" onMenuClick={() => setSidebarOpen(true)} />
 
                     <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-6 transition-colors duration-300">
                         <div className="max-w-6xl mx-auto">
                             <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                 <div>
-                                    <h1 className="text-2xl font-semibold text-foreground">Staff & Team</h1>
+                                    <h1 className="text-2xl font-semibold text-foreground">Staff & Dispatchers</h1>
+                                    <h1 className="text-2xl font-semibold text-foreground">Dispatcher Management</h1>
                                     <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Manage dashboard users and their access levels.</p>
                                 </div>
                                 <div className="flex flex-col md:flex-row gap-3">
@@ -166,7 +167,7 @@ export default function TeamManagementPage() {
                                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                         <input 
                                             type="text" 
-                                            placeholder="Search team..." 
+                                            placeholder="Search dispatchers..." 
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
                                             className="pl-10 pr-4 py-2 bg-card border border-border rounded-xl text-sm text-foreground outline-none focus:ring-1 focus:ring-emerald-500 transition-all min-w-[200px]"
@@ -196,7 +197,7 @@ export default function TeamManagementPage() {
                                     <div className="rounded-3xl border border-border bg-card p-12 text-center transition-colors">
                                         <UserIcon className="h-12 w-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
                                         <h3 className="text-lg font-medium text-foreground">No members found</h3>
-                                        <p className="text-slate-500 dark:text-slate-400 mt-1">Try adjusting your search or add a new team member.</p>
+                                        <p className="text-slate-500 dark:text-slate-400 mt-1">Try adjusting your search or add a new dispatcher.</p>
                                     </div>
                                 ) : (
                                     <div className="rounded-3xl border border-border bg-card shadow-sm overflow-hidden transition-colors">
@@ -329,7 +330,7 @@ export default function TeamManagementPage() {
                                     onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value as any })}
                                     className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground outline-none focus:ring-1 focus:ring-emerald-500 transition-all appearance-none cursor-pointer"
                                 >
-                                    <option value="team">Team Member</option>
+                                    <option value="dispatcher">Dispatcher</option>
                                     <option value="admin">Administrator</option>
                                     <option value="employee">Employee</option>
                                     <option value="driver">Driver</option>

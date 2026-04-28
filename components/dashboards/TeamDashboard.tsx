@@ -27,7 +27,7 @@ const STATUS_COLORS: Record<string, string> = {
     driver_denied: 'bg-red-100 text-red-700',
 };
 
-export default function TeamDashboard() {
+export default function DispatcherDashboard() {
     const [kpis, setKpis] = useState<DashboardKPI[]>([]);
     const [upcomingTasks, setUpcomingTasks] = useState<DashboardTask[]>([]);
     const [recentActivity, setRecentActivity] = useState<any[]>([]);
@@ -42,7 +42,7 @@ export default function TeamDashboard() {
             try {
                 setKpisLoading(true);
                 const data = await dashboardService.getKPIs();
-                // Filter out Revenue KPI for Team Dashboard
+                // Filter out Revenue KPI for Dispatcher Dashboard
                 setKpis(data.filter(kpi => !kpi.title.toLowerCase().includes('revenue')));
             } catch (err) {
                 console.error('Failed to fetch KPIs:', err);
