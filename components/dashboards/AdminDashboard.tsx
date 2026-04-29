@@ -140,7 +140,7 @@ export default function AdminDashboard() {
                             alert('Failed to trigger processing');
                         }
                     }}
-                    className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 group text-left"
+                    className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 group text-left cursor-pointer"
                 >
                     <div className="flex items-center justify-between">
                         <div>
