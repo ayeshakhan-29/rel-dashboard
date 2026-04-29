@@ -461,9 +461,23 @@ export default function ReservationDetailPage() {
                                             </div>
 
                                             {reservation.booking_type === 'form' && reservation.form_booking_ref && (
-                                                <div>
+                                                <div className="pt-2">
+                                                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Scheduled Charge Date</p>
+                                                    <p className="text-sm font-semibold text-emerald-600">
+                                                        {reservation.scheduled_charge_date 
+                                                            ? new Date(reservation.scheduled_charge_date).toLocaleDateString()
+                                                            : 'On Trip Date'}
+                                                    </p>
+                                                    <p className="text-[10px] text-slate-400 italic mt-1">
+                                                        Charges process at 00:00 NY Time on this date (or hourly if due).
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {reservation.booking_type === 'form' && reservation.form_booking_ref && (
+                                                <div className="mt-4">
                                                     <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Form / Stripe ref</p>
-                                                    <p className="text-xs font-mono text-foreground break-all">{reservation.form_booking_ref}</p>
+                                                    <p className="text-xs font-mono text-foreground break-all bg-slate-50 dark:bg-slate-800/50 p-2 rounded border border-border">{reservation.form_booking_ref}</p>
                                                 </div>
                                             )}
 

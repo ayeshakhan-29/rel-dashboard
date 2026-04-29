@@ -44,6 +44,9 @@ export interface Reservation {
     /** Web form booking id (Stripe client_reference_id) when booking_type is form */
     form_booking_ref?: string | null;
 
+    /** Date when the payment is scheduled to be processed */
+    scheduled_charge_date?: string | null;
+
     // Metadata
     created_by?: number;
     created_by_name?: string;

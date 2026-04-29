@@ -127,6 +127,29 @@ export default function AdminDashboard() {
                         <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
                     </div>
                 </Link>
+
+                <button
+                    onClick={async () => {
+                        if (!confirm('Process all due payments now?')) return;
+                        try {
+                            const api = (await import('@/app/services/api')).default;
+                            await api.post('/stripe/trigger-scheduler');
+                            alert('Payment processing triggered!');
+                            window.location.reload();
+                        } catch (err) {
+                            alert('Failed to trigger processing');
+                        }
+                    }}
+                    className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 group text-left"
+                >
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Process Payments</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Run scheduler now</p>
+                        </div>
+                        <Activity className="h-5 w-5 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                    </div>
+                </button>
             </div>
 
             {/* Performance Metrics, Tasks & Trip Activity */}
