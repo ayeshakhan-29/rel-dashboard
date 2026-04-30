@@ -1,9 +1,8 @@
 'use client';
 
 import { Suspense, useState } from 'react';
-import { Users, UserPlus, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import SecurityCard from '@/components/SecurityCard';
@@ -12,7 +11,7 @@ import { useAuth } from '../../context/AuthContext';
 function SettingsContent() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
-    const { logout, isAdmin } = useAuth();
+    const { logout } = useAuth();
     const router = useRouter();
 
     const handleLogout = async () => {
@@ -42,40 +41,6 @@ function SettingsContent() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* All Users */}
-                            {isAdmin && (
-                                <Link href="/admin/all-users">
-                                    <div className="bg-card rounded-2xl border border-border p-6 hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-800 transition-all cursor-pointer group">
-                                        <div className="flex items-center space-x-3 mb-4">
-                                            <div className="p-2.5 bg-background dark:bg-slate-800 rounded-xl border border-border">
-                                                <Users className="h-5 w-5 text-foreground" />
-                                            </div>
-                                            <h3 className="text-base font-bold text-foreground">All Users</h3>
-                                        </div>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">
-                                            View and manage all users in the system
-                                        </p>
-                                    </div>
-                                </Link>
-                            )}
-
-                            {/* Create User */}
-                            {isAdmin && (
-                                <Link href="/admin/create-user">
-                                    <div className="bg-card rounded-2xl border border-border p-6 hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-800 transition-all cursor-pointer group">
-                                        <div className="flex items-center space-x-3 mb-4">
-                                            <div className="p-2.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-900/30">
-                                                <UserPlus className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                                            </div>
-                                            <h3 className="text-base font-bold text-foreground">Create User</h3>
-                                        </div>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">
-                                            Add a new user to the system
-                                        </p>
-                                    </div>
-                                </Link>
-                            )}
-
                             {/* Logout Section */}
                             <div className="bg-card rounded-2xl border border-red-200 dark:border-red-900/30 p-6 md:col-span-2 transition-colors">
                                 <div className="flex items-center justify-between">

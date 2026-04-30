@@ -1,10 +1,11 @@
 import api from './api';
+import { UserRole } from './userService';
 
 export interface User {
     id: number;
     name: string;
     email: string;
-    role: 'employee' | 'admin' | 'dispatcher' | 'driver' | 'passenger';
+    role: UserRole;
     created_at: string;
     updated_at: string;
 }
@@ -23,7 +24,7 @@ export interface RegisterData {
     name: string;
     email: string;
     password: string;
-    role?: 'employee' | 'admin' | 'dispatcher' | 'driver' | 'passenger';
+    role?: UserRole;
 }
 
 export interface LoginData {

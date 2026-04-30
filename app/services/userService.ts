@@ -1,10 +1,12 @@
 import api from './api';
 
+export type UserRole = 'admin' | 'dispatcher' | 'driver';
+
 export interface User {
     id: number;
     name: string;
     email: string;
-    role: 'employee' | 'admin' | 'dispatcher' | 'driver' | 'passenger';
+    role: UserRole;
     created_at: string;
     updated_at: string;
 }
@@ -26,14 +28,14 @@ export interface CreateUserData {
     name: string;
     email: string;
     password: string;
-    role: 'employee' | 'admin' | 'dispatcher' | 'driver' | 'passenger';
+    role: UserRole;
 }
 
 export interface UpdateUserData {
     name?: string;
     email?: string;
     password?: string;
-    role?: 'employee' | 'admin' | 'dispatcher' | 'driver' | 'passenger';
+    role?: UserRole;
 }
 
 /**

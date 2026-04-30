@@ -17,7 +17,7 @@ export default function CreateUserPage() {
         email: '',
         password: '',
         confirmPassword: '',
-        role: 'employee' as const
+        role: 'dispatcher' as 'admin' | 'dispatcher' | 'driver'
     });
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -27,7 +27,7 @@ export default function CreateUserPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
@@ -178,6 +178,24 @@ export default function CreateUserPage() {
                                             placeholder="john@example.com"
                                         />
                                         {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+                                    </div>
+
+                                    {/* Role Field */}
+                                    <div>
+                                        <label htmlFor="role" className="block text-sm font-medium text-slate-700 mb-1">
+                                            Role <span className="text-red-500">*</span>
+                                        </label>
+                                        <select
+                                            id="role"
+                                            name="role"
+                                            value={formData.role}
+                                            onChange={handleChange}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 bg-white"
+                                        >
+                                            <option value="dispatcher">Dispatcher</option>
+                                            <option value="driver">Driver</option>
+                                            <option value="admin">Admin</option>
+                                        </select>
                                     </div>
 
                                     {/* Password Field */}
