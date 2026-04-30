@@ -71,8 +71,8 @@ export default function TeamManagementPage() {
             // Extract the users array correctly
             const usersArray = response.data?.users || response.users || (Array.isArray(response) ? response : []);
             
-            // Load all users for management
-            const staff = [...usersArray];
+            // Only show dispatchers
+            const staff = usersArray.filter((u: User) => u.role === 'dispatcher');
             
             setUsers(staff);
             setFilteredUsers(staff);
