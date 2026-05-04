@@ -72,12 +72,30 @@ export const refreshToken = async (refreshToken: string): Promise<{ success: boo
     return response.data;
 };
 
+/**
+ * Forgot password — request reset link
+ */
+export const forgotPassword = async (email: string): Promise<{ success: boolean; message: string }> => {
+    const response = await api.post('/auth/forgot-password', { email });
+    return response.data;
+};
+
+/**
+ * Reset password with token
+ */
+export const resetPassword = async (token: string, password: string): Promise<{ success: boolean; message: string }> => {
+    const response = await api.post('/auth/reset-password', { token, password });
+    return response.data;
+};
+
 const authService = {
     register,
     login,
     getMe,
     logout,
     refreshToken,
+    forgotPassword,
+    resetPassword,
 };
 
 export default authService;
