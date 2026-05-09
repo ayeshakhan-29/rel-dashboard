@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -57,7 +57,7 @@ api.interceptors.response.use(
 
                 // Try to refresh the token
                 const response = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/refresh-token`,
+                    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/auth/refresh-token`,
                     { refreshToken }
                 );
 

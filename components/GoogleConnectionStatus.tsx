@@ -15,7 +15,7 @@ export default function GoogleConnectionStatus({ onConnectionChange }: GoogleCon
     const checkConnectionStatus = useCallback(async () => {
         try {
             setLoading(true);
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
             const accessToken = sessionStorage.getItem('accessToken') || '';
             const response = await fetch(`${apiUrl}/auth/google/status`, {
                 headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined
@@ -52,7 +52,7 @@ export default function GoogleConnectionStatus({ onConnectionChange }: GoogleCon
         }
 
         // Redirect to Google OAuth using full API URL with token as query parameter
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
         const oauthUrl = `${apiUrl}/auth/google?token=${encodeURIComponent(accessToken)}`;
 
         console.log('Connecting to Google OAuth:', oauthUrl);
@@ -63,7 +63,7 @@ export default function GoogleConnectionStatus({ onConnectionChange }: GoogleCon
 
     const handleDisconnect = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
             const accessToken = sessionStorage.getItem('accessToken') || '';
             const response = await fetch(`${apiUrl}/auth/google/disconnect`, {
                 method: 'POST',
