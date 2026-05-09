@@ -34,7 +34,7 @@ export default function EmailsPage() {
 
     const checkGoogleConnection = async () => {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
             const accessToken = sessionStorage.getItem('accessToken') || '';
             const response = await fetch(`${apiUrl}/auth/google/status`, {
                 headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined
