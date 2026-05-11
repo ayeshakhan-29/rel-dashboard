@@ -47,6 +47,10 @@ export interface Reservation {
     /** Date when the payment is scheduled to be processed */
     scheduled_charge_date?: string | null;
 
+    tax_amount?: number;
+    gratuity_amount?: number;
+    cc_fee_amount?: number;
+
     // Metadata
     created_by?: number;
     created_by_name?: string;

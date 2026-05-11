@@ -417,7 +417,19 @@ export default function ReservationDetailPage() {
 
                                         <div className="space-y-4">
                                             <div className="flex justify-between items-center py-2 border-b border-border">
-                                                <span className="text-sm text-slate-500 dark:text-slate-400">Trip Price</span>
+                                                <span className="text-sm text-slate-500 dark:text-slate-400">Standard grad tax (20%)</span>
+                                                <span className="text-base font-medium text-foreground">${reservation.gratuity_amount || '0.00'}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center py-2 border-b border-border">
+                                                <span className="text-sm text-slate-500 dark:text-slate-400">State Tax (8.79%)</span>
+                                                <span className="text-base font-medium text-foreground">${reservation.tax_amount || '0.00'}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center py-2 border-b border-border">
+                                                <span className="text-sm text-slate-500 dark:text-slate-400">CC Fee (3.75%)</span>
+                                                <span className="text-base font-medium text-foreground">${reservation.cc_fee_amount || '0.00'}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center py-2 border-b border-border">
+                                                <span className="text-sm text-slate-500 dark:text-slate-400">Trip Total</span>
                                                 <span className="text-lg font-semibold text-foreground">${reservation.price}</span>
                                             </div>
 
