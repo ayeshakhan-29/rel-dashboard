@@ -573,28 +573,46 @@ function FormConfigurationContent() {
                                     </h3>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Base Rate</label>
+                                            <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Base Rate (Pickup Fee)</label>
                                             <input
                                                 type="number" step="0.01"
                                                 value={editingVehicle?.base_rate ?? editingVehicle?.pricing?.base_rate ?? 0}
-                                                onChange={(e) => setEditingVehicle({
-                                                    ...editingVehicle,
-                                                    pricing: { ...(editingVehicle?.pricing || { base_rate: 0, per_mile: 0, per_hour: 0, per_minute: 0 }), base_rate: parseFloat(e.target.value) },
-                                                    base_rate: parseFloat(e.target.value)
-                                                } as any)}
+                                                onChange={(e) => {
+                                                    const val = parseFloat(e.target.value) || 0;
+                                                    const currentPricing = editingVehicle?.pricing || {};
+                                                    setEditingVehicle({
+                                                        ...editingVehicle,
+                                                        base_rate: val,
+                                                        pricing: { 
+                                                            base_rate: val,
+                                                            per_mile: editingVehicle?.per_mile ?? currentPricing.per_mile ?? 0,
+                                                            per_hour: editingVehicle?.per_hour ?? currentPricing.per_hour ?? 0,
+                                                            per_minute: editingVehicle?.per_minute ?? currentPricing.per_minute ?? 0
+                                                        }
+                                                    } as any);
+                                                }}
                                                 className="w-full p-3 bg-background border border-border rounded-xl outline-none focus:ring-1 focus:ring-emerald-500 text-foreground"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Per Mile</label>
+                                            <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Per Mile (Default Fallback)</label>
                                             <input
                                                 type="number" step="0.01"
                                                 value={editingVehicle?.per_mile ?? editingVehicle?.pricing?.per_mile ?? 0}
-                                                onChange={(e) => setEditingVehicle({
-                                                    ...editingVehicle,
-                                                    pricing: { ...(editingVehicle?.pricing || { base_rate: 0, per_mile: 0, per_hour: 0, per_minute: 0 }), per_mile: parseFloat(e.target.value) },
-                                                    per_mile: parseFloat(e.target.value)
-                                                } as any)}
+                                                onChange={(e) => {
+                                                    const val = parseFloat(e.target.value) || 0;
+                                                    const currentPricing = editingVehicle?.pricing || {};
+                                                    setEditingVehicle({
+                                                        ...editingVehicle,
+                                                        per_mile: val,
+                                                        pricing: { 
+                                                            per_mile: val,
+                                                            base_rate: editingVehicle?.base_rate ?? currentPricing.base_rate ?? 0,
+                                                            per_hour: editingVehicle?.per_hour ?? currentPricing.per_hour ?? 0,
+                                                            per_minute: editingVehicle?.per_minute ?? currentPricing.per_minute ?? 0
+                                                        }
+                                                    } as any);
+                                                }}
                                                 className="w-full p-3 bg-background border border-border rounded-xl outline-none focus:ring-1 focus:ring-emerald-500 text-foreground"
                                             />
                                         </div>
@@ -603,11 +621,20 @@ function FormConfigurationContent() {
                                             <input
                                                 type="number" step="0.01"
                                                 value={editingVehicle?.per_hour ?? editingVehicle?.pricing?.per_hour ?? 0}
-                                                onChange={(e) => setEditingVehicle({
-                                                    ...editingVehicle,
-                                                    pricing: { ...(editingVehicle?.pricing || { base_rate: 0, per_mile: 0, per_hour: 0, per_minute: 0 }), per_hour: parseFloat(e.target.value) },
-                                                    per_hour: parseFloat(e.target.value)
-                                                } as any)}
+                                                onChange={(e) => {
+                                                    const val = parseFloat(e.target.value) || 0;
+                                                    const currentPricing = editingVehicle?.pricing || {};
+                                                    setEditingVehicle({
+                                                        ...editingVehicle,
+                                                        per_hour: val,
+                                                        pricing: { 
+                                                            per_hour: val,
+                                                            base_rate: editingVehicle?.base_rate ?? currentPricing.base_rate ?? 0,
+                                                            per_mile: editingVehicle?.per_mile ?? currentPricing.per_mile ?? 0,
+                                                            per_minute: editingVehicle?.per_minute ?? currentPricing.per_minute ?? 0
+                                                        }
+                                                    } as any);
+                                                }}
                                                 className="w-full p-3 bg-background border border-border rounded-xl outline-none focus:ring-1 focus:ring-emerald-500 text-foreground"
                                             />
                                         </div>
@@ -616,11 +643,20 @@ function FormConfigurationContent() {
                                             <input
                                                 type="number" step="0.01"
                                                 value={editingVehicle?.per_minute ?? editingVehicle?.pricing?.per_minute ?? 0}
-                                                onChange={(e) => setEditingVehicle({
-                                                    ...editingVehicle,
-                                                    pricing: { ...(editingVehicle?.pricing || { base_rate: 0, per_mile: 0, per_hour: 0, per_minute: 0 }), per_minute: parseFloat(e.target.value) },
-                                                    per_minute: parseFloat(e.target.value)
-                                                } as any)}
+                                                onChange={(e) => {
+                                                    const val = parseFloat(e.target.value) || 0;
+                                                    const currentPricing = editingVehicle?.pricing || {};
+                                                    setEditingVehicle({
+                                                        ...editingVehicle,
+                                                        per_minute: val,
+                                                        pricing: { 
+                                                            per_minute: val,
+                                                            base_rate: editingVehicle?.base_rate ?? currentPricing.base_rate ?? 0,
+                                                            per_mile: editingVehicle?.per_mile ?? currentPricing.per_mile ?? 0,
+                                                            per_hour: editingVehicle?.per_hour ?? currentPricing.per_hour ?? 0
+                                                        }
+                                                    } as any);
+                                                }}
                                                 className="w-full p-3 bg-background border border-border rounded-xl outline-none focus:ring-1 focus:ring-emerald-500 text-foreground"
                                             />
                                         </div>
