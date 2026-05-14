@@ -579,15 +579,15 @@ function FormConfigurationContent() {
                                                 value={editingVehicle?.base_rate ?? editingVehicle?.pricing?.base_rate ?? 0}
                                                 onChange={(e) => {
                                                     const val = parseFloat(e.target.value) || 0;
-                                                    const currentPricing = editingVehicle?.pricing || {};
+                                                    const currentPricing = editingVehicle?.pricing;
                                                     setEditingVehicle({
                                                         ...editingVehicle,
                                                         base_rate: val,
                                                         pricing: { 
                                                             base_rate: val,
-                                                            per_mile: editingVehicle?.per_mile ?? currentPricing.per_mile ?? 0,
-                                                            per_hour: editingVehicle?.per_hour ?? currentPricing.per_hour ?? 0,
-                                                            per_minute: editingVehicle?.per_minute ?? currentPricing.per_minute ?? 0
+                                                            per_mile: editingVehicle?.per_mile ?? currentPricing?.per_mile ?? 0,
+                                                            per_hour: editingVehicle?.per_hour ?? currentPricing?.per_hour ?? 0,
+                                                            per_minute: editingVehicle?.per_minute ?? currentPricing?.per_minute ?? 0
                                                         }
                                                     } as any);
                                                 }}
@@ -601,15 +601,15 @@ function FormConfigurationContent() {
                                                 value={editingVehicle?.per_mile ?? editingVehicle?.pricing?.per_mile ?? 0}
                                                 onChange={(e) => {
                                                     const val = parseFloat(e.target.value) || 0;
-                                                    const currentPricing = editingVehicle?.pricing || {};
+                                                    const currentPricing = editingVehicle?.pricing;
                                                     setEditingVehicle({
                                                         ...editingVehicle,
                                                         per_mile: val,
                                                         pricing: { 
                                                             per_mile: val,
-                                                            base_rate: editingVehicle?.base_rate ?? currentPricing.base_rate ?? 0,
-                                                            per_hour: editingVehicle?.per_hour ?? currentPricing.per_hour ?? 0,
-                                                            per_minute: editingVehicle?.per_minute ?? currentPricing.per_minute ?? 0
+                                                            base_rate: editingVehicle?.base_rate ?? currentPricing?.base_rate ?? 0,
+                                                            per_hour: editingVehicle?.per_hour ?? currentPricing?.per_hour ?? 0,
+                                                            per_minute: editingVehicle?.per_minute ?? currentPricing?.per_minute ?? 0
                                                         }
                                                     } as any);
                                                 }}
@@ -623,15 +623,15 @@ function FormConfigurationContent() {
                                                 value={editingVehicle?.per_hour ?? editingVehicle?.pricing?.per_hour ?? 0}
                                                 onChange={(e) => {
                                                     const val = parseFloat(e.target.value) || 0;
-                                                    const currentPricing = editingVehicle?.pricing || {};
+                                                    const currentPricing = editingVehicle?.pricing;
                                                     setEditingVehicle({
                                                         ...editingVehicle,
                                                         per_hour: val,
                                                         pricing: { 
                                                             per_hour: val,
-                                                            base_rate: editingVehicle?.base_rate ?? currentPricing.base_rate ?? 0,
-                                                            per_mile: editingVehicle?.per_mile ?? currentPricing.per_mile ?? 0,
-                                                            per_minute: editingVehicle?.per_minute ?? currentPricing.per_minute ?? 0
+                                                            base_rate: editingVehicle?.base_rate ?? currentPricing?.base_rate ?? 0,
+                                                            per_mile: editingVehicle?.per_mile ?? currentPricing?.per_mile ?? 0,
+                                                            per_minute: editingVehicle?.per_minute ?? currentPricing?.per_minute ?? 0
                                                         }
                                                     } as any);
                                                 }}
@@ -645,15 +645,15 @@ function FormConfigurationContent() {
                                                 value={editingVehicle?.per_minute ?? editingVehicle?.pricing?.per_minute ?? 0}
                                                 onChange={(e) => {
                                                     const val = parseFloat(e.target.value) || 0;
-                                                    const currentPricing = editingVehicle?.pricing || {};
+                                                    const currentPricing = editingVehicle?.pricing;
                                                     setEditingVehicle({
                                                         ...editingVehicle,
                                                         per_minute: val,
                                                         pricing: { 
                                                             per_minute: val,
-                                                            base_rate: editingVehicle?.base_rate ?? currentPricing.base_rate ?? 0,
-                                                            per_mile: editingVehicle?.per_mile ?? currentPricing.per_mile ?? 0,
-                                                            per_hour: editingVehicle?.per_hour ?? currentPricing.per_hour ?? 0
+                                                            base_rate: editingVehicle?.base_rate ?? currentPricing?.base_rate ?? 0,
+                                                            per_mile: editingVehicle?.per_mile ?? currentPricing?.per_mile ?? 0,
+                                                            per_hour: editingVehicle?.per_hour ?? currentPricing?.per_hour ?? 0
                                                         }
                                                     } as any);
                                                 }}
