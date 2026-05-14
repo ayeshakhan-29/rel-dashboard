@@ -37,7 +37,7 @@ import {
 
 function FormConfigurationContent() {
     const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState<'vehicles' | 'pricing' | 'rates' | 'behavior'>('vehicles');
+    const [activeTab, setActiveTab] = useState<'vehicles' | 'rates' | 'behavior'>('vehicles');
 
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const [rateConfig, setRateConfig] = useState<RateConfig | null>(null);
@@ -227,17 +227,6 @@ function FormConfigurationContent() {
                         Vehicles
                     </button>
                     <button
-                        onClick={() => setActiveTab('pricing')}
-                        className={`flex items-center gap-2 px-4 md:px-6 py-4 text-xs md:text-sm font-semibold transition-all border-b-2 whitespace-nowrap ${
-                            activeTab === 'pricing'
-                                ? 'border-emerald-600 text-emerald-600 bg-card'
-                                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-foreground hover:bg-background'
-                        }`}
-                    >
-                        <DollarSign className="w-4 h-4" />
-                        Pricing
-                    </button>
-                    <button
                         onClick={() => setActiveTab('rates')}
                         className={`flex items-center gap-2 px-4 md:px-6 py-4 text-xs md:text-sm font-semibold transition-all border-b-2 whitespace-nowrap ${
                             activeTab === 'rates'
@@ -325,46 +314,6 @@ function FormConfigurationContent() {
                         </div>
                     )}
 
-                    {/* Pricing Tab */}
-                    {activeTab === 'pricing' && (
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="border-b border-border">
-                                        <th className="py-4 px-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Vehicle</th>
-                                        <th className="py-4 px-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Base Rate</th>
-                                        <th className="py-4 px-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Per Mile</th>
-                                        <th className="py-4 px-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Per Hour</th>
-                                        <th className="py-4 px-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Per Minute</th>
-                                        <th className="py-4 px-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {vehicles.map((v) => (
-                                        <tr key={v.id} className="border-b border-border hover:bg-background transition-colors">
-                                            <td className="py-4 px-4 font-bold text-foreground">{v.label}</td>
-                                            <td className="py-4 px-4 text-slate-600 dark:text-slate-400">${Number(v.base_rate || 0).toFixed(2)}</td>
-                                            <td className="py-4 px-4 text-slate-600 dark:text-slate-400">${Number(v.per_mile || 0).toFixed(2)}/mi</td>
-                                            <td className="py-4 px-4 text-slate-600 dark:text-slate-400">${Number(v.per_hour || 0).toFixed(2)}/hr</td>
-                                            <td className="py-4 px-4 text-slate-600 dark:text-slate-400">${Number(v.per_minute || 0).toFixed(2)}/min</td>
-                                            <td className="py-4 px-4">
-                                                <button
-                                                    onClick={() => {
-                                                        setEditingVehicle({ ...v });
-                                                        setIsVehicleModalOpen(true);
-                                                    }}
-                                                    className="text-emerald-600 dark:text-emerald-400 hover:underline text-sm font-semibold"
-                                                >
-                                                    Edit Details
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-
                     {/* Rates Tab */}
                     {activeTab === 'rates' && rateConfig && (
                         <form onSubmit={handleUpdateRates} className="max-w-4xl space-y-8">
@@ -405,29 +354,6 @@ function FormConfigurationContent() {
                                         />
                                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">%</span>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div className="pt-6 border-t border-border">
-                                <h3 className="text-lg font-bold text-foreground mb-6">Service Type Multipliers</h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                                    {Object.entries(rateConfig.service_multipliers).map(([key, val]) => (
-                                        <div key={key} className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{key}</label>
-                                            <input
-                                                type="number" step="0.05"
-                                                value={val}
-                                                onChange={(e) => setRateConfig({
-                                                    ...rateConfig,
-                                                    service_multipliers: {
-                                                        ...rateConfig.service_multipliers,
-                                                        [key]: parseFloat(e.target.value)
-                                                    }
-                                                })}
-                                                className="w-full p-3 bg-background border border-border rounded-xl focus:ring-1 focus:ring-emerald-500 outline-none transition-all text-foreground"
-                                            />
-                                        </div>
-                                    ))}
                                 </div>
                             </div>
 
