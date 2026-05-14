@@ -24,6 +24,14 @@ export interface Booking {
     [key: string]: any;
 }
 
+export interface PricingTier {
+    miles?: number;
+    hours?: number;
+    rate: number;
+    type: 'flat' | 'per_mile' | 'per_hour';
+    minimum?: boolean | string;
+}
+
 export interface Vehicle {
     id?: number;
     slug: string;
@@ -38,6 +46,8 @@ export interface Vehicle {
     per_mile?: number;
     per_hour?: number;
     per_minute?: number;
+    distance_tiers?: PricingTier[] | null;
+    hourly_tiers?: PricingTier[] | null;
     pricing?: {
         base_rate: number;
         per_mile: number;
@@ -82,9 +92,12 @@ export const getBookingById = async (id: string): Promise<Booking> => {
     }
 };
 
-export const getVehicles = async (): Promise<Vehicle[]> => {
+export const getVehicles = async (includeInactive = false): Promise<Vehicle[]> => {
     try {
-        const response = await api.get('/forms/vehicles');
+        const response = await api.get('/forms/vehicles', {
+            params: { include_inactive: includeInactive, _t: Date.now() },
+            headers: { 'Cache-Control': 'no-cache' }
+        });
         return response.data.data;
     } catch (error) {
         console.error('Error fetching vehicles:', error);

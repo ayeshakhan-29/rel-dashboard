@@ -13,7 +13,8 @@ import {
     updateRateConfig,
     deleteVehicle,
     Vehicle,
-    RateConfig
+    RateConfig,
+    PricingTier
 } from '../../services/formsService';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
@@ -56,7 +57,7 @@ function FormConfigurationContent() {
         setLoading(true);
         try {
             const [vehiclesData, ratesData] = await Promise.all([
-                getVehicles(),
+                getVehicles(true), // Get all vehicles including inactive for admin editing
                 getRateConfig()
             ]);
             setVehicles(vehiclesData);
@@ -75,7 +76,13 @@ function FormConfigurationContent() {
 
         setSaving(true);
         try {
-            await saveVehicle(editingVehicle);
+            const vehicleData = {
+                ...editingVehicle,
+                // Ensure tiers are included in the payload
+                distance_tiers: editingVehicle.distance_tiers || null,
+                hourly_tiers: editingVehicle.hourly_tiers || null,
+            };
+            await saveVehicle(vehicleData);
             setMessage({ type: 'success', text: 'Vehicle saved successfully.' });
             setIsVehicleModalOpen(false);
             fetchData();
@@ -617,6 +624,192 @@ function FormConfigurationContent() {
                                                 className="w-full p-3 bg-background border border-border rounded-xl outline-none focus:ring-1 focus:ring-emerald-500 text-foreground"
                                             />
                                         </div>
+                                    </div>
+                                </div>
+
+                                {/* Distance Tiers Section */}
+                                <div className="space-y-4 pt-6 border-t border-border">
+                                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                                        <Car className="w-5 h-5 text-emerald-600" />
+                                        Distance Pricing Tiers (per mile)
+                                    </h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                                        Configure tiered pricing: First mile (flat rate), next X miles, remaining miles
+                                    </p>
+                                    <div className="space-y-3">
+                                        {((editingVehicle.distance_tiers as PricingTier[]) || []).map((tier, index) => (
+                                            <div key={index} className="flex items-center gap-3 p-3 bg-background border border-border rounded-xl">
+                                                <div className="flex-1 grid grid-cols-3 gap-3">
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase">
+                                                            {index === 0 ? 'First (Miles)' : index === 1 ? 'Next (Miles)' : 'Remaining'}
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            value={tier.miles || ''}
+                                                            onChange={(e) => {
+                                                                const newTiers = [...((editingVehicle.distance_tiers as PricingTier[]) || [])];
+                                                                newTiers[index] = { ...newTiers[index], miles: parseFloat(e.target.value) || undefined };
+                                                                setEditingVehicle({ ...editingVehicle, distance_tiers: newTiers } as any);
+                                                            }}
+                                                            placeholder={index === 2 ? '∞' : 'Miles'}
+                                                            className="w-full p-2 bg-card border border-border rounded-lg text-foreground text-sm"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase">Rate ($)</label>
+                                                        <input
+                                                            type="number" step="0.01"
+                                                            value={tier.rate}
+                                                            onChange={(e) => {
+                                                                const newTiers = [...((editingVehicle.distance_tiers as PricingTier[]) || [])];
+                                                                newTiers[index] = { ...newTiers[index], rate: parseFloat(e.target.value) };
+                                                                setEditingVehicle({ ...editingVehicle, distance_tiers: newTiers } as any);
+                                                            }}
+                                                            className="w-full p-2 bg-card border border-border rounded-lg text-foreground text-sm"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase">Type</label>
+                                                        <select
+                                                            value={tier.type}
+                                                            onChange={(e) => {
+                                                                const newTiers = [...((editingVehicle.distance_tiers as PricingTier[]) || [])];
+                                                                newTiers[index] = { ...newTiers[index], type: e.target.value as 'flat' | 'per_mile' };
+                                                                setEditingVehicle({ ...editingVehicle, distance_tiers: newTiers } as any);
+                                                            }}
+                                                            className="w-full p-2 bg-card border border-border rounded-lg text-foreground text-sm"
+                                                        >
+                                                            <option value="flat">Flat</option>
+                                                            <option value="per_mile">Per Mile</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const newTiers = [...((editingVehicle.distance_tiers as PricingTier[]) || [])];
+                                                        newTiers.splice(index, 1);
+                                                        setEditingVehicle({ ...editingVehicle, distance_tiers: newTiers } as any);
+                                                    }}
+                                                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const currentTiers = (editingVehicle.distance_tiers as PricingTier[]) || [];
+                                                const newTier: PricingTier = { rate: 0, type: 'per_mile' };
+                                                setEditingVehicle({ ...editingVehicle, distance_tiers: [...currentTiers, newTier] } as any);
+                                            }}
+                                            className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400 font-semibold hover:underline"
+                                        >
+                                            <Plus className="w-4 h-4" /> Add Tier
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Hourly Tiers Section */}
+                                <div className="space-y-4 pt-6 border-t border-border">
+                                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                                        <Settings className="w-5 h-5 text-emerald-600" />
+                                        Hourly Pricing Tiers (per hour)
+                                    </h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                                        Configure tiered hourly pricing: First hour (minimum), additional hours
+                                    </p>
+                                    <div className="space-y-3">
+                                        {((editingVehicle.hourly_tiers as PricingTier[]) || []).map((tier, index) => (
+                                            <div key={index} className="flex items-center gap-3 p-3 bg-background border border-border rounded-xl">
+                                                <div className="flex-1 grid grid-cols-4 gap-3">
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase">
+                                                            {index === 0 ? 'First (Hrs)' : 'Additional'}
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            value={tier.hours || ''}
+                                                            onChange={(e) => {
+                                                                const newTiers = [...((editingVehicle.hourly_tiers as PricingTier[]) || [])];
+                                                                newTiers[index] = { ...newTiers[index], hours: parseFloat(e.target.value) || undefined };
+                                                                setEditingVehicle({ ...editingVehicle, hourly_tiers: newTiers } as any);
+                                                            }}
+                                                            placeholder={index === 0 ? '1' : 'Hrs'}
+                                                            className="w-full p-2 bg-card border border-border rounded-lg text-foreground text-sm"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase">Rate ($)</label>
+                                                        <input
+                                                            type="number" step="0.01"
+                                                            value={tier.rate}
+                                                            onChange={(e) => {
+                                                                const newTiers = [...((editingVehicle.hourly_tiers as PricingTier[]) || [])];
+                                                                newTiers[index] = { ...newTiers[index], rate: parseFloat(e.target.value) };
+                                                                setEditingVehicle({ ...editingVehicle, hourly_tiers: newTiers } as any);
+                                                            }}
+                                                            className="w-full p-2 bg-card border border-border rounded-lg text-foreground text-sm"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase">Type</label>
+                                                        <select
+                                                            value={tier.type}
+                                                            onChange={(e) => {
+                                                                const newTiers = [...((editingVehicle.hourly_tiers as PricingTier[]) || [])];
+                                                                newTiers[index] = { ...newTiers[index], type: e.target.value as 'flat' | 'per_hour' };
+                                                                setEditingVehicle({ ...editingVehicle, hourly_tiers: newTiers } as any);
+                                                            }}
+                                                            className="w-full p-2 bg-card border border-border rounded-lg text-foreground text-sm"
+                                                        >
+                                                            <option value="flat">Flat</option>
+                                                            <option value="per_hour">Per Hour</option>
+                                                        </select>
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-bold text-slate-500 uppercase">Minimum?</label>
+                                                        <label className="flex items-center gap-2 cursor-pointer">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={tier.minimum === true || tier.minimum === 'true'}
+                                                                onChange={(e) => {
+                                                                    const newTiers = [...((editingVehicle.hourly_tiers as PricingTier[]) || [])];
+                                                                    newTiers[index] = { ...newTiers[index], minimum: e.target.checked };
+                                                                    setEditingVehicle({ ...editingVehicle, hourly_tiers: newTiers } as any);
+                                                                }}
+                                                                className="w-4 h-4 rounded border-border text-emerald-600 focus:ring-emerald-500"
+                                                            />
+                                                            <span className="text-xs text-slate-500">Min</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const newTiers = [...((editingVehicle.hourly_tiers as PricingTier[]) || [])];
+                                                        newTiers.splice(index, 1);
+                                                        setEditingVehicle({ ...editingVehicle, hourly_tiers: newTiers } as any);
+                                                    }}
+                                                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const currentTiers = (editingVehicle.hourly_tiers as PricingTier[]) || [];
+                                                const newTier: PricingTier = { rate: 0, type: 'per_hour' };
+                                                setEditingVehicle({ ...editingVehicle, hourly_tiers: [...currentTiers, newTier] } as any);
+                                            }}
+                                            className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400 font-semibold hover:underline"
+                                        >
+                                            <Plus className="w-4 h-4" /> Add Tier
+                                        </button>
                                     </div>
                                 </div>
 
