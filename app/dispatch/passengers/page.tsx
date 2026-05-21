@@ -5,15 +5,16 @@ import Header from "@/components/Header";
 import AdminRoute from "../../components/auth/AdminRoute";
 import { getPassengers, deleteUser, updateUserById } from "@/app/services/userService";
 import reservationService from "@/app/services/reservationService";
-import { Search, Plus, Phone, Mail, Users, Star, Calendar, DollarSign, Edit, Trash2, Loader2 } from "lucide-react";
+import { Search, Plus, Phone, Mail, Users, Star, Calendar, DollarSign, Edit, Trash2, Loader2, CreditCard } from "lucide-react";
 import Pagination from "@/components/Pagination";
+import ChargeCustomerModal from "@/components/ChargeCustomerModal";
 
 interface Trip { id: string; date: string; route: string; price: number; status: string; driver: string }
 interface Passenger {
   id: string | number; name: string; phone: string; email?: string;
   totalTrips: number; totalSpent: number; averageRating?: number;
   lastTripDate: string | null; preferredVehicle?: string; specialRequests?: string;
-  status: string; recentTrips?: Trip[];
+  status: string; recentTrips?: Trip[]; savedCards?: number;
 }
 
 const statusStyles: Record<string, string> = {
@@ -29,20 +30,49 @@ const tripStatusStyles: Record<string, string> = {
   dispatched: "text-sky-600 dark:text-sky-400",
 };
 
-function PassengerModal({ passenger, onClose }: { passenger: Passenger; onClose: () => void }) {
+function PassengerModal({ passenger, onClose, onCharge }: { passenger: Passenger; onClose: () => void; onCharge: () => void }) {
+  const [savedCards, setSavedCards] = useState<any[]>([]);
+  const [loadingCards, setLoadingCards] = useState(true);
+
+  useEffect(() => {
+    loadSavedCards();
+  }, [passenger.id]);
+
+  const loadSavedCards = async () => {
+    setLoadingCards(true);
+    try {
+      const { default: paymentService } = await import('@/app/services/paymentService');
+      const methods = await paymentService.getPaymentMethods(Number(passenger.id));
+      setSavedCards(methods);
+    } catch {
+      setSavedCards([]);
+    } finally {
+      setLoadingCards(false);
+    }
+  };
+
+  const brandColors: Record<string, string> = {
+    visa: 'text-blue-600',
+    mastercard: 'text-orange-500',
+    'american express': 'text-blue-500',
+    discover: 'text-orange-400',
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all animate-in fade-in duration-200">
-      <div className="bg-card rounded-xl border border-border w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+      <div className="bg-card rounded-xl border border-border w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
         <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-card transition-colors">
           <div>
             <h3 className="font-semibold text-foreground">{passenger.name}</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">{passenger.id}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">ID: {passenger.id}</p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-foreground text-2xl leading-none transition-colors">×</button>
+          <button onClick={onClose} className="text-slate-400 hover:text-foreground text-2xl leading-none transition-colors">&times;</button>
         </div>
 
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-72px)] bg-background/50 transition-colors">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+            {/* Left Column */}
             <div className="space-y-4">
               <div className="bg-card rounded-lg p-4 border border-border shadow-sm">
                 <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">Contact</h4>
@@ -51,18 +81,7 @@ function PassengerModal({ passenger, onClose }: { passenger: Passenger; onClose:
                   {passenger.email && <div className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-slate-400" />{passenger.email}</div>}
                 </div>
               </div>
-              <div className="bg-card rounded-lg p-4 border border-border shadow-sm">
-                <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">Preferences</h4>
-                <div className="space-y-2 text-sm">
-                  <p className="text-slate-500 dark:text-slate-400 text-xs uppercase font-medium">Preferred Vehicle</p>
-                  <p className="text-foreground/90">{passenger.preferredVehicle || 'None specified'}</p>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-3 uppercase font-medium">Special Requests</p>
-                  <p className="text-foreground/90">{passenger.specialRequests || 'None'}</p>
-                </div>
-              </div>
-            </div>
 
-            <div>
               <div className="bg-card rounded-lg p-4 border border-border shadow-sm">
                 <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">Statistics</h4>
                 <div className="space-y-3 text-sm">
@@ -79,9 +98,44 @@ function PassengerModal({ passenger, onClose }: { passenger: Passenger; onClose:
                   ))}
                 </div>
               </div>
+
+              {/* Saved Cards */}
+              <div className="bg-card rounded-lg p-4 border border-border shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Saved Cards</h4>
+                </div>
+                {loadingCards ? (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="w-4 h-4 text-emerald-600 animate-spin" />
+                  </div>
+                ) : savedCards.length === 0 ? (
+                  <div className="text-center py-4">
+                    <CreditCard className="w-6 h-6 text-slate-300 mx-auto mb-1" />
+                    <p className="text-xs text-slate-400">No saved cards</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {savedCards.map((card: any) => (
+                      <div key={card.id} className="flex items-center gap-2 bg-background rounded-lg p-2.5 border border-border">
+                        <CreditCard className={`w-4 h-4 ${brandColors[card.card_brand?.toLowerCase()] || 'text-slate-400'}`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground">
+                            {card.card_brand ? card.card_brand.charAt(0).toUpperCase() + card.card_brand.slice(1) : 'Card'} **** {card.card_last4}
+                          </p>
+                          <p className="text-[10px] text-slate-400">
+                            Expires {card.card_exp_month}/{card.card_exp_year}
+                            {card.is_default && <span className="ml-1 text-emerald-600 font-medium">Default</span>}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="lg:col-span-1">
+            {/* Right Column */}
+            <div className="space-y-4">
               <div className="bg-card rounded-lg p-4 border border-border shadow-sm overflow-hidden flex flex-col max-h-[400px]">
                 <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">Recent Trips</h4>
                 <div className="space-y-2 overflow-y-auto pr-1 custom-scrollbar">
@@ -107,6 +161,20 @@ function PassengerModal({ passenger, onClose }: { passenger: Passenger; onClose:
                   )}
                 </div>
               </div>
+
+              {/* Charge Action */}
+              {savedCards.length > 0 && (
+                <div className="bg-card rounded-lg p-4 border border-emerald-200 dark:border-emerald-900/30 shadow-sm">
+                  <h4 className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide mb-3">Quick Actions</h4>
+                  <button
+                    onClick={onCharge}
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm shadow-emerald-500/20"
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    Charge Customer
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -212,6 +280,7 @@ function PassengersContent() {
   const [selected, setSelected] = useState<Passenger | null>(null);
   const [editingPassenger, setEditingPassenger] = useState<Passenger | null>(null);
   const [deletingPassenger, setDeletingPassenger] = useState<Passenger | null>(null);
+  const [chargingPassenger, setChargingPassenger] = useState<Passenger | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
@@ -411,9 +480,17 @@ function PassengersContent() {
         </main>
       </div>
 
-      {selected && <PassengerModal passenger={selected} onClose={() => setSelected(null)} />}
+      {selected && <PassengerModal passenger={selected} onClose={() => setSelected(null)} onCharge={() => { setChargingPassenger(selected); setSelected(null); }} />}
       {editingPassenger && <EditPassengerModal passenger={editingPassenger} onClose={() => setEditingPassenger(null)} onSuccess={handleEditSuccess} />}
       {deletingPassenger && <DeleteConfirmModal passenger={deletingPassenger} onClose={() => setDeletingPassenger(null)} onConfirm={handleDeleteConfirm} />}
+      {chargingPassenger && (
+        <ChargeCustomerModal
+          userId={Number(chargingPassenger.id)}
+          customerName={chargingPassenger.name}
+          onClose={() => setChargingPassenger(null)}
+          onSuccess={() => setChargingPassenger(null)}
+        />
+      )}
     </div>
   );
 }

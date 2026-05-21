@@ -30,6 +30,7 @@ import AdminRoute from '@/app/components/auth/AdminRoute';
 import reservationService from '@/app/services/reservationService';
 import { Reservation } from '@/types/reservation.types';
 import TripStatusLog from '@/components/TripStatusLog';
+import ChargeCustomerModal from '@/components/ChargeCustomerModal';
 
 export default function ReservationDetailPage() {
     const params = useParams();
@@ -44,6 +45,7 @@ export default function ReservationDetailPage() {
     const [updating, setUpdating] = useState(false);
     const [retryingPayment, setRetryingPayment] = useState(false);
     const [retryMessage, setRetryMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [showChargeModal, setShowChargeModal] = useState(false);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -459,6 +461,18 @@ export default function ReservationDetailPage() {
                                                             {retryMessage.text}
                                                         </p>
                                                     )}
+
+                                                    {/* Charge Customer Button - always show if passenger has saved cards */}
+                                                    {reservation.passenger_id && (
+                                                        <button
+                                                            onClick={() => setShowChargeModal(true)}
+                                                            className="text-xs font-medium text-emerald-600 hover:text-emerald-700 flex items-center mt-2"
+                                                            title="Charge this customer using a saved card"
+                                                        >
+                                                            <CreditCard className="h-3 w-3 mr-1" />
+                                                            Charge Customer
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
 
@@ -579,6 +593,16 @@ export default function ReservationDetailPage() {
                     </main>
                 </div>
             </div>
+            {showChargeModal && reservation.passenger_id && (
+                <ChargeCustomerModal
+                    userId={reservation.passenger_id}
+                    customerName={reservation.passenger_name}
+                    reservationId={reservation.id}
+                    formBookingRef={reservation.form_booking_ref}
+                    onClose={() => setShowChargeModal(false)}
+                    onSuccess={() => { setShowChargeModal(false); fetchReservation(); }}
+                />
+            )}
         </AdminRoute>
     );
 }
