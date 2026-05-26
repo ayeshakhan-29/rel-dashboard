@@ -484,9 +484,9 @@ function DashboardContent() {
 
       {activeTab === "notifications" && (
         <div className="space-y-6">
-          <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-base font-semibold text-slate-900">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white">
                 Notifications
               </h3>
               {unreadCount > 0 && (
@@ -510,17 +510,17 @@ function DashboardContent() {
               )}
             </div>
             {notificationsLoading ? (
-              <div className="py-12 flex flex-col items-center justify-center text-slate-400">
+              <div className="py-12 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
                 <Loader2 className="h-8 w-8 animate-spin mb-4" />
                 <p className="text-sm">Loading notifications...</p>
               </div>
             ) : notifications.length === 0 ? (
-              <div className="py-12 flex flex-col items-center justify-center text-slate-400">
+              <div className="py-12 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
                 <Bell className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-sm font-medium text-slate-900">
+                <p className="text-sm font-medium text-slate-900 dark:text-white">
                   No notifications
                 </p>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   You're all caught up!
                 </p>
               </div>
@@ -531,8 +531,8 @@ function DashboardContent() {
                     key={notification.id}
                     className={`p-4 rounded-lg border transition-all cursor-pointer ${
                       notification.is_read
-                        ? "bg-white border-slate-200 hover:border-slate-300"
-                        : "bg-emerald-50 border-emerald-200 hover:border-emerald-300"
+                        ? "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                        : "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-900/30 hover:border-emerald-300 dark:hover:border-emerald-500"
                     }`}
                     onClick={async () => {
                       if (!notification.is_read) {
@@ -559,17 +559,17 @@ function DashboardContent() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="text-sm font-semibold text-slate-900">
+                          <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
                             {notification.title}
                           </h4>
                           {!notification.is_read && (
                             <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
                           )}
                         </div>
-                        <p className="text-xs text-slate-600">
+                        <p className="text-xs text-slate-600 dark:text-slate-400">
                           {notification.message}
                         </p>
-                        <p className="text-xs text-slate-400 mt-2">
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
                           {new Date(notification.created_at).toLocaleString()}
                         </p>
                       </div>
